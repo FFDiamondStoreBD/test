@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up - InvestEarn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">Create Account</h2>
+        <form method="POST" action="/register" class="space-y-4">
+            <input type="text" name="name" placeholder="Full Name" required class="w-full p-3 border rounded">
+            <input type="text" name="phone" placeholder="Phone Number" required class="w-full p-3 border rounded">
+            <input type="email" name="email" placeholder="Email Address" required class="w-full p-3 border rounded">
+            <input type="password" name="password" placeholder="Password" required class="w-full p-3 border rounded">
+            <input type="text" name="referral_code" placeholder="Referral Code (Optional)" class="w-full p-3 border rounded">
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700">Sign Up</button>
+        </form>
+        <p class="mt-4 text-center">Already have an account? <a href="/login" class="text-blue-500">Login</a></p>
+    </div>
+</body>
+</html>
