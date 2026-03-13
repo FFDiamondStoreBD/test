@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - InvestEarn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50">
+    <div class="max-w-4xl mx-auto py-10">
+        <!-- Profile Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white shadow-lg mb-8">
+            <h1 class="text-3xl font-bold">Welcome, {{ user.name }}!</h1>
+            <p class="text-xl mt-2">Balance: <span class="font-bold">৳ {{ user.balance }}</span></p>
+            <p class="mt-2 text-sm bg-white/20 inline-block px-3 py-1 rounded">Your Referral Code: {{ user.referral_code }}</p>
+        </div>
+
+        <!-- Free Package Claim -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8 flex justify-between items-center">
+            <div>
+                <h3 class="text-xl font-bold text-gray-800">🎁 Free Package</h3>
+                <p class="text-gray-500">Claim ৳7 every 8 hours.</p>
+            </div>
+            <form method="POST" action="/claim_free">
+                <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-600 shadow">Claim Now</button>
+            </form>
+        </div>
+
+        <!-- VIP Packages -->
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">VIP Packages</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for pkg_name, details in vip.items() %}
+            <div class="bg-white p-6 rounded-lg shadow border-t-4 border-blue-500">
+                <h3 class="text-xl font-bold mb-2">{{ pkg_name }}</h3>
+                <p class="text-gray-600 mb-1">Price: ৳ {{ details.price }}</p>
+                <p class="text-gray-600 mb-1">Daily Profit: ৳ {{ details.daily_profit }}</p>
+                <p class="text-gray-600 mb-4">Duration: {{ details.mead_days }} Days</p>
+                <form method="POST" action="/buy_vip/{{ pkg_name }}">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Buy Package</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
