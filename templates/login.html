@@ -1,69 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - InvestEarn</title>
+    <title>লগিন - InvestEarn</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts (Bangla) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
 
-    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-4 border-blue-600">
+    <!-- Login Container -->
+    <div class="bg-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-blue-600 relative overflow-hidden">
         
-        <!-- Logo / Title -->
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-extrabold text-gray-800">Welcome Back!</h2>
-            <p class="text-gray-500 mt-2">Login to your account to continue</p>
+        <!-- Decorative background element -->
+        <div class="absolute top-[-50px] right-[-50px] w-32 h-32 bg-blue-100 rounded-full opacity-50 blur-2xl"></div>
+
+        <!-- Header -->
+        <div class="text-center mb-8 relative z-10">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm border border-blue-100">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-800">স্বাগতম!</h2>
+            <p class="text-gray-500 mt-2">আপনার একাউন্টে লগিন করুন</p>
         </div>
 
         <!-- Flash Messages (For Error / Success alerts) -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
+                <div class="mb-6 relative z-10">
                 {% for category, message in messages %}
-                    <div class="p-3 mb-4 rounded text-white font-bold text-center shadow-sm
+                    <div class="p-3 mb-3 rounded-lg text-white font-bold text-sm text-center shadow-md flex justify-center items-center gap-2
                         {% if category == 'success' %} bg-green-500
                         {% elif category == 'danger' %} bg-red-500
-                        {% elif category == 'warning' %} bg-yellow-500
+                        {% elif category == 'warning' %} bg-yellow-500 text-yellow-900
                         {% else %} bg-blue-500 {% endif %}">
-                        {{ message }}
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ message }}
                     </div>
                 {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
 
         <!-- Login Form -->
-        <form method="POST" action="/login" class="space-y-5">
+        <form method="POST" action="/login" class="space-y-6 relative z-10">
+            
+            <!-- Email Input -->
             <div>
-                <label class="block text-gray-700 font-bold mb-2">Email Address</label>
+                <label class="block text-gray-700 font-bold mb-2">
+                    <i class="fa-regular fa-envelope text-blue-500 mr-1"></i> ইমেইল এড্রেস
+                </label>
                 <input type="email" name="email" placeholder="example@email.com" required 
-                       class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
             </div>
             
+            <!-- Password Input -->
             <div>
-                <label class="block text-gray-700 font-bold mb-2">Password</label>
+                <label class="block text-gray-700 font-bold mb-2">
+                    <i class="fa-solid fa-lock text-blue-500 mr-1"></i> পাসওয়ার্ড
+                </label>
                 <input type="password" name="password" placeholder="••••••••" required 
-                       class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
             </div>
 
+            <!-- Submit Button -->
             <button type="submit" 
-                    class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                Login Now
+                    class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-bold text-lg hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex justify-center items-center gap-2">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> লগিন করুন
             </button>
         </form>
 
         <!-- Footer Links -->
-        <div class="mt-6 text-center">
-            <p class="text-gray-600">Don't have an account? 
-                <a href="/register" class="text-blue-600 font-bold hover:underline">Sign Up</a>
+        <div class="mt-8 text-center relative z-10 border-t border-gray-100 pt-6">
+            <p class="text-gray-600 mb-3">একাউন্ট নেই? 
+                <a href="/register" class="text-blue-600 font-bold hover:underline transition">
+                    <i class="fa-solid fa-user-plus mr-1"></i>নতুন একাউন্ট খুলুন
+                </a>
             </p>
-        </div>
-        
-        <div class="mt-4 text-center">
-            <a href="/" class="text-gray-400 hover:text-gray-600 text-sm flex items-center justify-center gap-1 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Home
+            
+            <a href="/" class="inline-flex items-center justify-center gap-1 text-gray-400 hover:text-gray-600 text-sm transition bg-gray-50 px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-100">
+                <i class="fa-solid fa-arrow-left"></i> হোমে ফিরে যান
             </a>
         </div>
 
