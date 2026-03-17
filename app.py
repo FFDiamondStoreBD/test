@@ -33,7 +33,6 @@ def index():
     proofs = supabase.table("proofs").select("*").order("created_at", desc=True).limit(10).execute()
     
     return render_template('index.html', earners=top_earners.data, referrers=top_referrers.data, proofs=proofs.data)
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -44,28 +43,42 @@ def register():
         referred_by = request.form.get('referral_code', '')
         my_ref_code = str(uuid.uuid4())[:8].upper()
 
-        # Insert User
-        user_data = {
-            "name": name, "phone": phone, "email": email, 
-            "password_hash": password, "referral_code": my_ref_code, 
-            "referred_by": referred_by
-        }
-        res = supabase.table("users").insert(user_data).execute()
+        # ১. আগে চেক করা হচ্ছে এই ইমেইলটি ডাটাবেসে আছে কি না
+        existing_user = supabase.table("users").select("id").eq("email", email).execute()
         
-        if res.data:
-            user_id = res.data[0]['id']
-            # Give FREE Package automatically
-            supabase.table("user_packages").insert({
-                "user_id": user_id, 
-                "package_name": "FREE",
-                "last_claim_time": "2000-01-01T00:00:00" # Ready to claim
-            }).execute()
+        if existing_user.data:
+            # যদি ইমেইলটি পাওয়া যায়, তবে ইউজারকে এরর মেসেজ দেখাবে
+            flash("এই ইমেইল দিয়ে ইতিমধ্যেই একটি একাউন্ট খোলা আছে! দয়া করে অন্য ইমেইল ব্যবহার করুন অথবা লগিন করুন।", "danger")
+            return redirect(url_for('register'))
+
+        # ২. যদি নতুন ইমেইল হয়, তবে ডাটাবেসে সেভ করবে
+        try:
+            user_data = {
+                "name": name, "phone": phone, "email": email, 
+                "password_hash": password, "referral_code": my_ref_code, 
+                "referred_by": referred_by
+            }
+            res = supabase.table("users").insert(user_data).execute()
             
-            flash("Registration Successful! Please login.", "success")
-            return redirect(url_for('login'))
+            if res.data:
+                user_id = res.data[0]['id']
+                # ফ্রি প্যাকেজ দেওয়া হচ্ছে
+                supabase.table("user_packages").insert({
+                    "user_id": user_id, 
+                    "package_name": "FREE",
+                    "last_claim_time": "2000-01-01T00:00:00" # Ready to claim
+                }).execute()
+                
+                flash("একাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগিন করুন।", "success")
+                return redirect(url_for('login'))
+                
+        except Exception as e:
+            # যদি অন্য কোনো টেকনিক্যাল সমস্যা হয়
+            flash("একাউন্ট তৈরি করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।", "danger")
+            return redirect(url_for('register'))
             
     return render_template('register.html')
-
+    
 # --- NEW: History Page ---
 @app.route('/history')
 def history():
