@@ -11,7 +11,6 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "8a5f9c2d4e1b6a7f8d9c0e3b2a1f4c7d")
 
-# Supabase Setup
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
@@ -89,45 +88,69 @@ def dashboard():
         return redirect(url_for('login'))
 
     pkg_res = supabase.table("user_packages").select("*").eq("user_id", session['user_id']).execute()
+    packages = pkg_res.data
+    
+    # প্যাকেজ অনুযায়ী টাইমার এবং আয়ের ডাটা সেট করা হচ্ছে
+    for p in packages:
+        clean_time = p['last_claim_time'].split('.')[0].split('+')[0]
+        last_claim = datetime.fromisoformat(clean_time)
+        
+        if p['package_name'] == 'FREE':
+            p['next_claim'] = (last_claim + timedelta(hours=8)).isoformat() + "Z"
+            p['reward'] = 7
+            p['interval'] = '৮ ঘণ্টা'
+        elif p['package_name'] in VIP_PACKAGES:
+            p['next_claim'] = (last_claim + timedelta(hours=24)).isoformat() + "Z"
+            p['reward'] = VIP_PACKAGES[p['package_name']]['daily_profit']
+            p['interval'] = '২৪ ঘণ্টা'
+
     withdraw_res = supabase.table("withdrawals").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
     deposit_res = supabase.table("deposits").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
     
-    return render_template('dashboard.html', user=user, packages=pkg_res.data, vip=VIP_PACKAGES, withdrawals=withdraw_res.data, deposits=deposit_res.data)
+    return render_template('dashboard.html', user=user, packages=packages, vip=VIP_PACKAGES, withdrawals=withdraw_res.data, deposits=deposit_res.data)
 
-@app.route('/deposit', methods=['POST'])
-def deposit():
+# নতুন ডাইনামিক ক্লেইম সিস্টেম
+@app.route('/claim/<int:pkg_id>', methods=['POST'])
+def claim_reward(pkg_id):
     if 'user_id' not in session: return redirect(url_for('login'))
     user_id = session['user_id']
-    method = request.form.get('method')
-    sender_number = request.form.get('sender_number')
-    transaction_id = request.form.get('transaction_id')
-    amount = float(request.form.get('amount'))
-
-    if amount < 50:
-        flash("সর্বনিম্ন ডিপোজিট ৫০ টাকা!", "warning")
-    else:
-        supabase.table("deposits").insert({
-            "user_id": user_id, "method": method, "sender_number": sender_number,
-            "transaction_id": transaction_id, "amount": amount, "status": "Pending"
-        }).execute()
-        flash("ডিপোজিট রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে! এডমিন চেক করে ব্যালেন্স এড করে দেবেন।", "success")
+    
+    pkg_res = supabase.table("user_packages").select("*").eq("id", pkg_id).eq("user_id", user_id).execute()
+    if not pkg_res.data:
+        flash("প্যাকেজটি পাওয়া যায়নি!", "danger")
+        return redirect(url_for('dashboard'))
         
-    return redirect(url_for('dashboard'))
+    pkg = pkg_res.data[0]
+    pkg_name = pkg['package_name']
+    
+    if pkg_name == "FREE":
+        reward = 7
+        interval_hours = 8
+        mead_days = 365
+    elif pkg_name in VIP_PACKAGES:
+        reward = VIP_PACKAGES[pkg_name]['daily_profit']
+        interval_hours = 24
+        mead_days = VIP_PACKAGES[pkg_name]['mead_days']
+    else:
+        return redirect(url_for('dashboard'))
 
-@app.route('/claim_free', methods=['POST'])
-def claim_free():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    user_id = session['user_id']
-    pkg = supabase.table("user_packages").select("*").eq("user_id", user_id).eq("package_name", "FREE").execute()
-    if pkg.data:
-        last_claim = datetime.fromisoformat(pkg.data[0]['last_claim_time'].split('.')[0])
-        if datetime.now() >= last_claim + timedelta(hours=8):
-            user = supabase.table("users").select("balance").eq("id", user_id).execute().data[0]
-            supabase.table("users").update({"balance": user['balance'] + 7}).eq("id", user_id).execute()
-            supabase.table("user_packages").update({"last_claim_time": datetime.now().isoformat()}).eq("id", pkg.data[0]['id']).execute()
-            flash("আপনি সফলভাবে ৭ টাকা ক্লেইম করেছেন!", "success")
-        else:
-            flash("আপনি প্রতি ৮ ঘন্টা পর পর ক্লেইম করতে পারবেন।", "warning")
+    clean_created = pkg['created_at'].split('.')[0].split('+')[0]
+    created_at = datetime.fromisoformat(clean_created)
+    if datetime.now() > created_at + timedelta(days=mead_days):
+        flash(f"আপনার {pkg_name} প্যাকেজটির মেয়াদ শেষ হয়ে গেছে!", "danger")
+        return redirect(url_for('dashboard'))
+        
+    clean_time = pkg['last_claim_time'].split('.')[0].split('+')[0]
+    last_claim = datetime.fromisoformat(clean_time)
+    
+    if datetime.now() >= last_claim + timedelta(hours=interval_hours):
+        user = supabase.table("users").select("balance").eq("id", user_id).execute().data[0]
+        supabase.table("users").update({"balance": user['balance'] + reward}).eq("id", user_id).execute()
+        supabase.table("user_packages").update({"last_claim_time": datetime.now().isoformat()}).eq("id", pkg_id).execute()
+        flash(f"আপনি সফলভাবে ৳{reward} ক্লেইম করেছেন!", "success")
+    else:
+        flash("ক্লেইম করার সময় এখনো হয়নি!", "warning")
+        
     return redirect(url_for('dashboard'))
 
 @app.route('/buy_vip/<pkg_name>', methods=['POST'])
@@ -143,6 +166,20 @@ def buy_vip(pkg_name):
         flash(f"আপনি সফলভাবে {pkg_name} কিনেছেন!", "success")
     else:
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই।", "danger")
+    return redirect(url_for('dashboard'))
+
+@app.route('/deposit', methods=['POST'])
+def deposit():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    amount = float(request.form.get('amount'))
+    if amount < 50:
+        flash("সর্বনিম্ন ডিপোজিট ৫০ টাকা!", "warning")
+    else:
+        supabase.table("deposits").insert({
+            "user_id": session['user_id'], "method": request.form.get('method'), "sender_number": request.form.get('sender_number'),
+            "transaction_id": request.form.get('transaction_id'), "amount": amount, "status": "Pending"
+        }).execute()
+        flash("ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!", "success")
     return redirect(url_for('dashboard'))
 
 @app.route('/withdraw', methods=['POST'])
@@ -163,9 +200,7 @@ def withdraw():
             if referrer_res.data:
                 referrer = referrer_res.data[0]
                 bonus = 50 + (amount * 0.02)
-                supabase.table("users").update({
-                    "balance": referrer['balance'] + bonus, "total_referrals": referrer['total_referrals'] + 1, "total_earned": referrer['total_earned'] + bonus
-                }).eq("id", referrer['id']).execute()
+                supabase.table("users").update({"balance": referrer['balance'] + bonus, "total_referrals": referrer['total_referrals'] + 1, "total_earned": referrer['total_earned'] + bonus}).eq("id", referrer['id']).execute()
         
         supabase.table("withdrawals").insert({"user_id": user_id, "method": request.form.get('method'), "account_number": request.form.get('account_number'), "amount": amount, "status": "Pending"}).execute()
         flash("উত্তোলন রিকোয়েস্ট পাঠানো হয়েছে!", "success")
@@ -173,7 +208,7 @@ def withdraw():
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই!", "danger")
     return redirect(url_for('dashboard'))
 
-# Admin Routes
+# Admin, History & Referrals Routes
 @app.route('/admin')
 def admin_panel():
     if not is_admin(): return redirect(url_for('dashboard'))
@@ -182,29 +217,21 @@ def admin_panel():
     deposits = supabase.table("deposits").select("*").order("created_at", desc=True).execute().data
     
     user_dict = {u['id']: u for u in users}
-    for w in withdrawals:
-        w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown')
-        w['user_email'] = user_dict.get(w['user_id'], {}).get('email', 'Unknown')
-    for d in deposits:
-        d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown')
-        d['user_email'] = user_dict.get(d['user_id'], {}).get('email', 'Unknown')
-        
+    for w in withdrawals: w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown'); w['user_email'] = user_dict.get(w['user_id'], {}).get('email', 'Unknown')
+    for d in deposits: d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown'); d['user_email'] = user_dict.get(d['user_id'], {}).get('email', 'Unknown')
     return render_template('admin.html', users=users, withdrawals=withdrawals, deposits=deposits)
 
 @app.route('/admin/deposit/<int:d_id>/<action>')
 def admin_handle_deposit(d_id, action):
     if not is_admin(): return redirect(url_for('dashboard'))
     d_data = supabase.table("deposits").select("*").eq("id", d_id).execute().data[0]
-    
     if d_data['status'] == 'Pending':
         if action == 'approve':
             u_data = supabase.table("users").select("balance").eq("id", d_data['user_id']).execute().data[0]
             supabase.table("users").update({"balance": u_data['balance'] + d_data['amount']}).eq("id", d_data['user_id']).execute()
             supabase.table("deposits").update({"status": "Approved"}).eq("id", d_id).execute()
-            flash("ডিপোজিট এপ্রুভ করা হয়েছে! ব্যালেন্স যোগ হয়েছে।", "success")
         elif action == 'reject':
             supabase.table("deposits").update({"status": "Rejected"}).eq("id", d_id).execute()
-            flash("ডিপোজিট বাতিল করা হয়েছে!", "warning")
     return redirect(url_for('admin_panel'))
 
 @app.route('/admin/withdraw/<int:w_id>/<action>')
@@ -213,37 +240,28 @@ def admin_handle_withdraw(w_id, action):
     w_data = supabase.table("withdrawals").select("*").eq("id", w_id).execute().data[0]
     if action == 'approve':
         supabase.table("withdrawals").update({"status": "Approved"}).eq("id", w_id).execute()
-        flash("উত্তোলন এপ্রুভ করা হয়েছে!", "success")
     elif action == 'reject' and w_data['status'] == 'Pending':
         u_data = supabase.table("users").select("balance").eq("id", w_data['user_id']).execute().data[0]
         supabase.table("users").update({"balance": u_data['balance'] + w_data['amount']}).eq("id", w_data['user_id']).execute()
         supabase.table("withdrawals").update({"status": "Rejected"}).eq("id", w_id).execute()
-        flash("উত্তোলন বাতিল করা হয়েছে এবং টাকা ফেরত দেওয়া হয়েছে!", "warning")
     return redirect(url_for('admin_panel'))
 
 @app.route('/admin/update_balance/<int:user_id>', methods=['POST'])
 def admin_update_balance(user_id):
-    if not is_admin(): return redirect(url_for('dashboard'))
-    supabase.table("users").update({"balance": float(request.form.get('balance'))}).eq("id", user_id).execute()
-    flash("ব্যালেন্স আপডেট হয়েছে!", "success")
+    if is_admin(): supabase.table("users").update({"balance": float(request.form.get('balance'))}).eq("id", user_id).execute()
     return redirect(url_for('admin_panel'))
 
 @app.route('/admin/toggle_ban/<int:user_id>')
 def admin_toggle_ban(user_id):
-    if not is_admin(): return redirect(url_for('dashboard'))
-    user = supabase.table("users").select("is_banned").eq("id", user_id).execute().data[0]
-    supabase.table("users").update({"is_banned": not user.get('is_banned')}).eq("id", user_id).execute()
-    flash("ইউজারের স্ট্যাটাস পরিবর্তন হয়েছে!", "success")
+    if is_admin():
+        user = supabase.table("users").select("is_banned").eq("id", user_id).execute().data[0]
+        supabase.table("users").update({"is_banned": not user.get('is_banned')}).eq("id", user_id).execute()
     return redirect(url_for('admin_panel'))
 
 @app.route('/admin/delete_user/<int:user_id>')
 def admin_delete_user(user_id):
-    if not is_admin(): return redirect(url_for('dashboard'))
-    supabase.table("user_packages").delete().eq("user_id", user_id).execute()
-    supabase.table("withdrawals").delete().eq("user_id", user_id).execute()
-    supabase.table("deposits").delete().eq("user_id", user_id).execute()
-    supabase.table("users").delete().eq("id", user_id).execute()
-    flash("ইউজারকে ডিলিট করা হয়েছে!", "danger")
+    if is_admin():
+        for t in ["user_packages", "withdrawals", "deposits", "users"]: supabase.table(t).delete().eq("user_id" if t!="users" else "id", user_id).execute()
     return redirect(url_for('admin_panel'))
 
 @app.route('/history')
