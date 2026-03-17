@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>হিস্ট্রি - InvestEarn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Hind Siliguri', sans-serif; } </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/dashboard" class="text-blue-600 font-bold hover:bg-blue-50 px-3 py-2 rounded-lg transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> ড্যাশবোর্ড
+            </a>
+            <h1 class="text-xl font-bold text-gray-700">উত্তোলনের ইতিহাস</h1>
+            <div class="w-10"></div> <!-- Spacer -->
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="font-bold text-gray-700 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> সকল ট্রানজেকশন
+                </h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap">
+                    <thead class="bg-white text-gray-500 text-sm border-b border-gray-100">
+                        <tr>
+                            <th class="p-4 font-bold">তারিখ</th>
+                            <th class="p-4 font-bold">মেথড</th>
+                            <th class="p-4 font-bold">একাউন্ট</th>
+                            <th class="p-4 font-bold">পরিমাণ</th>
+                            <th class="p-4 font-bold text-center">স্ট্যাটাস</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50 text-sm">
+                        {% for w in withdrawals %}
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="p-4 text-gray-500">{{ w.created_at.split('T')[0] }}</td>
+                            <td class="p-4 font-bold text-gray-700 flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center"><i class="fa-solid fa-building-columns"></i></div>
+                                {{ w.method }}
+                            </td>
+                            <td class="p-4 text-gray-600 font-mono">{{ w.account_number }}</td>
+                            <td class="p-4 font-bold text-red-500">৳ {{ w.amount }}</td>
+                            <td class="p-4 text-center">
+                                {% if w.status == 'Pending' %}
+                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">পেন্ডিং</span>
+                                {% elif w.status == 'Approved' %}
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">সম্পন্ন</span>
+                                {% else %}
+                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">বাতিল</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="p-12 text-center text-gray-400">
+                                <i class="fa-solid fa-file-invoice-dollar text-4xl mb-3 text-gray-300"></i><br>আপনি এখনো কোনো উত্তোলনের রিকোয়েস্ট করেননি।
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
