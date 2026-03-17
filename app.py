@@ -65,7 +65,56 @@ def register():
             return redirect(url_for('login'))
             
     return render_template('register.html')
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    
+    # User data
+    user_res = supabase.table("users").select("*").eq("id", session['user_id']).execute()
+    user = user_res.data[0]
+    
+    # Packages
+    pkg_res = supabase.table("user_packages").select("*").eq("user_id", session['user_id']).execute()
+    
+    # Withdraw History
+    withdraw_res = supabase.table("withdrawals").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
+    
+    return render_template('dashboard.html', user=user, packages=pkg_res.data, vip=VIP_PACKAGES, withdrawals=withdraw_res.data)
 
+@app.route('/withdraw', methods=['POST'])
+def withdraw():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user_id = session['user_id']
+    
+    method = request.form.get('method')
+    account_number = request.form.get('account_number')
+    amount = float(request.form.get('amount'))
+    
+    user = supabase.table("users").select("balance").eq("id", user_id).execute().data[0]
+    
+    # শর্ত: সর্বনিম্ন উইথড্র ১০০ টাকা (আপনি চাইলে বদলাতে পারেন)
+    if amount < 100:
+        flash("সর্বনিম্ন উত্তোলনের পরিমাণ ১০০ টাকা!", "warning")
+    elif user['balance'] >= amount:
+        # ব্যালেন্স কাটা হচ্ছে
+        new_balance = user['balance'] - amount
+        supabase.table("users").update({"balance": new_balance}).eq("id", user_id).execute()
+        
+        # ডাটাবেসে রিকোয়েস্ট সেভ করা হচ্ছে
+        supabase.table("withdrawals").insert({
+            "user_id": user_id,
+            "method": method,
+            "account_number": account_number,
+            "amount": amount,
+            "status": "Pending" # এডমিন এপ্রুভ করার আগ পর্যন্ত Pending থাকবে
+        }).execute()
+        
+        flash("উত্তোলন রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে! এডমিন খুব দ্রুত পেমেন্ট করে দেবে।", "success")
+    else:
+        flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই!", "danger")
+        
+    return redirect(url_for('dashboard'))
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
