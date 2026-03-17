@@ -65,6 +65,28 @@ def register():
             return redirect(url_for('login'))
             
     return render_template('register.html')
+
+# --- NEW: History Page ---
+@app.route('/history')
+def history():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    withdraw_res = supabase.table("withdrawals").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
+    
+    return render_template('history.html', user=user, withdrawals=withdraw_res.data)
+
+# --- NEW: Referral & Team Page ---
+@app.route('/referrals')
+def referrals():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    # যারা এই ইউজারের রেফার কোড দিয়ে জয়েন করেছে তাদের ডাটা বের করা হচ্ছে
+    team_res = supabase.table("users").select("name, created_at, is_vip").eq("referred_by", user['referral_code']).order("created_at", desc=True).execute()
+    
+    return render_template('referrals.html', user=user, team=team_res.data)
+    
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session: return redirect(url_for('login'))
