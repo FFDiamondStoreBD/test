@@ -127,18 +127,7 @@ def login():
             return redirect(url_for('dashboard'))
         flash("Invalid Credentials", "danger")
     return render_template('login.html')
-
-@app.route('/dashboard')
-def dashboard():
-    if 'user_id' not in session: return redirect(url_for('login'))
     
-    user_res = supabase.table("users").select("*").eq("id", session['user_id']).execute()
-    user = user_res.data[0]
-    
-    pkg_res = supabase.table("user_packages").select("*").eq("user_id", session['user_id']).execute()
-    
-    return render_template('dashboard.html', user=user, packages=pkg_res.data, vip=VIP_PACKAGES)
-
 @app.route('/claim_free', methods=['POST'])
 def claim_free():
     if 'user_id' not in session: return redirect(url_for('login'))
