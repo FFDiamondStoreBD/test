@@ -160,6 +160,61 @@
         </div>
 
     </div>
-
+<!-- Deposit Management -->
+<h2 class="text-2xl font-bold mb-4 text-gray-800 border-l-4 border-green-500 pl-3">ডিপোজিট (Add Money) রিকোয়েস্ট</h2>
+<div class="bg-white rounded-xl shadow-md overflow-hidden mb-12">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left whitespace-nowrap text-sm">
+            <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                    <th class="p-4">ID</th>
+                    <th class="p-4">ইউজার (ইমেইল)</th>
+                    <th class="p-4">পেমেন্ট মেথড ও নাম্বার</th>
+                    <th class="p-4">TrxID</th>
+                    <th class="p-4">পরিমাণ</th>
+                    <th class="p-4">স্ট্যাটাস</th>
+                    <th class="p-4 text-center">অ্যাকশন</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for d in deposits %}
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4 font-bold text-gray-500">#{{ d.id }}</td>
+                    <td class="p-4">
+                        <p class="font-bold text-gray-800">{{ d.user_name }}</p>
+                        <p class="text-xs text-gray-500">{{ d.user_email }}</p>
+                    </td>
+                    <td class="p-4">
+                        <span class="font-bold text-green-600">{{ d.method }}</span> <br> {{ d.sender_number }}
+                    </td>
+                    <td class="p-4 font-mono text-gray-600">{{ d.transaction_id }}</td>
+                    <td class="p-4 font-bold text-green-600">৳ {{ d.amount }}</td>
+                    <td class="p-4">
+                        {% if d.status == 'Pending' %}
+                            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-bold">Pending</span>
+                        {% elif d.status == 'Approved' %}
+                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">Approved</span>
+                        {% else %}
+                            <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 text-center space-x-2">
+                        {% if d.status == 'Pending' %}
+                        <a href="/admin/deposit/{{ d.id }}/approve" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg shadow transition text-xs font-bold" onclick="return confirm('ডিপোজিট এপ্রুভ করতে চান? ইউজারের ব্যালেন্সে টাকা যোগ হয়ে যাবে!')">
+                            <i class="fa-solid fa-check"></i> Approve
+                        </a>
+                        <a href="/admin/deposit/{{ d.id }}/reject" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg shadow transition text-xs font-bold" onclick="return confirm('এই ফেক ডিপোজিটটি বাতিল করতে চান?')">
+                            <i class="fa-solid fa-xmark"></i> Reject
+                        </a>
+                        {% else %}
+                        <span class="text-gray-400 text-xs italic">No Action Needed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>
