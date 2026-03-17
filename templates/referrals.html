@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রেফারেল ও টিম - InvestEarn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Hind Siliguri', sans-serif; } </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/dashboard" class="text-blue-600 font-bold hover:bg-blue-50 px-3 py-2 rounded-lg transition">
+                <i class="fa-solid fa-arrow-left mr-1"></i> ড্যাশবোর্ড
+            </a>
+            <h1 class="text-xl font-bold text-gray-700">আপনার টিম</h1>
+            <div class="w-10"></div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        
+        <!-- Referral Code Card with Copy System -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg mb-8 text-center relative overflow-hidden">
+            <div class="absolute top-[-20px] left-[-20px] opacity-10 text-9xl"><i class="fa-solid fa-users-viewfinder"></i></div>
+            <h2 class="text-lg font-bold mb-2 relative z-10"><i class="fa-solid fa-gift text-yellow-300 mr-1"></i> আপনার রেফারেল কোড</h2>
+            <p class="text-blue-200 text-sm mb-4 relative z-10">আপনার বন্ধুদের ইনভাইট করুন এবং প্রতি রেফারে পান ৫০ টাকা + ২% কমিশন!</p>
+            
+            <div class="flex justify-center items-center relative z-10">
+                <div class="bg-white text-blue-800 font-extrabold text-2xl px-6 py-3 rounded-l-xl tracking-widest border border-white">
+                    <span id="ref-code">{{ user.referral_code }}</span>
+                </div>
+                <button onclick="copyCode()" class="bg-yellow-400 hover:bg-yellow-500 text-blue-900 px-5 py-4 rounded-r-xl font-bold transition flex items-center gap-2 shadow-md">
+                    <i id="copy-icon" class="fa-regular fa-copy"></i> <span id="copy-text">কপি করুন</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Team Stats -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-users text-3xl text-blue-500 mb-2"></i>
+                <p class="text-gray-500 text-sm font-bold">মোট রেফার</p>
+                <h3 class="text-2xl font-extrabold text-gray-800">{{ team | length }} জন</h3>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center">
+                <i class="fa-solid fa-sack-dollar text-3xl text-green-500 mb-2"></i>
+                <p class="text-gray-500 text-sm font-bold">রেফারেল থেকে আয়</p>
+                <h3 class="text-2xl font-extrabold text-gray-800">৳ {{ user.total_earned }}</h3>
+            </div>
+        </div>
+
+        <!-- Team List -->
+        <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+            <i class="fa-solid fa-list-ul text-gray-500"></i> রেফারকৃত মেম্বারদের তালিকা
+        </h2>
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+            <ul class="divide-y divide-gray-50">
+                {% for member in team %}
+                <li class="p-4 flex justify-between items-center hover:bg-gray-50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
+                            {{ member.name[0] | upper }}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-700">{{ member.name }}</h4>
+                            <p class="text-xs text-gray-400"><i class="fa-regular fa-calendar-days"></i> {{ member.created_at.split('T')[0] }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        {% if member.is_vip %}
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold"><i class="fa-solid fa-star text-yellow-500"></i> VIP</span>
+                        {% else %}
+                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold">Free User</span>
+                        {% endif %}
+                    </div>
+                </li>
+                {% else %}
+                <li class="p-10 text-center text-gray-400">
+                    <i class="fa-solid fa-user-xmark text-4xl mb-3 text-gray-300"></i><br>আপনি এখনো কাউকে রেফার করেননি।
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- JavaScript for Copy Function -->
+    <script>
+        function copyCode() {
+            var codeText = document.getElementById("ref-code").innerText;
+            navigator.clipboard.writeText(codeText);
+            
+            document.getElementById("copy-icon").className = "fa-solid fa-check";
+            document.getElementById("copy-text").innerText = "কপি হয়েছে!";
+            
+            setTimeout(function() {
+                document.getElementById("copy-icon").className = "fa-regular fa-copy";
+                document.getElementById("copy-text").innerText = "কপি করুন";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
