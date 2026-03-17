@@ -308,6 +308,50 @@
         </div>
 
     </div>
+<!-- Add Money / Deposit Section -->
+<h2 id="deposit-section" class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2 pt-4">
+    <i class="fa-solid fa-circle-plus text-green-500"></i> এড মানি (ডিপোজিট)
+</h2>
+<div class="bg-white rounded-2xl p-6 shadow-sm border-t-4 border-green-500 mb-10">
+    
+    <!-- Admin Payment Information -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <p class="text-sm font-bold text-blue-800 mb-2"><i class="fa-solid fa-circle-info"></i> নিচের যেকোনো নম্বরে সেন্ড মানি (Send Money) করে ফর্মটি পূরণ করুন:</p>
+        <ul class="text-gray-700 text-sm space-y-1 ml-5 list-disc">
+            <li>বিকাশ (পার্সোনাল): <strong>017XXXXXXXX</strong></li>
+            <li>নগদ (পার্সোনাল): <strong>018XXXXXXXX</strong></li>
+            <li>রকেট (পার্সোনাল): <strong>019XXXXXXXX</strong></li>
+        </ul>
+    </div>
 
+    <form method="POST" action="/deposit" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">মেথড</label>
+            <select name="method" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-bold text-gray-700">
+                <option value="bKash">বিকাশ</option>
+                <option value="Nagad">নগদ</option>
+                <option value="Rocket">রকেট</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">যে নম্বর থেকে টাকা পাঠিয়েছেন</label>
+            <input type="text" name="sender_number" placeholder="01XXXXXXXXX" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">TrxID (ট্রানজেকশন আইডি)</label>
+            <input type="text" name="transaction_id" placeholder="8X2B9... " required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">পরিমাণ (৳)</label>
+            <input type="number" name="amount" min="50" placeholder="কত টাকা?" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+        </div>
+        <div>
+            <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-xl font-bold hover:bg-green-600 transition flex justify-center items-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> রিকোয়েস্ট পাঠান
+            </button>
+        </div>
+    </form>
+</div>
+    
 </body>
 </html>
