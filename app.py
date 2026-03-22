@@ -44,21 +44,48 @@ def register():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
         referred_by = request.form.get('referral_code', '')
+        fingerprint = request.form.get('fingerprint', '') # <--- ThumbmarkJS Fingerprint
         my_ref_code = str(uuid.uuid4())[:8].upper()
 
+        if not fingerprint:
+            flash("ডিভাইস আইডেন্টিফাই করা যাচ্ছে না! দয়া করে পেজটি রিলোড দিন।", "danger")
+            return redirect(url_for('register'))
+
+        # ১. চেক করা হচ্ছে এই ইমেইলটি ডাটাবেসে আছে কি না
         existing_user = supabase.table("users").select("id").eq("email", email).execute()
         if existing_user.data:
             flash("এই ইমেইল দিয়ে ইতিমধ্যেই একটি একাউন্ট খোলা আছে!", "danger")
             return redirect(url_for('register'))
 
-        user_data = {"name": name, "phone": phone, "email": email, "password_hash": password, "referral_code": my_ref_code, "referred_by": referred_by}
-        res = supabase.table("users").insert(user_data).execute()
-        if res.data:
-            supabase.table("user_packages").insert({"user_id": res.data[0]['id'], "package_name": "FREE", "last_claim_time": "2000-01-01T00:00:00"}).execute()
-            flash("একাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগিন করুন।", "success")
+        # ২. NEW: ডিভাইস ফিঙ্গারপ্রিন্ট চেক (এক ডিভাইসে এক একাউন্ট)
+        existing_device = supabase.table("users").select("id").eq("device_fingerprint", fingerprint).execute()
+        if existing_device.data:
+            flash("দুঃখিত! এক ডিভাইস থেকে শুধুমাত্র একটি একাউন্টই খোলা যাবে। আপনি লগিন করুন।", "danger")
             return redirect(url_for('login'))
-    return render_template('register.html')
 
+        # ৩. নতুন ইউজার সেভ করা হচ্ছে
+        try:
+            user_data = {
+                "name": name, 
+                "phone": phone, 
+                "email": email, 
+                "password_hash": password, 
+                "referral_code": my_ref_code, 
+                "referred_by": referred_by,
+                "device_fingerprint": fingerprint # <--- Fingerprint Save
+            }
+            res = supabase.table("users").insert(user_data).execute()
+            
+            if res.data:
+                supabase.table("user_packages").insert({"user_id": res.data[0]['id'], "package_name": "FREE", "last_claim_time": "2000-01-01T00:00:00"}).execute()
+                flash("একাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগিন করুন।", "success")
+                return redirect(url_for('login'))
+                
+        except Exception as e:
+            flash("একাউন্ট তৈরি করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।", "danger")
+            return redirect(url_for('register'))
+            
+    return render_template('register.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
