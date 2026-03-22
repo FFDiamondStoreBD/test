@@ -2,49 +2,41 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>একাউন্ট খুলুন - InvestEarn</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Google Fonts (Bangla) -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <!-- ThumbmarkJS for Device Fingerprinting -->
+    <script src="https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs/dist/thumbmark.umd.js"></script>
+
     <style>
-        body { font-family: 'Hind Siliguri', sans-serif; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; }
+        .bg-bkash { background-color: #E2136E; }
+        .text-bkash { color: #E2136E; }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4 py-10">
+<body class="flex items-center justify-center min-h-screen p-4 py-10">
 
-    <!-- Register Container -->
-    <div class="bg-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-blue-600 relative overflow-hidden">
+    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl w-full max-w-md border-t-[6px] border-[#E2136E] relative overflow-hidden">
         
-        <!-- Decorative background element -->
-        <div class="absolute top-[-50px] right-[-50px] w-32 h-32 bg-blue-100 rounded-full opacity-50 blur-2xl"></div>
-
         <!-- Header -->
         <div class="text-center mb-8 relative z-10">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm border border-blue-100">
+            <div class="w-16 h-16 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm border border-pink-100">
                 <i class="fa-solid fa-user-plus"></i>
             </div>
             <h2 class="text-3xl font-extrabold text-gray-800">একাউন্ট খুলুন</h2>
-            <p class="text-gray-500 mt-2">নতুন একাউন্ট তৈরি করে আয় শুরু করুন</p>
+            <p class="text-gray-500 text-sm mt-1 font-semibold">নতুন একাউন্ট তৈরি করে আয় শুরু করুন</p>
         </div>
 
-        <!-- Flash Messages (For Error / Success alerts) -->
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="mb-6 relative z-10">
                 {% for category, message in messages %}
-                    <div class="p-3 mb-3 rounded-lg text-white font-bold text-sm text-center shadow-md flex justify-center items-center gap-2
-                        {% if category == 'success' %} bg-green-500
-                        {% elif category == 'danger' %} bg-red-500
-                        {% elif category == 'warning' %} bg-yellow-500 text-yellow-900
-                        {% else %} bg-blue-500 {% endif %}">
+                    <div class="p-3 rounded-xl text-white font-bold text-sm text-center shadow-md flex justify-center items-center gap-2
+                        {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% else %} bg-yellow-500 text-yellow-900 {% endif %}">
                         <i class="fa-solid fa-circle-exclamation"></i> {{ message }}
                     </div>
                 {% endfor %}
@@ -52,75 +44,86 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Register Form -->
-        <form method="POST" action="/register" class="space-y-5 relative z-10">
-            
-            <!-- Full Name Input -->
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">
-                    <i class="fa-regular fa-user text-blue-500 mr-1"></i> পুরো নাম
-                </label>
-                <input type="text" name="name" placeholder="আপনার নাম লিখুন" required 
-                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
-            </div>
+        <!-- Form Container (Will be hidden if device is already registered) -->
+        <div id="form-container" class="relative z-10">
+            <form id="registerForm" method="POST" action="/register" class="space-y-4">
+                
+                <!-- Hidden Fingerprint Input -->
+                <input type="hidden" name="fingerprint" id="device-fingerprint">
 
-            <!-- Phone Input -->
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">
-                    <i class="fa-solid fa-phone text-blue-500 mr-1"></i> মোবাইল নম্বর
-                </label>
-                <input type="text" name="phone" placeholder="01XXXXXXXXX" required 
-                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
-            </div>
-            
-            <!-- Email Input -->
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">
-                    <i class="fa-regular fa-envelope text-blue-500 mr-1"></i> ইমেইল এড্রেস
-                </label>
-                <input type="email" name="email" placeholder="example@email.com" required 
-                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
-            </div>
-            
-            <!-- Password Input -->
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">
-                    <i class="fa-solid fa-lock text-blue-500 mr-1"></i> পাসওয়ার্ড
-                </label>
-                <input type="password" name="password" placeholder="••••••••" required 
-                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
-            </div>
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">আপনার নাম</label>
+                    <input type="text" name="name" placeholder="আপনার পুরো নাম" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold text-sm">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">মোবাইল নম্বর</label>
+                    <input type="text" name="phone" placeholder="01XXXXXXXXX" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold text-sm">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">ইমেইল এড্রেস</label>
+                    <input type="email" name="email" placeholder="example@email.com" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold text-sm">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">পাসওয়ার্ড</label>
+                    <input type="password" name="password" placeholder="••••••••" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold text-sm">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">রেফারেল কোড <span class="text-gray-400 font-normal">(যদি থাকে)</span></label>
+                    <input type="text" name="referral_code" placeholder="কোডটি এখানে বসান" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-bold text-sm text-bkash uppercase tracking-wider">
+                </div>
 
-            <!-- Referral Code Input (Optional) -->
-            <div>
-                <label class="block text-gray-700 font-bold mb-2">
-                    <i class="fa-solid fa-link text-blue-500 mr-1"></i> রেফারেল কোড <span class="text-sm text-gray-400 font-normal">(যদি থাকে)</span>
-                </label>
-                <input type="text" name="referral_code" placeholder="রেফারেল কোড বসান" 
-                       class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition shadow-sm">
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" 
-                    class="w-full bg-blue-600 text-white p-3.5 mt-2 rounded-xl font-bold text-lg hover:bg-blue-700 transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex justify-center items-center gap-2">
-                <i class="fa-solid fa-user-check"></i> একাউন্ট তৈরি করুন
-            </button>
-        </form>
+                <!-- Submit Button -->
+                <button type="submit" id="submit-btn" disabled class="w-full bg-gray-400 text-white p-4 mt-2 rounded-xl font-extrabold text-sm transition shadow-md flex justify-center items-center gap-2 cursor-not-allowed">
+                    <i class="fa-solid fa-spinner fa-spin"></i> ডিভাইস চেক করা হচ্ছে...
+                </button>
+            </form>
+        </div>
 
         <!-- Footer Links -->
         <div class="mt-8 text-center relative z-10 border-t border-gray-100 pt-6">
-            <p class="text-gray-600 mb-3">ইতিমধ্যেই একাউন্ট আছে? 
-                <a href="/login" class="text-blue-600 font-bold hover:underline transition">
-                    <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i>লগিন করুন
-                </a>
+            <p class="text-gray-600 mb-3 text-sm font-semibold">ইতিমধ্যেই একাউন্ট আছে? 
+                <a href="/login" class="text-bkash font-extrabold hover:underline transition">লগিন করুন</a>
             </p>
-            
-            <a href="/" class="inline-flex items-center justify-center gap-1 text-gray-400 hover:text-gray-600 text-sm transition bg-gray-50 px-4 py-2 rounded-full border border-gray-200 hover:bg-gray-100">
+            <a href="/" class="inline-flex items-center justify-center gap-1 text-gray-400 hover:text-gray-600 text-xs font-bold transition bg-gray-50 px-4 py-2 rounded-full border border-gray-200">
                 <i class="fa-solid fa-arrow-left"></i> হোমে ফিরে যান
             </a>
         </div>
-
     </div>
 
+    <!-- Script for Anti-Fraud -->
+    <script>
+        // ১. Local Storage Check (দ্রুততম সিকিউরিটি)
+        if (localStorage.getItem("device_registered") === "true") {
+            // যদি আগে একাউন্ট খোলা হয়ে থাকে, ফর্ম লুকিয়ে ওয়ার্নিং দেখাবে
+            document.getElementById("form-container").innerHTML = `
+                <div class='text-center bg-red-50 p-6 rounded-2xl border border-red-100'>
+                    <i class='fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4 animate-bounce'></i>
+                    <h3 class='text-lg font-black text-red-700 mb-2'>একাউন্ট তৈরি করা যাবে না!</h3>
+                    <p class='text-xs text-red-600 font-semibold mb-6'>এই ডিভাইস থেকে ইতিমধ্যেই একটি একাউন্ট তৈরি করা হয়েছে। আমাদের নিয়মানুযায়ী এক ডিভাইস থেকে একাধিক একাউন্ট খোলা সম্পূর্ণ নিষিদ্ধ।</p>
+                    <a href='/login' class='inline-block bg-red-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-red-700 active:scale-95 transition'>
+                        আপনার একাউন্টে লগিন করুন
+                    </a>
+                </div>
+            `;
+        } else {
+            // ২. ThumbmarkJS Fingerprint Generation
+            ThumbmarkJS.getFingerprint().then(function(fp) {
+                // হিডেন ইনপুটে ফিঙ্গারপ্রিন্ট বসানো হচ্ছে
+                document.getElementById('device-fingerprint').value = fp;
+                
+                // বাটন অ্যাক্টিভ করা হচ্ছে
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                submitBtn.classList.add('bg-bkash', 'hover:opacity-90', 'active:scale-95', 'shadow-pink-500/30');
+                submitBtn.innerHTML = "<i class='fa-solid fa-user-check'></i> একাউন্ট তৈরি করুন";
+            });
+
+            // ৩. ফর্ম সাবমিট হলে Local Storage এ ফ্ল্যাগ সেট করে দেওয়া
+            document.getElementById('registerForm').addEventListener('submit', function() {
+                localStorage.setItem("device_registered", "true");
+            });
+        }
+    </script>
 </body>
 </html>
