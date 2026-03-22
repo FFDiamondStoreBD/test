@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leadership Panel - Hidden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Hind Siliguri', sans-serif; background-color: #111827; color: white; } </style>
+</head>
+<body class="antialiased pb-20">
+
+    <div class="max-w-4xl mx-auto py-10 px-4">
+        
+        <div class="text-center mb-10">
+            <i class="fa-solid fa-user-secret text-5xl text-blue-500 mb-4"></i>
+            <h1 class="text-3xl font-black text-gray-100">লিডারশিপ প্যানেল</h1>
+            <p class="text-gray-400 text-sm mt-2">এই পেজটি সাধারণ ইউজারদের থেকে লুকানো আছে।</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                {% for category, message in messages %}
+                    <div class="p-4 mb-3 rounded-xl font-bold shadow-md flex items-center gap-2 {% if category == 'success' %} bg-green-900 text-green-300 {% elif category == 'danger' %} bg-red-900 text-red-300 {% else %} bg-yellow-900 text-yellow-300 {% endif %}">
+                        <i class="fa-solid fa-circle-info"></i> {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Leader Balance & Withdraw -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <!-- Balance Card -->
+            <div class="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-xl relative overflow-hidden">
+                <div class="absolute top-[-20px] right-[-20px] text-8xl opacity-10 text-blue-500"><i class="fa-solid fa-coins"></i></div>
+                <div class="relative z-10">
+                    <p class="text-gray-400 font-semibold mb-2">আপনার লিডারশিপ ব্যালেন্স (50% Bonus)</p>
+                    <h2 class="text-5xl font-black text-blue-400">৳ {{ user.leader_balance or 0.0 }}</h2>
+                    <p class="text-xs text-gray-500 mt-4"><i class="fa-solid fa-circle-info text-blue-500"></i> আপনার রেফার করা মেম্বাররা যত টাকা ডিপোজিট করবে, তার ৫০% এখানে স্বয়ংক্রিয়ভাবে জমা হবে।</p>
+                </div>
+            </div>
+
+            <!-- Withdraw Card -->
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-xl">
+                <h3 class="text-lg font-bold text-gray-200 mb-4 border-b border-gray-700 pb-2"><i class="fa-solid fa-money-bill-transfer text-blue-500"></i> লিডার ব্যালেন্স উত্তোলন</h3>
+                <form method="POST" action="/leader_withdraw" class="space-y-4">
+                    <div>
+                        <select name="method" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm">
+                            <option value="bKash">বিকাশ (bKash)</option>
+                            <option value="Nagad">নগদ (Nagad)</option>
+                            <option value="Rocket">রকেট (Rocket)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" name="account_number" placeholder="আপনার একাউন্ট নম্বর" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm">
+                    </div>
+                    <div>
+                        <input type="number" name="amount" min="100" placeholder="পরিমাণ (মিনিমাম ১০০৳)" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition">উত্তোলন রিকোয়েস্ট পাঠান</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Referred Users Details -->
+        <h3 class="text-xl font-bold text-gray-200 mb-4"><i class="fa-solid fa-address-book text-gray-400"></i> রেফারকৃত মেম্বারদের বিস্তারিত তথ্য</h3>
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap text-sm text-gray-300">
+                    <thead class="bg-gray-900 text-gray-400">
+                        <tr>
+                            <th class="p-4">নাম</th>
+                            <th class="p-4">ইমেইল এড্রেস</th>
+                            <th class="p-4">জয়েনিং ডেট</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for member in team %}
+                        <tr class="hover:bg-gray-700/50">
+                            <td class="p-4 font-bold text-gray-100"><i class="fa-solid fa-user text-blue-500 mr-2"></i> {{ member.name }}</td>
+                            <td class="p-4 font-mono text-gray-400">{{ member.email }}</td>
+                            <td class="p-4 text-xs text-gray-500">{{ member.created_at.split('T')[0] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="p-10 text-center text-gray-500">আপনি এখনো কাউকে রেফার করেননি।</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="text-center mt-10">
+            <a href="/dashboard" class="text-blue-500 hover:text-blue-400 text-sm font-bold"><i class="fa-solid fa-arrow-left"></i> মেইন ড্যাশবোর্ডে ফিরে যান</a>
+        </div>
+    </div>
+</body>
+</html>
