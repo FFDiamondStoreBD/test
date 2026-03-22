@@ -6,119 +6,240 @@
     <title>ড্যাশবোর্ড - InvestEarn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; }
         .bg-bkash { background-color: #E2136E; }
         .text-bkash { color: #E2136E; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="text-gray-800 antialiased pb-24">
 
-    <!-- Header -->
-    <div class="bg-bkash text-white px-4 pt-6 pb-8 rounded-b-[2.5rem] shadow-lg relative overflow-hidden z-20">
+    <!-- ========================================== -->
+    <!-- 1. bKash Style Header & Tap for Balance    -->
+    <!-- ========================================== -->
+    <div class="bg-bkash text-white px-5 pt-6 pb-10 rounded-b-[2.5rem] shadow-lg relative overflow-hidden z-20">
+        <!-- Decor Elements -->
+        <div class="absolute top-[-20px] right-[-20px] w-32 h-32 bg-white opacity-10 rounded-full"></div>
+        <div class="absolute bottom-[-20px] left-[-20px] w-24 h-24 bg-white opacity-10 rounded-full"></div>
+
         <div class="flex justify-between items-center relative z-10">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-white text-bkash rounded-full flex justify-center items-center text-2xl font-extrabold shadow-inner">{{ user.name[0] | upper }}</div>
-                <div><p class="text-xs text-pink-200">শুভ দিন,</p><p class="font-bold text-lg leading-tight">{{ user.name }}</p></div>
+                <div class="w-12 h-12 bg-white text-bkash rounded-full flex justify-center items-center text-2xl font-black shadow-inner border-2 border-pink-300">
+                    {{ user.name[0] | upper }}
+                </div>
+                <div>
+                    <p class="text-[11px] text-pink-200 uppercase tracking-widest font-bold">স্বাগতম</p>
+                    <p class="font-extrabold text-lg leading-tight">{{ user.name }}</p>
+                </div>
             </div>
-            <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm"><i class="fa-solid fa-gift text-xl text-white"></i></div>
+            <div class="bg-white/20 p-2.5 rounded-full backdrop-blur-md shadow-sm border border-white/30">
+                <i class="fa-solid fa-headset text-xl text-white"></i>
+            </div>
         </div>
+
+        <!-- Tap for Balance -->
         <div class="mt-6 flex justify-center relative z-10">
-            <button onclick="document.getElementById('balance-text').innerText='৳ {{ user.balance }}'; setTimeout(()=>document.getElementById('balance-text').innerText='ব্যালেন্স জানতে ট্যাপ করুন', 3000);" class="bg-white text-bkash px-5 py-2.5 rounded-full font-bold shadow-md flex items-center justify-center gap-2 w-56 active:scale-95">
-                <i class="fa-solid fa-bangladeshi-taka-sign bg-bkash text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"></i>
-                <span id="balance-text" class="text-sm">ব্যালেন্স জানতে ট্যাপ করুন</span>
+            <button onclick="document.getElementById('balance-text').innerText='৳ {{ user.balance }}'; document.getElementById('balance-text').classList.add('text-lg'); setTimeout(()=> {document.getElementById('balance-text').innerText='ব্যালেন্স দেখতে ট্যাপ করুন'; document.getElementById('balance-text').classList.remove('text-lg');}, 3000);" class="bg-white text-bkash px-6 py-2.5 rounded-full font-bold shadow-lg flex items-center justify-center gap-3 w-64 active:scale-95 transition-transform">
+                <i class="fa-solid fa-bangladeshi-taka-sign bg-bkash text-white w-7 h-7 rounded-full flex items-center justify-center text-sm shadow-inner"></i>
+                <span id="balance-text" class="text-sm font-extrabold transition-all duration-300">ব্যালেন্স দেখতে ট্যাপ করুন</span>
             </button>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4 -mt-4 relative z-30">
+    <div class="max-w-md mx-auto px-4 -mt-5 relative z-30">
+
         <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="mb-4">{% for category, message in messages %}<div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-md flex items-center gap-2 animate-bounce {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% elif category == 'warning' %} bg-yellow-500 text-yellow-900 {% else %} bg-blue-500 {% endif %}"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                {% for category, message in messages %}
+                    <div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-md flex items-center gap-2 animate-bounce
+                        {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% elif category == 'warning' %} bg-yellow-500 text-yellow-900 {% else %} bg-blue-500 {% endif %}">
+                        <i class="fa-solid fa-circle-info"></i> {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <!-- Quick Navs -->
-        <div class="bg-white rounded-2xl shadow-sm p-5 grid grid-cols-4 gap-y-6 gap-x-2 text-center mb-4 border border-gray-100">
-            <a href="/transfer#deposit" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-circle-plus"></i></div><span class="text-[11px] font-bold text-gray-600">এড মানি</span></a>
-            <a href="/transfer#withdraw" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-money-bill-transfer"></i></div><span class="text-[11px] font-bold text-gray-600">ক্যাশ আউট</span></a>
-            <a href="/leaderboard" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-trophy"></i></div><span class="text-[11px] font-bold text-gray-600">লিডারবোর্ড</span></a>
-            <a href="/history" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-file-invoice"></i></div><span class="text-[11px] font-bold text-gray-600">স্টেটমেন্ট</span></a>
+        <!-- ========================================== -->
+        <!-- 2. Dynamic Scrolling Notice Banner         -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-1 mb-5 flex items-center gap-2 overflow-hidden">
+            <div class="w-10 h-10 bg-gradient-to-tr from-yellow-400 to-orange-500 text-white rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm z-10">
+                <i class="fa-solid fa-bell animate-[ring_2s_infinite]"></i>
+            </div>
+            <marquee behavior="scroll" direction="left" scrollamount="4" class="text-sm font-bold text-gray-700 w-full py-2">
+                {{ notice }}
+            </marquee>
         </div>
 
-        <!-- Dynamic Admin Notice -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 mb-6 flex items-center gap-3">
-            <div class="w-10 h-10 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-bell animate-[ring_2s_infinite]"></i></div>
-            <marquee behavior="scroll" direction="left" class="text-sm font-semibold text-gray-600">{{ notice }}</marquee>
+        <!-- ========================================== -->
+        <!-- 3. Expanded Quick Navs (App Menu)          -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl shadow-sm p-5 grid grid-cols-4 gap-y-5 gap-x-2 text-center mb-6 border border-gray-100">
+            <a href="/transfer#deposit" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-wallet"></i></div><span class="text-[10px] font-extrabold text-gray-600">এড মানি</span></a>
+            
+            <a href="/transfer#withdraw" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-money-bill-transfer"></i></div><span class="text-[10px] font-extrabold text-gray-600">উত্তোলন</span></a>
+            
+            <a href="/referrals" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-users"></i></div><span class="text-[10px] font-extrabold text-gray-600">টিম/রেফার</span></a>
+            
+            <a href="/leaderboard" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-trophy"></i></div><span class="text-[10px] font-extrabold text-gray-600">র‍্যাংকিং</span></a>
+            
+            <a href="/history" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-clock-rotate-left"></i></div><span class="text-[10px] font-extrabold text-gray-600">হিস্ট্রি</span></a>
+            
+            <a href="/#proofs" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-money-check-dollar"></i></div><span class="text-[10px] font-extrabold text-gray-600">প্রুফ</span></a>
+            
+            <a href="https://t.me/your_telegram_channel" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-brands fa-telegram"></i></div><span class="text-[10px] font-extrabold text-gray-600">টেলিগ্রাম</span></a>
+            
+            <a href="https://t.me/your_support_bot" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-headset"></i></div><span class="text-[10px] font-extrabold text-gray-600">সাপোর্ট</span></a>
         </div>
 
-        <!-- First Time Offer Card -->
+        <!-- ========================================== -->
+        <!-- 4. First Time Premium Offer                -->
+        <!-- ========================================== -->
         {% if not user.has_premium_offer %}
-        <div class="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-5 mb-6 text-white shadow-xl relative overflow-hidden border-2 border-yellow-300">
-            <div class="absolute top-[-10px] right-[-10px] text-7xl opacity-20"><i class="fa-solid fa-fire"></i></div>
+        <div class="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-2xl p-5 mb-6 text-white shadow-lg relative overflow-hidden border-2 border-yellow-300">
+            <div class="absolute top-[-10px] right-[-10px] text-7xl opacity-20"><i class="fa-solid fa-bolt"></i></div>
             <div class="relative z-10">
-                <span class="bg-red-600 text-white text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider mb-2 inline-block animate-pulse">লিমিটেড অফার</span>
-                <h3 class="text-xl font-extrabold mb-1">স্পেশাল প্রিমিয়াম প্যাকেজ</h3>
-                <p class="text-xs text-orange-100 mb-4 border-b border-orange-400 pb-3">শুধুমাত্র ১০০ টাকায় VIP 1 আনলক করুন এবং আপনার মিনিমাম উইথড্র লিমিট ১০০ টাকায় নামিয়ে আনুন!</p>
+                <span class="bg-yellow-400 text-red-800 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-wider mb-2 inline-block animate-pulse shadow-sm">লিমিটেড অফার</span>
+                <h3 class="text-xl font-extrabold mb-1">স্পেশাল প্রিমিয়াম এক্সেস</h3>
+                <p class="text-xs text-orange-50 mb-4 border-b border-white/20 pb-3 font-semibold">মাত্র ১০০ টাকায় VIP 1 আনলক করুন এবং আপনার মিনিমাম উইথড্র লিমিট আজীবনের জন্য ১০০ টাকায় নামিয়ে আনুন!</p>
                 <form method="POST" action="/buy_premium_offer">
-                    <button type="submit" class="w-full bg-white text-orange-600 py-2.5 rounded-xl text-sm font-extrabold shadow-md hover:scale-105 transition active:scale-95 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-bolt"></i> মাত্র ১০০ টাকায় কিনুন
+                    <button type="submit" class="w-full bg-white text-red-600 py-3 rounded-xl text-sm font-black shadow-lg hover:scale-[1.02] transition active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-unlock-keyhole"></i> মাত্র ১০০ টাকায় কিনুন
                     </button>
                 </form>
             </div>
         </div>
         {% endif %}
 
-        <!-- Active Packages -->
+        <!-- ========================================== -->
+        <!-- 5. Active Packages & Daily Claims          -->
+        <!-- ========================================== -->
         <div class="mb-6">
-            <h2 class="text-base font-bold text-gray-800 mb-3 px-1">আমার প্যাকেজ ও ক্লেইম</h2>
+            <div class="flex items-center justify-between mb-3 px-1">
+                <h2 class="text-base font-extrabold text-gray-800"><i class="fa-solid fa-boxes-packing text-bkash mr-1"></i> আপনার প্যাকেজ ও আয়</h2>
+            </div>
             <div class="space-y-4">
                 {% for pkg in packages %}
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full {% if pkg.package_name == 'FREE' %} bg-green-100 text-green-500 {% else %} bg-gradient-to-br from-purple-500 to-indigo-500 text-white {% endif %} flex items-center justify-center text-2xl shadow-sm"><i class="fa-solid {% if pkg.package_name == 'FREE' %} fa-gift {% else %} fa-gem {% endif %}"></i></div>
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 {% if pkg.package_name == 'FREE' %} bg-green-500 {% else %} bg-bkash {% endif %}"></div>
+                    <div class="flex items-center gap-3 pl-2">
+                        <div class="w-12 h-12 rounded-full {% if pkg.package_name == 'FREE' %} bg-green-50 text-green-500 {% else %} bg-pink-50 text-bkash {% endif %} flex items-center justify-center text-2xl shadow-sm border border-gray-50">
+                            <i class="fa-solid {% if pkg.package_name == 'FREE' %} fa-gift {% else %} fa-gem {% endif %}"></i>
+                        </div>
                         <div>
-                            <h3 class="font-bold text-gray-800 text-sm">{{ pkg.package_name }}</h3>
-                            <div id="timer-display-{{ pkg.id }}" class="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock text-yellow-500 animate-pulse"></i> <span id="countdown-{{ pkg.id }}" class="pkg-timer tracking-widest" data-id="{{ pkg.id }}" data-next-claim="{{ pkg.next_claim }}">00:00:00</span></div>
+                            <h3 class="font-extrabold text-gray-800 text-sm">{{ pkg.package_name }}</h3>
+                            <div id="timer-display-{{ pkg.id }}" class="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1.5 bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                <i class="fa-regular fa-clock text-yellow-500 animate-pulse"></i> 
+                                <span id="countdown-{{ pkg.id }}" class="pkg-timer tracking-widest text-gray-600" data-id="{{ pkg.id }}" data-next-claim="{{ pkg.next_claim }}">00:00:00</span>
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- Claim Button -->
                     <form method="POST" action="/claim/{{ pkg.id }}">
-                        <button id="claim-btn-{{ pkg.id }}" type="submit" class="hidden {% if pkg.package_name == 'FREE' %} bg-green-500 {% else %} bg-indigo-600 {% endif %} text-white px-4 py-2 rounded-full text-xs font-bold shadow-md hover:scale-105 transition active:scale-95">ক্লেইম ৳{{ pkg.reward }}</button>
+                        <button id="claim-btn-{{ pkg.id }}" type="submit" class="hidden {% if pkg.package_name == 'FREE' %} bg-green-500 {% else %} bg-bkash {% endif %} text-white px-4 py-2.5 rounded-xl text-xs font-extrabold shadow-md hover:scale-105 transition active:scale-95 flex items-center gap-1">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> ৳{{ pkg.reward }}
+                        </button>
                     </form>
+                </div>
+                {% else %}
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+                    <i class="fa-solid fa-box-open text-gray-300 text-4xl mb-2"></i>
+                    <p class="text-sm font-bold text-gray-500">আপনার কোনো রানিং প্যাকেজ নেই।</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- VIP Packages Store -->
+        <!-- ========================================== -->
+        <!-- 6. Attractive VIP Packages Store           -->
+        <!-- ========================================== -->
         <div class="mb-6">
-            <h2 class="text-base font-bold text-gray-800 mb-3 px-1">প্রিমিয়াম স্টোর</h2>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="flex items-center justify-between mb-4 px-1">
+                <h2 class="text-base font-extrabold text-gray-800"><i class="fa-solid fa-store text-yellow-500 mr-1"></i> ভিআইপি স্টোর</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-5">
                 {% for pkg_name, details in vip.items() %}
-                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-lg border border-gray-700 overflow-hidden flex flex-col relative text-white">
-                    <div class="absolute top-0 right-0 bg-yellow-500 text-gray-900 text-[10px] font-bold px-2 py-1 rounded-bl-lg">{{ details.mead_days }} দিন</div>
-                    <div class="p-4 text-center flex-grow">
-                        <i class="fa-solid fa-crown text-3xl text-yellow-400 mb-2"></i>
-                        <h3 class="font-bold text-gray-100 text-sm mb-1">{{ pkg_name }}</h3>
-                        <p class="text-[11px] text-gray-400 mb-2">দৈনিক আয়: <strong class="text-green-400">৳{{ details.daily_profit }}</strong></p>
-                        <h4 class="font-extrabold text-yellow-400 text-lg">৳{{ details.price }}</h4>
+                <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-2xl shadow-lg border border-yellow-500/30 overflow-hidden relative">
+                    <!-- Validity Badge -->
+                    <div class="absolute top-0 right-0 bg-gradient-to-l from-yellow-500 to-yellow-400 text-gray-900 text-[10px] font-black px-4 py-1.5 rounded-bl-xl shadow-md">
+                        {{ details.mead_days }} দিন মেয়াদ
                     </div>
-                    <form method="POST" action="/buy_vip/{{ pkg_name }}" class="p-2 pt-0">
-                        <button type="submit" class="w-full bg-yellow-500 text-gray-900 py-2 rounded-xl text-xs font-extrabold hover:bg-yellow-400 transition active:scale-95">কিনুন</button>
-                    </form>
+                    
+                    <div class="p-5 flex items-center justify-between">
+                        <!-- Left Side: Icon & Title -->
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-gradient-to-tr from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white text-2xl shadow-[0_0_15px_rgba(234,179,8,0.4)] border border-yellow-300">
+                                <i class="fa-solid fa-crown"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-white text-lg tracking-wide">{{ pkg_name }}</h3>
+                                <h4 class="font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 text-2xl">৳{{ details.price }}</h4>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Button -->
+                        <div>
+                            <form method="POST" action="/buy_vip/{{ pkg_name }}">
+                                <button type="submit" class="bg-gradient-to-r from-yellow-500 to-yellow-400 text-gray-900 px-5 py-2.5 rounded-xl text-sm font-black hover:scale-105 transition active:scale-95 shadow-lg shadow-yellow-500/20">
+                                    কিনুন
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Details Box (Daily vs Total Profit) -->
+                    <div class="bg-gray-800/80 px-5 py-3 border-t border-gray-700/50 flex justify-between items-center text-xs font-bold">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-gray-700 text-yellow-400 flex items-center justify-center"><i class="fa-solid fa-bolt"></i></div>
+                            <div><p class="text-gray-400 text-[9px]">দৈনিক আয়</p><p class="text-green-400">৳{{ details.daily_profit }}</p></div>
+                        </div>
+                        <div class="h-6 w-px bg-gray-700"></div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-gray-700 text-yellow-400 flex items-center justify-center"><i class="fa-solid fa-sack-dollar"></i></div>
+                            <!-- Calculate Total Profit -->
+                            <div><p class="text-gray-400 text-[9px]">মোট আয়</p><p class="text-green-400">৳{{ details.daily_profit * details.mead_days }}</p></div>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
+
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2">
-            <a href="/dashboard" class="flex flex-col items-center gap-1 text-bkash"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">হোম</span></a>
-            <a href="/transfer" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition"><i class="fa-solid fa-money-bill-transfer text-xl"></i><span class="text-[10px] font-bold">ট্রান্সফার</span></a>
-            <a href="/referrals" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition"><i class="fa-solid fa-users text-xl"></i><span class="text-[10px] font-bold">টিম</span></a>
+    <!-- ========================================== -->
+    <!-- 7. Bottom Navigation Bar                   -->
+    <!-- ========================================== -->
+    <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-50 rounded-t-2xl">
+        <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2.5">
+            <a href="/dashboard" class="flex flex-col items-center gap-1 text-bkash">
+                <i class="fa-solid fa-house text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">হোম</span>
+            </a>
+            <a href="/transfer" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
+                <i class="fa-solid fa-money-bill-transfer text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">ট্রান্সফার</span>
+            </a>
+            <a href="/referrals" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
+                <i class="fa-solid fa-users text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">টিম</span>
+            </a>
+            <a href="/logout" class="flex flex-col items-center gap-1 text-gray-400 hover:text-red-500 transition">
+                <i class="fa-solid fa-power-off text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">লগআউট</span>
+            </a>
         </div>
     </div>
 
+    <!-- Script For Claim Timers -->
     <script>
         document.querySelectorAll('.pkg-timer').forEach(function(el) {
             const nextClaimStr = el.getAttribute('data-next-claim');
@@ -126,6 +247,7 @@
             const nextClaimTime = new Date(nextClaimStr).getTime();
             const timerDisplay = document.getElementById('timer-display-' + pkgId);
             const claimBtn = document.getElementById('claim-btn-' + pkgId);
+
             const updateTimer = setInterval(function() {
                 const distance = nextClaimTime - new Date().getTime();
                 if (distance <= 0) {
