@@ -7,51 +7,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* bKash Brand Color */
         .bg-bkash { background-color: #E2136E; }
         .text-bkash { color: #E2136E; }
-        .border-bkash { border-color: #E2136E; }
-
-        /* Animation for balance button */
-        .balance-expand { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
-<body class="text-gray-800 antialiased pb-24"> <!-- pb-24 for bottom nav padding -->
+<body class="text-gray-800 antialiased pb-24">
 
-    <!-- ========================================== -->
-    <!-- 1. bKash Style Top Header & Balance Info   -->
-    <!-- ========================================== -->
+    <!-- Header -->
     <div class="bg-bkash text-white px-4 pt-6 pb-8 rounded-b-[2.5rem] shadow-lg relative overflow-hidden z-20">
-        <!-- Decor circles -->
-        <div class="absolute top-[-30px] right-[-30px] w-32 h-32 bg-white opacity-10 rounded-full"></div>
-        <div class="absolute bottom-[-20px] left-[-20px] w-20 h-20 bg-white opacity-10 rounded-full"></div>
-
         <div class="flex justify-between items-center relative z-10">
             <div class="flex items-center gap-3">
-                <!-- User Avatar -->
-                <div class="w-12 h-12 bg-white text-bkash rounded-full flex justify-center items-center text-2xl font-extrabold shadow-inner">
-                    {{ user.name[0] | upper }}
-                </div>
-                <div>
-                    <p class="text-xs text-pink-200">শুভ দিন,</p>
-                    <p class="font-bold text-lg leading-tight">{{ user.name }}</p>
-                </div>
+                <div class="w-12 h-12 bg-white text-bkash rounded-full flex justify-center items-center text-2xl font-extrabold shadow-inner">{{ user.name[0] | upper }}</div>
+                <div><p class="text-xs text-pink-200">শুভ দিন,</p><p class="font-bold text-lg leading-tight">{{ user.name }}</p></div>
             </div>
-            <!-- Reward Icon -->
-            <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm">
-                <i class="fa-solid fa-gift text-xl text-white"></i>
-            </div>
+            <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm"><i class="fa-solid fa-gift text-xl text-white"></i></div>
         </div>
-
-        <!-- Tap for Balance Button -->
         <div class="mt-6 flex justify-center relative z-10">
-            <button id="balance-btn" onclick="toggleBalance()" class="balance-expand bg-white text-bkash px-5 py-2.5 rounded-full font-bold shadow-md flex items-center justify-center gap-2 w-56 active:scale-95">
+            <button onclick="document.getElementById('balance-text').innerText='৳ {{ user.balance }}'; setTimeout(()=>document.getElementById('balance-text').innerText='ব্যালেন্স জানতে ট্যাপ করুন', 3000);" class="bg-white text-bkash px-5 py-2.5 rounded-full font-bold shadow-md flex items-center justify-center gap-2 w-56 active:scale-95">
                 <i class="fa-solid fa-bangladeshi-taka-sign bg-bkash text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"></i>
                 <span id="balance-text" class="text-sm">ব্যালেন্স জানতে ট্যাপ করুন</span>
             </button>
@@ -60,233 +34,109 @@
 
     <div class="max-w-md mx-auto px-4 -mt-4 relative z-30">
         <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="mb-4">
-                {% for category, message in messages %}
-                    <div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-md flex items-center gap-2 animate-bounce
-                        {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% elif category == 'warning' %} bg-yellow-500 text-yellow-900 {% else %} bg-blue-500 {% endif %}">
-                        <i class="fa-solid fa-circle-info"></i> {{ message }}
-                    </div>
-                {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="mb-4">{% for category, message in messages %}<div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-md flex items-center gap-2 animate-bounce {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% elif category == 'warning' %} bg-yellow-500 text-yellow-900 {% else %} bg-blue-500 {% endif %}"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
-        <!-- ========================================== -->
-        <!-- 2. Services Grid (App Menu)                -->
-        <!-- ========================================== -->
-        <div class="bg-white rounded-2xl shadow-sm p-5 grid grid-cols-4 gap-y-6 gap-x-2 text-center mb-6 border border-gray-100">
-            <a href="/transfer#deposit" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-circle-plus"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">এড মানি</span>
-            </a>
-            <a href="/transfer#withdraw" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-money-bill-transfer"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">ক্যাশ আউট</span>
-            </a>
-            <a href="/leaderboard" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-trophy"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">লিডারবোর্ড</span>
-            </a>
-            <a href="/history" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-file-invoice"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">স্টেটমেন্ট</span>
-            </a>
-            <a href="/referrals" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-user-plus"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">রেফার করুন</span>
-            </a>
-            <a href="https://t.me/your_telegram_channel" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-brands fa-telegram"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">সাপোর্ট</span>
-            </a>
-            <a href="#" onclick="copyRef()" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-link"></i></div>
-                <span class="text-[11px] font-bold text-gray-600" id="copy-btn-txt">কপি লিংক</span>
-            </a>
-            <a href="/logout" class="flex flex-col items-center gap-2 group">
-                <div class="w-11 h-11 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center text-xl group-hover:bg-red-100 group-hover:text-red-500 transition shadow-sm"><i class="fa-solid fa-power-off"></i></div>
-                <span class="text-[11px] font-bold text-gray-600">লগআউট</span>
-            </a>
+        <!-- Quick Navs -->
+        <div class="bg-white rounded-2xl shadow-sm p-5 grid grid-cols-4 gap-y-6 gap-x-2 text-center mb-4 border border-gray-100">
+            <a href="/transfer#deposit" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-circle-plus"></i></div><span class="text-[11px] font-bold text-gray-600">এড মানি</span></a>
+            <a href="/transfer#withdraw" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-money-bill-transfer"></i></div><span class="text-[11px] font-bold text-gray-600">ক্যাশ আউট</span></a>
+            <a href="/leaderboard" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-trophy"></i></div><span class="text-[11px] font-bold text-gray-600">লিডারবোর্ড</span></a>
+            <a href="/history" class="flex flex-col items-center gap-2"><div class="w-11 h-11 bg-pink-50 text-bkash rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-file-invoice"></i></div><span class="text-[11px] font-bold text-gray-600">স্টেটমেন্ট</span></a>
         </div>
-        
-        <!-- Hidden Ref Code for JS copy -->
-        <span id="hidden-ref" class="hidden">{{ user.referral_code }}</span>
 
-        <!-- Notice Banner -->
+        <!-- Dynamic Admin Notice -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 mb-6 flex items-center gap-3">
-            <div class="w-10 h-10 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-lg shrink-0">
-                <i class="fa-solid fa-bell animate-[ring_2s_infinite]"></i>
-            </div>
-            <marquee behavior="scroll" direction="left" class="text-sm font-semibold text-gray-600">
-                ফ্রি প্যাকেজ থেকে প্রতি ৮ ঘণ্টায় ৭ টাকা ক্লেইম করুন! বন্ধুদের ইনভাইট করে আয় বাড়ান।
-            </marquee>
+            <div class="w-10 h-10 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-bell animate-[ring_2s_infinite]"></i></div>
+            <marquee behavior="scroll" direction="left" class="text-sm font-semibold text-gray-600">{{ notice }}</marquee>
         </div>
 
-        <!-- ========================================== -->
-        <!-- 3. Active Packages (My Offers)             -->
-        <!-- ========================================== -->
-        <div class="mb-6">
-            <div class="flex justify-between items-center mb-3 px-1">
-                <h2 class="text-base font-bold text-gray-800">আমার প্যাকেজ ও ক্লেইম</h2>
+        <!-- First Time Offer Card -->
+        {% if not user.has_premium_offer %}
+        <div class="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl p-5 mb-6 text-white shadow-xl relative overflow-hidden border-2 border-yellow-300">
+            <div class="absolute top-[-10px] right-[-10px] text-7xl opacity-20"><i class="fa-solid fa-fire"></i></div>
+            <div class="relative z-10">
+                <span class="bg-red-600 text-white text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider mb-2 inline-block animate-pulse">লিমিটেড অফার</span>
+                <h3 class="text-xl font-extrabold mb-1">স্পেশাল প্রিমিয়াম প্যাকেজ</h3>
+                <p class="text-xs text-orange-100 mb-4 border-b border-orange-400 pb-3">শুধুমাত্র ১০০ টাকায় VIP 1 আনলক করুন এবং আপনার মিনিমাম উইথড্র লিমিট ১০০ টাকায় নামিয়ে আনুন!</p>
+                <form method="POST" action="/buy_premium_offer">
+                    <button type="submit" class="w-full bg-white text-orange-600 py-2.5 rounded-xl text-sm font-extrabold shadow-md hover:scale-105 transition active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> মাত্র ১০০ টাকায় কিনুন
+                    </button>
+                </form>
             </div>
-            
+        </div>
+        {% endif %}
+
+        <!-- Active Packages -->
+        <div class="mb-6">
+            <h2 class="text-base font-bold text-gray-800 mb-3 px-1">আমার প্যাকেজ ও ক্লেইম</h2>
             <div class="space-y-4">
                 {% for pkg in packages %}
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full {% if pkg.package_name == 'FREE' %} bg-green-100 text-green-500 {% else %} bg-bkash text-white {% endif %} flex items-center justify-center text-2xl shadow-sm">
-                            <i class="fa-solid {% if pkg.package_name == 'FREE' %} fa-gift {% else %} fa-gem {% endif %}"></i>
-                        </div>
+                        <div class="w-12 h-12 rounded-full {% if pkg.package_name == 'FREE' %} bg-green-100 text-green-500 {% else %} bg-gradient-to-br from-purple-500 to-indigo-500 text-white {% endif %} flex items-center justify-center text-2xl shadow-sm"><i class="fa-solid {% if pkg.package_name == 'FREE' %} fa-gift {% else %} fa-gem {% endif %}"></i></div>
                         <div>
                             <h3 class="font-bold text-gray-800 text-sm">{{ pkg.package_name }}</h3>
-                            
-                            <!-- Timer -->
-                            <div id="timer-display-{{ pkg.id }}" class="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1">
-                                <i class="fa-regular fa-clock text-yellow-500 animate-pulse"></i> 
-                                <span id="countdown-{{ pkg.id }}" class="pkg-timer tracking-widest" data-id="{{ pkg.id }}" data-next-claim="{{ pkg.next_claim }}">00:00:00</span>
-                            </div>
+                            <div id="timer-display-{{ pkg.id }}" class="text-xs font-bold text-gray-500 mt-1 flex items-center gap-1"><i class="fa-regular fa-clock text-yellow-500 animate-pulse"></i> <span id="countdown-{{ pkg.id }}" class="pkg-timer tracking-widest" data-id="{{ pkg.id }}" data-next-claim="{{ pkg.next_claim }}">00:00:00</span></div>
                         </div>
                     </div>
-                    
-                    <!-- Claim Button -->
                     <form method="POST" action="/claim/{{ pkg.id }}">
-                        <button id="claim-btn-{{ pkg.id }}" type="submit" class="hidden bg-bkash text-white px-4 py-2 rounded-full text-xs font-bold shadow-md hover:scale-105 transition active:scale-95">
-                            ক্লেইম ৳{{ pkg.reward }}
-                        </button>
+                        <button id="claim-btn-{{ pkg.id }}" type="submit" class="hidden {% if pkg.package_name == 'FREE' %} bg-green-500 {% else %} bg-indigo-600 {% endif %} text-white px-4 py-2 rounded-full text-xs font-bold shadow-md hover:scale-105 transition active:scale-95">ক্লেইম ৳{{ pkg.reward }}</button>
                     </form>
-                </div>
-                {% else %}
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center text-sm text-gray-500">
-                    কোনো রানিং প্যাকেজ নেই।
                 </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- 4. Buy VIP Packages (Store)                -->
-        <!-- ========================================== -->
+        <!-- VIP Packages Store -->
         <div class="mb-6">
-            <div class="flex justify-between items-center mb-3 px-1">
-                <h2 class="text-base font-bold text-gray-800">প্রিমিয়াম অফার সমূহ</h2>
-            </div>
-            
+            <h2 class="text-base font-bold text-gray-800 mb-3 px-1">প্রিমিয়াম স্টোর</h2>
             <div class="grid grid-cols-2 gap-3">
                 {% for pkg_name, details in vip.items() %}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative group">
-                    <!-- Badge -->
-                    <div class="absolute top-0 right-0 bg-bkash text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">
-                        {{ details.mead_days }} দিন
-                    </div>
-                    
+                <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-lg border border-gray-700 overflow-hidden flex flex-col relative text-white">
+                    <div class="absolute top-0 right-0 bg-yellow-500 text-gray-900 text-[10px] font-bold px-2 py-1 rounded-bl-lg">{{ details.mead_days }} দিন</div>
                     <div class="p-4 text-center flex-grow">
-                        <i class="fa-solid fa-crown text-3xl text-yellow-400 mb-2 group-hover:scale-110 transition"></i>
-                        <h3 class="font-bold text-gray-800 text-sm mb-1">{{ pkg_name }}</h3>
-                        <p class="text-[11px] text-gray-500 mb-2">দৈনিক আয়: <strong class="text-green-500">৳{{ details.daily_profit }}</strong></p>
-                        <h4 class="font-extrabold text-bkash text-lg">৳{{ details.price }}</h4>
+                        <i class="fa-solid fa-crown text-3xl text-yellow-400 mb-2"></i>
+                        <h3 class="font-bold text-gray-100 text-sm mb-1">{{ pkg_name }}</h3>
+                        <p class="text-[11px] text-gray-400 mb-2">দৈনিক আয়: <strong class="text-green-400">৳{{ details.daily_profit }}</strong></p>
+                        <h4 class="font-extrabold text-yellow-400 text-lg">৳{{ details.price }}</h4>
                     </div>
-                    
                     <form method="POST" action="/buy_vip/{{ pkg_name }}" class="p-2 pt-0">
-                        <button type="submit" class="w-full bg-pink-50 text-bkash py-2 rounded-xl text-xs font-bold hover:bg-bkash hover:text-white transition active:scale-95">
-                            কিনুন
-                        </button>
+                        <button type="submit" class="w-full bg-yellow-500 text-gray-900 py-2 rounded-xl text-xs font-extrabold hover:bg-yellow-400 transition active:scale-95">কিনুন</button>
                     </form>
                 </div>
                 {% endfor %}
             </div>
         </div>
-
     </div>
 
-    <!-- ========================================== -->
-    <!-- 5. Bottom Navigation Bar (App Style)       -->
-    <!-- ========================================== -->
+    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
         <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2">
-            <a href="/dashboard" class="flex flex-col items-center gap-1 text-bkash">
-                <i class="fa-solid fa-house text-xl"></i>
-                <span class="text-[10px] font-bold">হোম</span>
-            </a>
-            <a href="/transfer" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
-                <i class="fa-solid fa-money-bill-transfer text-xl"></i>
-                <span class="text-[10px] font-bold">ট্রান্সফার</span>
-            </a>
-            <a href="/referrals" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
-                <i class="fa-solid fa-users text-xl"></i>
-                <span class="text-[10px] font-bold">টিম</span>
-            </a>
-            <a href="/history" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
-                <i class="fa-solid fa-clock-rotate-left text-xl"></i>
-                <span class="text-[10px] font-bold">হিস্ট্রি</span>
-            </a>
+            <a href="/dashboard" class="flex flex-col items-center gap-1 text-bkash"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">হোম</span></a>
+            <a href="/transfer" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition"><i class="fa-solid fa-money-bill-transfer text-xl"></i><span class="text-[10px] font-bold">ট্রান্সফার</span></a>
+            <a href="/referrals" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition"><i class="fa-solid fa-users text-xl"></i><span class="text-[10px] font-bold">টিম</span></a>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- JavaScript for Animations & Timers         -->
-    <!-- ========================================== -->
     <script>
-        // --- 1. bKash Style Balance Reveal ---
-        let balanceRevealed = false;
-        const balanceBtn = document.getElementById('balance-btn');
-        const balanceText = document.getElementById('balance-text');
-        const actualBalance = "৳ {{ user.balance }}"; // Real balance
-
-        function toggleBalance() {
-            if(balanceRevealed) return; // Prevent double click
-            
-            balanceRevealed = true;
-            balanceText.innerText = actualBalance;
-            balanceText.classList.add("text-lg");
-            
-            // Revert back after 3 seconds like bKash
-            setTimeout(() => {
-                balanceText.innerText = "ব্যালেন্স জানতে ট্যাপ করুন";
-                balanceText.classList.remove("text-lg");
-                balanceRevealed = false;
-            }, 3000);
-        }
-
-        // --- 2. Copy Referral Code ---
-        function copyRef() {
-            const code = document.getElementById('hidden-ref').innerText;
-            navigator.clipboard.writeText(code);
-            const btnTxt = document.getElementById('copy-btn-txt');
-            btnTxt.innerText = "কপি হয়েছে!";
-            btnTxt.classList.add('text-green-500');
-            setTimeout(() => {
-                btnTxt.innerText = "কপি লিংক";
-                btnTxt.classList.remove('text-green-500');
-            }, 2000);
-        }
-
-        // --- 3. Dynamic Package Timers ---
         document.querySelectorAll('.pkg-timer').forEach(function(el) {
             const nextClaimStr = el.getAttribute('data-next-claim');
             const pkgId = el.getAttribute('data-id');
             const nextClaimTime = new Date(nextClaimStr).getTime();
-            
             const timerDisplay = document.getElementById('timer-display-' + pkgId);
             const claimBtn = document.getElementById('claim-btn-' + pkgId);
-
             const updateTimer = setInterval(function() {
-                const now = new Date().getTime();
-                const distance = nextClaimTime - now;
-
+                const distance = nextClaimTime - new Date().getTime();
                 if (distance <= 0) {
                     clearInterval(updateTimer);
                     timerDisplay.classList.add('hidden');
                     claimBtn.classList.remove('hidden');
                 } else {
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                    
-                    el.innerHTML = (hours < 10 ? "0" + hours : hours) + ":" 
-                                 + (minutes < 10 ? "0" + minutes : minutes) + ":" 
-                                 + (seconds < 10 ? "0" + seconds : seconds);
+                    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((distance % (1000 * 60)) / 1000);
+                    el.innerHTML = (h<10?"0"+h:h) + ":" + (m<10?"0"+m:m) + ":" + (s<10?"0"+s:s);
                 }
             }, 1000);
         });
