@@ -1,182 +1,274 @@
 <!DOCTYPE html>
-<html lang="bn" class="scroll-smooth">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ফান্ড ট্রান্সফার - InvestEarn</title>
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ট্রান্সফার - InvestEarn</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Fonts (Bangla) -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <style> body { font-family: 'Hind Siliguri', sans-serif; } </style>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; }
+        .bg-bkash { background-color: #E2136E; }
+        .text-bkash { color: #E2136E; }
+        .border-bkash { border-color: #E2136E; }
+        
+        /* Smooth Tab Transition */
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased pb-12">
+<body class="text-gray-800 antialiased pb-24">
 
-    <!-- Top Navbar -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/dashboard" class="text-blue-600 font-bold hover:bg-blue-50 px-3 py-2 rounded-lg transition flex items-center gap-1">
-                <i class="fa-solid fa-arrow-left"></i> ড্যাশবোর্ড
+    <!-- ========================================== -->
+    <!-- 1. App Header & Balance Card               -->
+    <!-- ========================================== -->
+    <div class="bg-bkash text-white px-5 pt-6 pb-8 rounded-b-[2rem] shadow-lg relative z-20">
+        <!-- Back Button & Title -->
+        <div class="flex justify-between items-center mb-6">
+            <a href="/dashboard" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md transition active:scale-95">
+                <i class="fa-solid fa-arrow-left text-lg"></i>
             </a>
-            <h1 class="text-xl font-bold text-gray-800">ফান্ড ট্রান্সফার</h1>
-            <div class="w-16"></div> <!-- Spacer to keep title centered -->
+            <h1 class="text-xl font-extrabold tracking-wide">ফান্ড ট্রান্সফার</h1>
+            <div class="w-10"></div> <!-- Spacer -->
         </div>
-    </nav>
 
-    <div class="max-w-4xl mx-auto py-8 px-4">
+        <!-- Balance Info -->
+        <div class="text-center">
+            <p class="text-pink-200 text-sm font-semibold mb-1">ব্যবহারযোগ্য ব্যালেন্স</p>
+            <h1 class="text-4xl font-black tracking-tight flex justify-center items-center gap-2">
+                <i class="fa-solid fa-bangladeshi-taka-sign text-2xl opacity-80"></i> {{ user.balance }}
+            </h1>
+        </div>
+    </div>
 
+    <div class="max-w-md mx-auto px-4 -mt-5 relative z-30">
+        
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="mb-6">
+                <div class="mb-4">
                 {% for category, message in messages %}
-                    <div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md flex items-center gap-2 
-                        {% if category == 'success' %} bg-green-500 
-                        {% elif category == 'danger' %} bg-red-500 
-                        {% elif category == 'warning' %} bg-yellow-500 text-yellow-900 
-                        {% else %} bg-blue-500 {% endif %}">
-                        <i class="fa-solid fa-circle-info text-xl"></i> {{ message }}
+                    <div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-md flex items-start gap-2 animate-bounce
+                        {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% elif category == 'warning' %} bg-yellow-500 text-yellow-900 {% else %} bg-blue-500 {% endif %}">
+                        <i class="fa-solid fa-circle-info mt-1"></i> <span>{{ message }}</span>
                     </div>
                 {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
 
-        <!-- Current Balance Card -->
-        <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white shadow-xl mb-10 text-center flex justify-between items-center relative overflow-hidden">
-            <div class="absolute top-[-20px] right-[-10px] opacity-10 text-9xl">
-                <i class="fa-solid fa-vault"></i>
-            </div>
-            <div class="text-left relative z-10">
-                <p class="text-gray-400 text-sm font-semibold mb-1"><i class="fa-solid fa-wallet text-gray-500 mr-1"></i> আপনার বর্তমান ব্যালেন্স</p>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-green-400">৳ {{ user.balance }}</h1>
-            </div>
+        <!-- ========================================== -->
+        <!-- 2. Custom App Tabs                         -->
+        <!-- ========================================== -->
+        <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 flex justify-between mb-6 relative">
+            <button onclick="switchTab('deposit')" id="tab-deposit" class="w-1/2 py-2.5 text-sm font-extrabold rounded-xl transition-all duration-300 bg-pink-50 text-bkash shadow-sm">
+                <i class="fa-solid fa-circle-plus mr-1"></i> এড মানি
+            </button>
+            <button onclick="switchTab('withdraw')" id="tab-withdraw" class="w-1/2 py-2.5 text-sm font-bold text-gray-500 rounded-xl transition-all duration-300 hover:bg-gray-50">
+                <i class="fa-solid fa-money-bill-transfer mr-1"></i> ক্যাশ আউট
+            </button>
         </div>
 
         <!-- ========================================== -->
-        <!-- 1. Deposit (Add Money) Section -->
+        <!-- 3. Deposit (Add Money) Content             -->
         <!-- ========================================== -->
-        <h2 id="deposit" class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-            <i class="fa-solid fa-circle-plus text-green-500"></i> এড মানি (ডিপোজিট)
-        </h2>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border-t-4 border-green-500 mb-12">
-            
-            <!-- Admin Payment Info -->
-            <div class="bg-green-50 border border-green-200 rounded-xl p-5 mb-6">
-                <p class="text-sm font-bold text-green-800 mb-3"><i class="fa-solid fa-circle-info"></i> নিচের যেকোনো নম্বরে সেন্ড মানি (Send Money) করে ফর্মটি পূরণ করুন:</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-gray-700 font-medium">
-                    <div class="bg-white p-3 rounded-lg border border-green-100 flex items-center gap-2 shadow-sm">
-                        <img src="https://i.ibb.co/bXQnfF0/bkash.png" alt="bKash" class="w-6 h-6 object-contain hidden">
-                        <i class="fa-solid fa-building-columns text-pink-600"></i>
-                        <span>বিকাশ: <strong class="tracking-wider text-gray-900">017XXXXXXXX</strong></span>
+        <div id="content-deposit" class="tab-content active">
+            <!-- Payment Instructions -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
+                <h3 class="text-sm font-extrabold text-gray-800 mb-3 border-b border-gray-100 pb-2"><i class="fa-solid fa-building-columns text-green-500 mr-1"></i> পেমেন্ট ইনফরমেশন</h3>
+                <p class="text-xs text-gray-500 font-semibold mb-4">নিচের যেকোনো একটি নম্বরে সেন্ড মানি (Send Money) করে ফর্মটি পূরণ করুন:</p>
+                
+                <div class="space-y-2">
+                    <!-- bKash Box -->
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center"><i class="fa-solid fa-b"></i></div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">বিকাশ পার্সোনাল</p>
+                                <p class="text-sm font-extrabold text-gray-800 tracking-wider" id="bkash-num">017XXXXXXXX</p>
+                            </div>
+                        </div>
+                        <button onclick="copyNumber('bkash-num')" class="text-bkash bg-pink-50 px-3 py-1.5 rounded-lg text-xs font-bold active:scale-90 transition"><i class="fa-regular fa-copy"></i> কপি</button>
                     </div>
-                    <div class="bg-white p-3 rounded-lg border border-green-100 flex items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-building-columns text-orange-500"></i>
-                        <span>নগদ: <strong class="tracking-wider text-gray-900">018XXXXXXXX</strong></span>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg border border-green-100 flex items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-building-columns text-purple-600"></i>
-                        <span>রকেট: <strong class="tracking-wider text-gray-900">019XXXXXXXX</strong></span>
+
+                    <!-- Nagad Box -->
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center"><i class="fa-solid fa-n"></i></div>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">নগদ পার্সোনাল</p>
+                                <p class="text-sm font-extrabold text-gray-800 tracking-wider" id="nagad-num">018XXXXXXXX</p>
+                            </div>
+                        </div>
+                        <button onclick="copyNumber('nagad-num')" class="text-orange-500 bg-orange-50 px-3 py-1.5 rounded-lg text-xs font-bold active:scale-90 transition"><i class="fa-regular fa-copy"></i> কপি</button>
                     </div>
                 </div>
             </div>
 
             <!-- Deposit Form -->
-            <form method="POST" action="/deposit" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">মেথড নির্বাচন করুন</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-money-check absolute left-4 top-3.5 text-gray-400"></i>
-                        <select name="method" required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 font-bold text-gray-700 cursor-pointer">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <form method="POST" action="/deposit" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">পেমেন্ট মেথড</label>
+                        <select name="method" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-bold text-gray-700">
                             <option value="bKash">বিকাশ (bKash)</option>
                             <option value="Nagad">নগদ (Nagad)</option>
                             <option value="Rocket">রকেট (Rocket)</option>
                         </select>
                     </div>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">যে নম্বর থেকে টাকা পাঠিয়েছেন</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-phone absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" name="sender_number" placeholder="01XXXXXXXXX" required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">সেন্ডার নম্বর</label>
+                        <input type="text" name="sender_number" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold placeholder-gray-400 text-sm">
                     </div>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">TrxID (ট্রানজেকশন আইডি)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" name="transaction_id" placeholder="8X2B9... " required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500 uppercase">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">ট্রানজেকশন আইডি (TrxID)</label>
+                        <input type="text" name="transaction_id" placeholder="8X2B9..." required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold placeholder-gray-400 text-sm uppercase">
                     </div>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">পরিমাণ (মিনিমাম ৫০৳)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-bangladeshi-taka-sign absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="number" name="amount" min="50" placeholder="কত টাকা?" required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-green-500">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">পরিমাণ (মিনিমাম ৫০৳)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3.5 font-extrabold text-gray-400">৳</span>
+                            <input type="number" name="amount" min="50" placeholder="0.00" required class="w-full pl-8 p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-extrabold text-gray-800 text-lg">
+                        </div>
                     </div>
-                </div>
-                <div class="md:col-span-2 mt-2">
-                    <button type="submit" class="w-full bg-green-500 text-white p-3.5 rounded-xl font-bold text-lg hover:bg-green-600 transition flex justify-center items-center gap-2 shadow-lg transform hover:-translate-y-1">
-                        <i class="fa-solid fa-paper-plane"></i> ডিপোজিট রিকোয়েস্ট পাঠান
+                    <button type="submit" class="w-full bg-bkash text-white py-4 rounded-xl font-extrabold text-sm hover:opacity-90 transition active:scale-95 shadow-lg shadow-pink-500/30 flex justify-center items-center gap-2 mt-2">
+                        <i class="fa-solid fa-circle-check"></i> ডিপোজিট রিকোয়েস্ট পাঠান
                     </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- 2. Withdraw (Cash Out) Section -->
+        <!-- 4. Withdraw (Cash Out) Content             -->
         <!-- ========================================== -->
-        <h2 id="withdraw" class="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-            <i class="fa-solid fa-money-bill-transfer text-red-500"></i> টাকা উত্তোলন (Withdraw)
-        </h2>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border-t-4 border-red-500">
+        <div id="content-withdraw" class="tab-content">
             
-            <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-                <p class="text-sm font-bold text-red-800"><i class="fa-solid fa-triangle-exclamation"></i> সতর্কতা: উত্তোলন রিকোয়েস্ট দেওয়ার পর এডমিন ম্যানুয়ালি যাচাই করে আপনার নাম্বারে পেমেন্ট পাঠাবে।</p>
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-4 mb-5 flex gap-3 items-start shadow-sm">
+                <i class="fa-solid fa-shield-halved text-red-500 text-xl mt-0.5"></i>
+                <div>
+                    <h4 class="text-red-800 font-extrabold text-sm mb-1">নিরাপদ ক্যাশ আউট</h4>
+                    <p class="text-xs text-red-600 font-semibold">আপনার রিকোয়েস্ট দেওয়ার পর এডমিন ম্যানুয়ালি যাচাই করে খুব দ্রুত আপনার নাম্বারে পেমেন্ট পাঠিয়ে দেবে।</p>
+                </div>
             </div>
 
             <!-- Withdraw Form -->
-            <form method="POST" action="/withdraw" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">কোথায় পেমেন্ট নিতে চান?</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-building-columns absolute left-4 top-3.5 text-gray-400"></i>
-                        <select name="method" required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500 font-bold text-gray-700 cursor-pointer">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <form method="POST" action="/withdraw" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">পেমেন্ট রিসিভ মেথড</label>
+                        <select name="method" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-bold text-gray-700">
                             <option value="bKash">বিকাশ (bKash)</option>
-                            <option value="Nagad">ন নগদ (Nagad)</option>
+                            <option value="Nagad">নগদ (Nagad)</option>
                             <option value="Rocket">রকেট (Rocket)</option>
                         </select>
                     </div>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2">আপনার একাউন্ট নম্বর</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-mobile-screen absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="text" name="account_number" placeholder="01XXXXXXXXX" required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">আপনার রিসিভার নম্বর</label>
+                        <input type="text" name="account_number" placeholder="যে নম্বরে টাকা নিতে চান" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold placeholder-gray-400 text-sm">
                     </div>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">পরিমাণ (মিনিমাম ১০০৳)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-bangladeshi-taka-sign absolute left-4 top-3.5 text-gray-400"></i>
-                        <input type="number" name="amount" min="100" placeholder="কত টাকা তুলতে চান?" required class="w-full pl-10 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500 text-lg font-bold text-red-600">
+                    <div>
+                        <div class="flex justify-between items-end mb-1.5">
+                            <label class="block text-gray-700 text-xs font-extrabold uppercase tracking-wide">উত্তোলনের পরিমাণ</label>
+                            <span class="text-[10px] font-bold text-bkash bg-pink-50 px-2 py-0.5 rounded-md border border-pink-100">
+                                মিনিমাম {% if user.has_premium_offer %}১০০{% else %}৫০০{% endif %}৳
+                            </span>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3.5 font-extrabold text-bkash">৳</span>
+                            <input type="number" name="amount" min="{% if user.has_premium_offer %}100{% else %}500{% endif %}" placeholder="0.00" required class="w-full pl-8 p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-black text-bkash text-xl">
+                        </div>
                     </div>
-                </div>
-                <div class="md:col-span-2 mt-2">
-                    <button type="submit" class="w-full bg-red-500 text-white p-3.5 rounded-xl font-bold text-lg hover:bg-red-600 transition flex justify-center items-center gap-2 shadow-lg transform hover:-translate-y-1">
-                        <i class="fa-solid fa-hand-holding-dollar"></i> উত্তোলন রিকোয়েস্ট পাঠান
+                    <button type="submit" class="w-full bg-gray-900 text-white py-4 rounded-xl font-extrabold text-sm hover:bg-black transition active:scale-95 shadow-lg shadow-gray-900/30 flex justify-center items-center gap-2 mt-2">
+                        <i class="fa-solid fa-money-bill-transfer"></i> ক্যাশ আউট রিকোয়েস্ট করুন
                     </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
     </div>
 
+    <!-- ========================================== -->
+    <!-- 5. Bottom Navigation Bar                   -->
+    <!-- ========================================== -->
+    <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-50 rounded-t-2xl">
+        <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2.5">
+            <a href="/dashboard" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
+                <i class="fa-solid fa-house text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">হোম</span>
+            </a>
+            <a href="/transfer" class="flex flex-col items-center gap-1 text-bkash">
+                <i class="fa-solid fa-money-bill-transfer text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">ট্রান্সফার</span>
+            </a>
+            <a href="/referrals" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
+                <i class="fa-solid fa-users text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">টিম</span>
+            </a>
+            <a href="/logout" class="flex flex-col items-center gap-1 text-gray-400 hover:text-red-500 transition">
+                <i class="fa-solid fa-power-off text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">লগআউট</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Script For Tab Switching & Copy Function -->
+    <script>
+        function switchTab(tabName) {
+            // Get Elements
+            const tabDepositBtn = document.getElementById('tab-deposit');
+            const tabWithdrawBtn = document.getElementById('tab-withdraw');
+            const contentDeposit = document.getElementById('content-deposit');
+            const contentWithdraw = document.getElementById('content-withdraw');
+
+            // Reset Tabs
+            tabDepositBtn.className = "w-1/2 py-2.5 text-sm font-bold text-gray-500 rounded-xl transition-all duration-300 hover:bg-gray-50";
+            tabWithdrawBtn.className = "w-1/2 py-2.5 text-sm font-bold text-gray-500 rounded-xl transition-all duration-300 hover:bg-gray-50";
+            
+            // Hide Contents
+            contentDeposit.classList.remove('active');
+            contentWithdraw.classList.remove('active');
+
+            // Activate Selected Tab
+            if(tabName === 'deposit') {
+                tabDepositBtn.className = "w-1/2 py-2.5 text-sm font-extrabold rounded-xl transition-all duration-300 bg-pink-50 text-bkash shadow-sm";
+                contentDeposit.classList.add('active');
+                // Change URL Hash without reloading
+                history.replaceState(null, null, '#deposit');
+            } else {
+                tabWithdrawBtn.className = "w-1/2 py-2.5 text-sm font-extrabold rounded-xl transition-all duration-300 bg-gray-900 text-white shadow-sm";
+                contentWithdraw.classList.add('active');
+                // Change URL Hash without reloading
+                history.replaceState(null, null, '#withdraw');
+            }
+        }
+
+        // Handle direct link with hash (e.g., /transfer#withdraw)
+        window.onload = function() {
+            if(window.location.hash === '#withdraw') {
+                switchTab('withdraw');
+            } else {
+                switchTab('deposit');
+            }
+        }
+
+        // Copy Number Function
+        function copyNumber(elementId) {
+            const num = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(num);
+            
+            // Temporary feedback
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> কপিড';
+            btn.classList.add('text-green-600', 'bg-green-100');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('text-green-600', 'bg-green-100');
+            }, 2000);
+        }
+    </script>
 </body>
 </html>
