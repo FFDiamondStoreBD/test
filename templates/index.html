@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InvestEarn - ঘরে বসেই প্রতিদিন আয় করুন</title>
+    <title>InvestEarn - ঘরে বসেই প্রতিদিন নিশ্চিত আয় করুন</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,222 +12,294 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Google Fonts (Bangla) -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            font-family: 'Hind Siliguri', sans-serif;
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; }
+        .bg-bkash { background-color: #E2136E; }
+        .text-bkash { color: #E2136E; }
+        
+        /* Floating Animation */
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased">
+<body class="text-gray-800 antialiased overflow-x-hidden">
 
-    <!-- Responsive Navbar -->
-    <nav class="bg-white sticky top-0 z-50 shadow-md">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            
+    <!-- ========================================== -->
+    <!-- 1. Navbar (Dynamic Login/Dashboard Button) -->
+    <!-- ========================================== -->
+    <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <!-- Logo -->
-            <a href="/" class="text-2xl font-bold text-blue-700 flex items-center gap-2">
-                <i class="fa-solid fa-chart-line"></i> ইনভেস্ট-আর্ন
+            <a href="/" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#E2136E] to-purple-600 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-[#E2136E]"></i> InvestEarn
             </a>
 
-            <!-- Desktop Nav Links (Hidden on Mobile) -->
-            <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600">
-                <a href="#" class="hover:text-blue-600 transition"><i class="fa-solid fa-house mr-1"></i> হোম</a>
-                <a href="#leaderboard" class="hover:text-blue-600 transition"><i class="fa-solid fa-trophy mr-1"></i> লিডারবোর্ড</a>
-                <a href="#proofs" class="hover:text-blue-600 transition"><i class="fa-solid fa-money-check-dollar mr-1"></i> পেমেন্ট প্রুফ</a>
-                <a href="#contact" class="hover:text-blue-600 transition"><i class="fa-solid fa-headset mr-1"></i> যোগাযোগ</a>
+            <!-- Nav Links (Desktop) -->
+            <div class="hidden md:flex items-center gap-8 font-bold text-gray-600">
+                <a href="#how-it-works" class="hover:text-[#E2136E] transition">কীভাবে কাজ করে?</a>
+                <a href="#features" class="hover:text-[#E2136E] transition">সুবিধাসমূহ</a>
+                <a href="#leaderboard" class="hover:text-[#E2136E] transition">লিডারবোর্ড</a>
+                <a href="#proofs" class="hover:text-[#E2136E] transition">পেমেন্ট প্রুফ</a>
             </div>
 
-            <!-- Desktop Buttons (Hidden on Mobile) -->
-            <div class="hidden md:flex gap-3">
-                <a href="/login" class="px-5 py-2 text-blue-600 border border-blue-600 rounded-full font-semibold hover:bg-blue-50 transition duration-300">
-                    <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> লগিন
-                </a>
-                <a href="/register" class="px-5 py-2 bg-blue-600 text-white rounded-full font-semibold shadow-md hover:bg-blue-700 transition duration-300 transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-user-plus mr-1"></i> একাউন্ট খুলুন
-                </a>
-            </div>
-
-            <!-- Mobile Menu Toggle Button -->
-            <button id="mobile-menu-btn" class="md:hidden text-gray-700 text-2xl focus:outline-none">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            
-        </div>
-
-        <!-- Mobile Nav Menu (Hidden by Default) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full">
-            <div class="flex flex-col px-6 py-4 space-y-4 font-semibold text-gray-700">
-                <a href="#" class="mobile-link hover:text-blue-600 transition block"><i class="fa-solid fa-house w-6"></i> হোম</a>
-                <a href="#leaderboard" class="mobile-link hover:text-blue-600 transition block"><i class="fa-solid fa-trophy w-6"></i> লিডারবোর্ড</a>
-                <a href="#proofs" class="mobile-link hover:text-blue-600 transition block"><i class="fa-solid fa-money-check-dollar w-6"></i> পেমেন্ট প্রুফ</a>
-                <a href="#contact" class="mobile-link hover:text-blue-600 transition block"><i class="fa-solid fa-headset w-6"></i> যোগাযোগ</a>
-                
-                <hr class="border-gray-200">
-                
-                <div class="flex flex-col gap-3 pt-2">
-                    <a href="/login" class="text-center px-5 py-2 text-blue-600 border border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition duration-300">
-                        <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> লগিন
+            <!-- Action Buttons (Dynamic based on Login Status) -->
+            <div class="flex items-center gap-3">
+                {% if 'user_id' in session %}
+                    <!-- If User is Logged In -->
+                    <a href="/dashboard" class="px-6 py-2.5 bg-gradient-to-r from-[#E2136E] to-pink-500 text-white rounded-full font-extrabold shadow-lg shadow-pink-500/30 hover:scale-105 transition active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie"></i> ড্যাশবোর্ড
                     </a>
-                    <a href="/register" class="text-center px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-300">
-                        <i class="fa-solid fa-user-plus mr-1"></i> একাউন্ট খুলুন
+                {% else %}
+                    <!-- If User is NOT Logged In -->
+                    <a href="/login" class="hidden sm:inline-block px-6 py-2.5 text-[#E2136E] bg-pink-50 rounded-full font-extrabold hover:bg-pink-100 transition">
+                        লগিন
                     </a>
-                </div>
+                    <a href="/register" class="px-6 py-2.5 bg-gradient-to-r from-[#E2136E] to-pink-500 text-white rounded-full font-extrabold shadow-lg shadow-pink-500/30 hover:scale-105 transition active:scale-95">
+                        একাউন্ট খুলুন
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="relative bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 text-white overflow-hidden py-24">
-        <div class="absolute inset-0 bg-black opacity-10"></div>
-        <div class="relative max-w-4xl mx-auto px-4 text-center z-10">
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
-                আজই ইনভেস্ট করুন, <br> <span class="text-yellow-400">প্রতিদিন নিশ্চিত আয় করুন!</span>
-            </h2>
-            <p class="text-lg md:text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-                এখুনি একাউন্ট খুললেই পাচ্ছেন একটি <span class="font-bold text-white">ফ্রি প্যাকেজ</span>। 
-                প্রতি ৮ ঘণ্টা পর পর <span class="font-bold text-yellow-300 bg-black/20 px-2 py-1 rounded">৭ টাকা ক্লেইম করুন</span> একদম ফ্রি!
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/register" class="px-8 py-4 bg-yellow-400 text-indigo-900 text-lg font-bold rounded-full shadow-lg hover:bg-yellow-500 transition duration-300 transform hover:scale-105">
-                    <i class="fa-solid fa-rocket mr-2"></i> এখনই ফ্রি শুরু করুন
-                </a>
-                <a href="#leaderboard" class="px-8 py-4 bg-white/10 border border-white/30 text-white text-lg font-bold rounded-full hover:bg-white/20 transition duration-300">
-                    <i class="fa-solid fa-arrow-down mr-2"></i> বিস্তারিত দেখুন
-                </a>
+    <!-- ========================================== -->
+    <!-- 2. Hero Section (Modern & Attractive)      -->
+    <!-- ========================================== -->
+    <header class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden py-20 lg:py-32">
+        <!-- Background Elements -->
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E2136E] rounded-full blur-[120px] opacity-20"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600 rounded-full blur-[120px] opacity-20"></div>
+
+        <div class="max-w-7xl mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center gap-12">
+            <!-- Text Content -->
+            <div class="lg:w-1/2 text-center lg:text-left">
+                <div class="inline-block bg-white/10 border border-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-pink-300 mb-6 tracking-widest uppercase">
+                    <i class="fa-solid fa-star text-yellow-400 mr-1"></i> বাংলাদেশের সেরা ইনকাম প্ল্যাটফর্ম
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 leading-tight">
+                    আজই ইনভেস্ট করুন, <br> 
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">প্রতিদিন নিশ্চিত আয়</span> করুন!
+                </h1>
+                <p class="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0">
+                    একাউন্ট খুললেই পাচ্ছেন একটি ফ্রি প্যাকেজ। এছাড়াও আমাদের স্পেশাল ভিআইপি প্যাকেজ কিনে প্রতিদিন আনলিমিটেড ইনকাম এবং রেফারেল বোনাস উপভোগ করুন।
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                    {% if 'user_id' in session %}
+                        <a href="/dashboard" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#E2136E] to-pink-600 text-white text-lg font-black rounded-full shadow-lg shadow-pink-600/40 hover:scale-105 transition text-center flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rocket"></i> ড্যাশবোর্ডে যান
+                        </a>
+                    {% else %}
+                        <a href="/register" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#E2136E] to-pink-600 text-white text-lg font-black rounded-full shadow-lg shadow-pink-600/40 hover:scale-105 transition text-center flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-user-plus"></i> এখনই শুরু করুন
+                        </a>
+                        <a href="/login" class="w-full sm:w-auto px-8 py-4 bg-white/10 border border-white/20 text-white text-lg font-bold rounded-full hover:bg-white/20 transition text-center">
+                            লগিন করুন
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hero Image / Graphics -->
+            <div class="lg:w-1/2 relative hidden md:block">
+                <div class="relative w-full max-w-md mx-auto animate-float">
+                    <img src="https://i.ibb.co/60qYh7x/mobile-mockup-or-earnings-vector.png" alt="Earnings" class="w-full drop-shadow-2xl rounded-2xl" onerror="this.style.display='none'">
+                    <!-- Fallback if image not found: CSS shape -->
+                    <div class="w-full aspect-square bg-gradient-to-tr from-[#E2136E] to-purple-600 rounded-full blur-3xl opacity-40 absolute top-0"></div>
+                    <div class="bg-gray-800 border border-gray-700 p-6 rounded-2xl shadow-2xl relative z-10 text-center">
+                        <i class="fa-solid fa-wallet text-6xl text-green-400 mb-4"></i>
+                        <h3 class="text-2xl font-black text-white">দৈনিক পেমেন্ট গ্যারান্টি</h3>
+                        <p class="text-gray-400 mt-2">বিকাশ, নগদ এবং রকেটের মাধ্যমে খুব দ্রুত পেমেন্ট!</p>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Support Center & Telegram -->
-    <div id="contact" class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-4xl mx-auto py-10 px-4 text-center">
-            <h3 class="text-2xl font-bold text-gray-800 mb-6">যেকোনো প্রয়োজনে আমাদের সাথে যুক্ত হোন</h3>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="https://t.me/your_telegram_channel" target="_blank" class="flex items-center justify-center gap-2 bg-[#0088cc] text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-[#0077b3] transition duration-300 hover:-translate-y-1">
-                    <i class="fa-brands fa-telegram text-2xl"></i> টেলিগ্রাম চ্যানেল
-                </a>
-                <a href="https://t.me/your_support_bot" target="_blank" class="flex items-center justify-center gap-2 bg-gray-800 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-gray-900 transition duration-300 hover:-translate-y-1">
-                    <i class="fa-solid fa-headset text-2xl"></i> সাপোর্ট সেন্টার
-                </a>
+    <!-- ========================================== -->
+    <!-- 3. Live Statistics (Fake Counters)         -->
+    <!-- ========================================== -->
+    <div class="bg-white border-b border-gray-100 relative z-20 -mt-6 mx-4 sm:mx-auto max-w-6xl rounded-2xl shadow-lg p-6 md:p-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-gray-100">
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">২৫,০০০+</h4>
+                <p class="text-sm font-bold text-gray-500">মোট মেম্বার</p>
+            </div>
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">৳ ১২ লক্ষ+</h4>
+                <p class="text-sm font-bold text-gray-500">মোট পেমেন্ট</p>
+            </div>
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">৩ মিনিট</h4>
+                <p class="text-sm font-bold text-gray-500">গড় পেমেন্ট সময়</p>
+            </div>
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">২৪/৭</h4>
+                <p class="text-sm font-bold text-gray-500">লাইভ সাপোর্ট</p>
             </div>
         </div>
     </div>
 
-    <!-- Leaderboard Section -->
-    <div id="leaderboard" class="max-w-6xl mx-auto py-16 px-4 grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-20">
-        <!-- Top Earners -->
-        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border-t-4 border-green-500 hover:shadow-2xl transition duration-300">
-            <h3 class="text-2xl font-bold mb-6 text-center text-green-600 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-trophy text-yellow-500 text-3xl"></i> শীর্ষ আয়কারী
-            </h3>
-            <ul class="divide-y divide-gray-100">
-                {% for earner in earners %}
-                <li class="py-4 flex justify-between items-center group">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm">{{ loop.index }}</span>
-                        <span class="font-bold text-gray-700 group-hover:text-green-600 transition">{{ earner.name }}</span>
-                    </div>
-                    <span class="bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm border border-green-200">
-                        ৳ {{ earner.total_earned }}
-                    </span>
-                </li>
-                {% else %}
-                <li class="py-4 text-center text-gray-500 text-sm">এখনো কোনো ডাটা পাওয়া যায়নি।</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <!-- Top Referrers -->
-        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border-t-4 border-blue-500 hover:shadow-2xl transition duration-300">
-            <h3 class="text-2xl font-bold mb-6 text-center text-blue-600 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-users text-blue-500 text-3xl"></i> শীর্ষ রেফারার
-            </h3>
-            <ul class="divide-y divide-gray-100">
-                {% for referrer in referrers %}
-                <li class="py-4 flex justify-between items-center group">
-                    <div class="flex items-center gap-3">
-                        <span class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">{{ loop.index }}</span>
-                        <span class="font-bold text-gray-700 group-hover:text-blue-600 transition">{{ referrer.name }}</span>
-                    </div>
-                    <span class="bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm border border-blue-200">
-                        <i class="fa-solid fa-user-check mr-1"></i> {{ referrer.total_referrals }} জন
-                    </span>
-                </li>
-                {% else %}
-                <li class="py-4 text-center text-gray-500 text-sm">এখনো কোনো ডাটা পাওয়া যায়নি।</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-
-    <!-- Payment Proofs Section -->
-    <div id="proofs" class="bg-gray-100 py-16 scroll-mt-20">
-        <div class="max-w-6xl mx-auto px-4">
-            <h3 class="text-3xl font-bold mb-10 text-center text-gray-800 flex items-center justify-center gap-3">
-                <i class="fa-solid fa-money-bill-wave text-green-500"></i> লাইভ পেমেন্ট প্রুফ
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for proof in proofs %}
-                <div class="bg-white p-4 rounded-2xl shadow-md hover:shadow-xl transition duration-300 transform hover:-translate-y-2">
-                    <img src="{{ proof.image_url }}" alt="Payment Proof" class="w-full h-56 object-cover rounded-xl mb-4 border border-gray-100">
-                    <p class="text-gray-600 text-sm text-center bg-gray-50 p-3 rounded-lg font-semibold"><i class="fa-solid fa-check-circle text-green-500 mr-1"></i> {{ proof.description }}</p>
+    <!-- ========================================== -->
+    <!-- 4. How it Works (Steps)                    -->
+    <!-- ========================================== -->
+    <section id="how-it-works" class="py-20 bg-[#f8fafc]">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-black text-gray-800 mb-4">কীভাবে কাজ শুরু করবেন?</h2>
+            <p class="text-gray-500 font-medium mb-12 max-w-2xl mx-auto">খুব সহজ ৪টি ধাপে আমাদের প্ল্যাটফর্মে যুক্ত হয়ে আপনার স্মার্ট ইনকাম যাত্রা শুরু করুন।</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-pink-50 text-[#E2136E] rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-user-plus"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">১. একাউন্ট খুলুন</h3>
+                    <p class="text-sm text-gray-500">আপনার নাম, ফোন নম্বর ও ইমেইল দিয়ে মাত্র ১ মিনিটে ফ্রি একাউন্ট তৈরি করুন।</p>
                 </div>
-                {% else %}
-                <div class="col-span-full text-center text-gray-500 py-12 bg-white rounded-2xl shadow-sm border border-dashed border-gray-300">
-                    <i class="fa-regular fa-images text-5xl mb-4 text-gray-300"></i>
-                    <p class="text-lg">এখনো কোনো পেমেন্ট প্রুফ আপলোড করা হয়নি।</p>
+                <!-- Step 2 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-wallet"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">২. এড মানি করুন</h3>
+                    <p class="text-sm text-gray-500">বিকাশ, নগদ বা রকেট এর মাধ্যমে আপনার ব্যালেন্সে খুব সহজে টাকা যুক্ত করুন।</p>
                 </div>
-                {% endfor %}
+                <!-- Step 3 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-box-open"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">৩. প্যাকেজ কিনুন</h3>
+                    <p class="text-sm text-gray-500">আপনার পছন্দমতো ভিআইপি প্যাকেজ কিনে প্রতিদিনের ইনকাম নিশ্চিত করুন।</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">৪. ক্যাশআউট করুন</h3>
+                    <p class="text-sm text-gray-500">আপনার জমানো টাকা যেকোনো সময় সরাসরি আপনার মোবাইলে ক্যাশআউট করুন।</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 text-center py-10">
-        <div class="max-w-6xl mx-auto px-4">
-            <p class="font-bold text-2xl text-white flex justify-center items-center gap-2 mb-4">
-                <i class="fa-solid fa-shield-halved text-blue-400"></i> নিরাপদ বিনিয়োগ
-            </p>
-            <p class="mb-4 text-gray-400">আমাদের সাথে যুক্ত হয়ে প্রতিদিন স্মার্ট আয় নিশ্চিত করুন।</p>
-            <div class="flex justify-center gap-6 mb-6">
-                <a href="#" class="text-gray-400 hover:text-white text-xl transition"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white text-xl transition"><i class="fa-brands fa-telegram"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white text-xl transition"><i class="fa-brands fa-youtube"></i></a>
+    <!-- ========================================== -->
+    <!-- 5. Why Choose Us (Features)                -->
+    <!-- ========================================== -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
+            <div class="lg:w-1/2">
+                <h2 class="text-3xl lg:text-4xl font-black text-gray-800 mb-6 leading-tight">কেন হাজারো মানুষ <span class="text-[#E2136E]">InvestEarn</span> কেই বেছে নিচ্ছে?</h2>
+                <p class="text-gray-500 font-medium mb-8">আমরা দিচ্ছি ১০০% নিরাপদ এবং নির্ভরযোগ্য একটি প্ল্যাটফর্ম, যেখানে আপনার বিনিয়োগ থাকবে সম্পূর্ণ সুরক্ষিত।</p>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-bolt"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-800">অটোমেটিক উইথড্র সিস্টেম</h4>
+                            <p class="text-sm text-gray-500">রিকোয়েস্ট দেওয়ার কয়েক মিনিটের মধ্যেই আপনার পেমেন্ট পৌঁছে যাবে আপনার নাম্বারে।</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-800">সর্বোচ্চ নিরাপত্তা</h4>
+                            <p class="text-sm text-gray-500">আপনার ডাটা এবং ব্যালেন্স মডার্ন এনক্রিপশন টেকনোলজি দ্বারা সুরক্ষিত।</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-gift"></i></div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-800">বিশাল রেফারেল বোনাস</h4>
+                            <p class="text-sm text-gray-500">প্রতিটি সফল রেফারে আপনি পাবেন ৫০ টাকা ফিক্সড বোনাস এবং আজীবন ২% কমিশন।</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p class="text-sm border-t border-gray-700 pt-6">&copy; ২০২৬ ইনভেস্ট-আর্ন। সর্বস্বত্ব সংরক্ষিত।</p>
+            
+            <div class="lg:w-1/2">
+                <div class="bg-gradient-to-tr from-gray-100 to-gray-50 p-8 rounded-3xl border border-gray-200 shadow-lg relative">
+                    <div class="absolute top-4 right-4 text-6xl text-gray-200"><i class="fa-solid fa-quote-right"></i></div>
+                    <h3 class="text-2xl font-black text-gray-800 mb-6">আমাদের কমিউনিটিতে যুক্ত হোন</h3>
+                    <p class="text-gray-600 font-medium mb-6">যেকোনো আপডেট সবার আগে পেতে এবং আমাদের পেমেন্ট প্রুফ দেখতে টেলিগ্রাম চ্যানেলে যুক্ত থাকুন।</p>
+                    <a href="https://t.me/your_telegram_channel" target="_blank" class="inline-flex items-center justify-center gap-2 w-full py-4 bg-[#0088cc] text-white rounded-xl font-bold text-lg hover:bg-[#0077b3] transition shadow-md shadow-blue-500/30">
+                        <i class="fa-brands fa-telegram text-2xl"></i> টেলিগ্রাম চ্যানেল
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 6. Leaderboard Snippet                     -->
+    <!-- ========================================== -->
+    <section id="leaderboard" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black text-gray-800 mb-2">শীর্ষ আয়কারী (Top 5)</h2>
+                <p class="text-gray-500">যারা আমাদের প্ল্যাটফর্ম থেকে সবচেয়ে বেশি আয় করেছেন।</p>
+            </div>
+            
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden max-w-3xl mx-auto">
+                <ul class="divide-y divide-gray-50">
+                    {% for earner in earners %}
+                    <li class="p-4 sm:p-6 flex justify-between items-center hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-4">
+                            {% if loop.index == 1 %}
+                                <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center text-xl shadow-sm border border-yellow-200"><i class="fa-solid fa-medal"></i></div>
+                            {% elif loop.index == 2 %}
+                                <div class="w-12 h-12 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-xl shadow-sm border border-gray-300"><i class="fa-solid fa-medal"></i></div>
+                            {% elif loop.index == 3 %}
+                                <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xl shadow-sm border border-orange-200"><i class="fa-solid fa-medal"></i></div>
+                            {% else %}
+                                <div class="w-12 h-12 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center font-bold text-lg">{{ loop.index }}</div>
+                            {% endif %}
+                            <span class="font-extrabold text-gray-700 text-lg">{{ earner.name }}</span>
+                        </div>
+                        <span class="bg-green-100 text-green-700 px-4 py-2 rounded-xl text-sm font-bold border border-green-200">
+                            ৳ {{ earner.total_earned }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="p-4 bg-gray-50 text-center border-t border-gray-100">
+                    <a href="/leaderboard" class="text-[#E2136E] font-bold hover:underline">সম্পূর্ণ লিডারবোর্ড দেখুন <i class="fa-solid fa-arrow-right text-sm ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 7. Footer                                  -->
+    <!-- ========================================== -->
+    <footer class="bg-gray-900 text-gray-300 py-12 border-t-4 border-[#E2136E]">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 items-center text-center md:text-left">
+            <div>
+                <a href="/" class="text-2xl font-black text-white flex items-center justify-center md:justify-start gap-2 mb-4">
+                    <i class="fa-solid fa-bolt text-[#E2136E]"></i> InvestEarn
+                </a>
+                <p class="text-sm text-gray-400">স্মার্ট ইনকামের নির্ভরযোগ্য প্ল্যাটফর্ম। ঘরে বসেই আয় করুন খুব সহজে।</p>
+            </div>
+            
+            <div class="flex flex-col gap-2">
+                <h4 class="text-white font-bold mb-2">প্রয়োজনীয় লিংক</h4>
+                <a href="#how-it-works" class="hover:text-white transition">কীভাবে কাজ করে</a>
+                <a href="/login" class="hover:text-white transition">লগিন করুন</a>
+                <a href="/register" class="hover:text-white transition">নতুন একাউন্ট</a>
+            </div>
+            
+            <div>
+                <h4 class="text-white font-bold mb-4">আমাদের সাথে যুক্ত থাকুন</h4>
+                <div class="flex justify-center md:justify-start gap-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#E2136E] hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://t.me/your_telegram_channel" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-[#0088cc] hover:text-white transition"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-red-600 hover:text-white transition"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500 font-medium">
+            &copy; ২০২৬ InvestEarn. সর্বস্বত্ব সংরক্ষিত।
         </div>
     </footer>
-
-    <!-- JavaScript for Mobile Menu Toggle -->
-    <script>
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-        const icon = btn.querySelector('i');
-        const mobileLinks = document.querySelectorAll('.mobile-link');
-
-        // Toggle Menu
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-            if(menu.classList.contains('hidden')) {
-                icon.classList.remove('fa-xmark');
-                icon.classList.add('fa-bars');
-            } else {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-xmark');
-            }
-        });
-
-        // Close menu when a link is clicked
-        mobileLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                menu.classList.add('hidden');
-                icon.classList.remove('fa-xmark');
-                icon.classList.add('fa-bars');
-            });
-        });
-    </script>
 
 </body>
 </html>
