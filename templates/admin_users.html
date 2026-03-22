@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ইউজার ম্যানেজমেন্ট - Admin Panel</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts (Bangla) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style> body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; } </style>
+</head>
+<body class="text-gray-800 antialiased pb-20">
+
+    <!-- ========================================== -->
+    <!-- Admin Navbar                               -->
+    <!-- ========================================== -->
+    <nav class="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <a href="/admin" class="text-2xl font-bold flex items-center gap-2 text-yellow-400">
+                <i class="fa-solid fa-user-shield"></i> এডমিন প্যানেল
+            </a>
+            <div class="flex items-center gap-2 md:gap-4 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                <a href="/admin" class="px-4 py-2 hover:bg-gray-800 rounded-lg text-sm font-bold whitespace-nowrap transition"><i class="fa-solid fa-wallet text-green-400"></i> ডিপোজিট</a>
+                <a href="/admin/withdrawals" class="px-4 py-2 hover:bg-gray-800 rounded-lg text-sm font-bold whitespace-nowrap transition"><i class="fa-solid fa-money-bill-transfer text-red-400"></i> উইথড্র</a>
+                
+                <!-- Active Tab -->
+                <a href="/admin/users" class="px-4 py-2 bg-gray-700 rounded-lg text-sm font-bold whitespace-nowrap transition"><i class="fa-solid fa-users text-blue-400"></i> ইউজার্স</a>
+                
+                <a href="/dashboard" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-bold whitespace-nowrap shadow-md transition ml-2"><i class="fa-solid fa-house"></i> সাইট</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- Main Content                               -->
+    <!-- ========================================== -->
+    <div class="max-w-7xl mx-auto py-8 px-4">
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                {% for category, message in messages %}
+                    <div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md flex items-center gap-2 animate-bounce
+                        {% if category == 'success' %} bg-green-500 
+                        {% elif category == 'danger' %} bg-red-500 
+                        {% else %} bg-yellow-500 text-yellow-900 {% endif %}">
+                        <i class="fa-solid fa-circle-info text-lg"></i> {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-extrabold text-gray-800 flex items-center gap-2">
+                <i class="fa-solid fa-users-gear text-blue-600"></i> সকল ইউজার লিস্ট
+            </h2>
+            <span class="bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm border border-blue-200">
+                মোট ইউজার: {{ users|length }} জন
+            </span>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap text-sm">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="p-4 font-bold">ID ও নাম</th>
+                            <th class="p-4 font-bold">কন্টাক্ট ইনফো ও রেফার</th>
+                            <th class="p-4 font-bold">বর্তমান ব্যালেন্স</th>
+                            <th class="p-4 font-bold text-center">অ্যাকশন (Ban / Delete)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for u in users %}
+                        <!-- Row color changes if user is banned -->
+                        <tr class="hover:bg-gray-50 transition duration-150 {% if u.is_banned %} bg-red-50/60 {% endif %}">
+                            
+                            <!-- User ID & Name -->
+                            <td class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full {% if u.is_banned %} bg-red-100 text-red-500 {% elif u.is_admin %} bg-purple-100 text-purple-600 {% else %} bg-blue-50 text-blue-500 {% endif %} flex items-center justify-center font-black text-lg border border-gray-100 shadow-sm">
+                                        {{ u.name[0] | upper }}
+                                    </div>
+                                    <div>
+                                        <p class="font-extrabold text-gray-800 flex items-center gap-1.5">
+                                            #{{ u.id }} - {{ u.name }}
+                                            {% if u.is_admin %}
+                                                <span class="bg-purple-600 text-white text-[9px] px-2 py-0.5 rounded-full font-black tracking-wider shadow-sm">ADMIN</span>
+                                            {% endif %}
+                                            {% if u.is_vip %}
+                                                <i class="fa-solid fa-star text-yellow-500 text-xs" title="VIP User"></i>
+                                            {% endif %}
+                                        </p>
+                                        <p class="text-xs text-gray-400 font-semibold mt-0.5">যোগদান: {{ u.created_at.split('T')[0] }}</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Contact & Referrals -->
+                            <td class="p-4">
+                                <p class="font-mono text-gray-600 font-semibold text-[13px]"><i class="fa-regular fa-envelope text-gray-400 mr-1"></i> {{ u.email }}</p>
+                                <p class="text-xs text-gray-500 font-semibold mt-1"><i class="fa-solid fa-phone text-gray-400 mr-1"></i> {{ u.phone }}</p>
+                                <div class="mt-1.5 flex gap-2">
+                                    <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded font-bold border border-gray-200">কোড: {{ u.referral_code }}</span>
+                                    <span class="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded font-bold border border-blue-100">রেফার: {{ u.total_referrals }} জন</span>
+                                </div>
+                            </td>
+                            
+                            <!-- Balance Edit Form -->
+                            <td class="p-4">
+                                <form action="/admin/update_balance/{{ u.id }}" method="POST" class="flex items-center gap-2">
+                                    <div class="relative">
+                                        <span class="absolute left-2.5 top-2 text-gray-400 font-bold text-xs">৳</span>
+                                        <input type="number" step="0.01" name="balance" value="{{ u.balance }}" class="w-28 pl-6 p-1.5 bg-gray-50 border border-gray-200 rounded-lg font-bold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                    </div>
+                                    <button type="submit" class="bg-blue-600 text-white w-8 h-8 rounded-lg hover:bg-blue-700 shadow-sm transition active:scale-95 flex items-center justify-center" title="ব্যালেন্স আপডেট করুন">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                    </button>
+                                </form>
+                                {% if u.leader_balance > 0 %}
+                                <p class="text-[10px] text-purple-600 font-bold mt-1 bg-purple-50 inline-block px-1.5 rounded border border-purple-100">লিডারশিপ ব্যালেন্স: ৳ {{ u.leader_balance }}</p>
+                                {% endif %}
+                            </td>
+
+                            <!-- Action Buttons -->
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    
+                                    <!-- Ban / Unban -->
+                                    {% if u.is_banned %}
+                                    <a href="/admin/toggle_ban/{{ u.id }}" class="bg-green-500 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-green-600 text-xs font-bold transition active:scale-95 flex items-center gap-1.5" title="একাউন্ট আনব্যান করুন">
+                                        <i class="fa-solid fa-unlock"></i> আনব্যান
+                                    </a>
+                                    {% else %}
+                                    <a href="/admin/toggle_ban/{{ u.id }}" class="bg-yellow-500 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-yellow-600 text-xs font-bold transition active:scale-95 flex items-center gap-1.5" onclick="return confirm('আপনি কি নিশ্চিত যে এই ইউজারকে ব্লক (Ban) করতে চান? ব্লক করলে সে আর লগিন করতে পারবে না।')">
+                                        <i class="fa-solid fa-ban"></i> ব্যান
+                                    </a>
+                                    {% endif %}
+
+                                    <!-- Delete -->
+                                    <a href="/admin/delete_user/{{ u.id }}" class="bg-red-500 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-red-600 text-xs font-bold transition active:scale-95 flex items-center gap-1.5" onclick="return confirm('সতর্কতা: ডিলিট করলে এই ইউজারের সমস্ত ডাটা, প্যাকেজ, এবং ব্যালেন্স চিরতরে মুছে যাবে! আপনি কি নিশ্চিত?')">
+                                        <i class="fa-solid fa-trash-can"></i> ডিলিট
+                                    </a>
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {% if not users %}
+                <div class="p-10 text-center text-gray-400">
+                    <i class="fa-solid fa-users-slash text-4xl mb-3 text-gray-300"></i>
+                    <p class="font-bold text-sm">কোনো ইউজার ডাটা পাওয়া যায়নি!</p>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
