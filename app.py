@@ -59,15 +59,6 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
-@app.route('/transfer')
-def transfer():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    
-    # ইউজারের ব্যালেন্স দেখানোর জন্য ডাটাবেস থেকে ডাটা নেওয়া হচ্ছে
-    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
-    
-    return render_template('transfer.html', user=user)
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -76,7 +67,7 @@ def login():
         res = supabase.table("users").select("*").eq("email", email).execute()
         if res.data and check_password_hash(res.data[0]['password_hash'], password):
             if res.data[0].get('is_banned'):
-                flash("আপনার একাউন্টটি ব্যান করা হয়েছে! সাপোর্টে যোগাযোগ করুন।", "danger")
+                flash("আপনার একাউন্টটি ব্যান করা হয়েছে!", "danger")
                 return redirect(url_for('login'))
             session['user_id'] = res.data[0]['id']
             return redirect(url_for('dashboard'))
@@ -88,68 +79,22 @@ def logout():
     session.pop('user_id', None)
     flash("লগআউট সফল হয়েছে।", "success")
     return redirect(url_for('login'))
-# --- NEW: Leaderboard Page ---
-# --- NEW: Fake Auto-updating Leaderboard Page ---
-@app.route('/leaderboard')
-def leaderboard():
-    # ফেক নামের একটি তালিকা (আপনি চাইলে এখানে আরও নাম যোগ করতে পারেন)
-    fake_names =[
-        "Rahim", "Karim", "Samiya", "Nusrat", "Arif", "Hasan", "Mehedi", "Tariq", 
-        "Fatema", "Rina", "Shakil", "Imran", "Farjana", "Sumaiya", "Tanjim", "Jony",
-        "Momin", "Sujon", "Riaz", "Habib", "Ayesha", "Khadija", "Nadim", "Sohel",
-        "Mahmud", "Rubel", "Tania", "Lipa", "Fahim", "Siam", "Rakib", "Asif",
-        "Sabbir", "Mithun", "Rifat", "Jitu", "Sadia", "Riya", "Mitu", "Ashik"
-    ]
-    
-    # আজকের তারিখ নেওয়া হচ্ছে (এটি প্রতিদিন রাত ১২টায় পরিবর্তন হবে)
-    today_str = datetime.now().strftime('%Y-%m-%d')
-    
-    # Random ফাংশনকে আজকের তারিখ দিয়ে লক করে দেওয়া হলো (যাতে ২৪ ঘণ্টা একই ডাটা থাকে)
-    random.seed(today_str)
-    
-    # ১. ফেক শীর্ষ আয়কারী (Top Earners) তৈরি
-    earners =[]
-    earner_names = random.sample(fake_names, 20) # ২০টি নাম সিলেক্ট করা হলো
-    for name in earner_names:
-        earners.append({
-            "name": name,
-            "total_earned": random.randint(5000, 50000) # ৫ হাজার থেকে ৫০ হাজারের মধ্যে ফেক আয়
-        })
-    # আয় অনুযায়ী বড় থেকে ছোট সাজানো
-    earners.sort(key=lambda x: x["total_earned"], reverse=True)
-    
-    # ২. ফেক শীর্ষ রেফারার (Top Referrers) তৈরি
-    referrers =[]
-    referrer_names = random.sample(fake_names, 20)
-    for name in referrer_names:
-        referrers.append({
-            "name": name,
-            "total_referrals": random.randint(50, 500) # ৫০ থেকে ৫০০ এর মধ্যে ফেক রেফার
-        })
-    # রেফার অনুযায়ী বড় থেকে ছোট সাজানো
-    referrers.sort(key=lambda x: x["total_referrals"], reverse=True)
-    
-    # সিস্টেমের অন্য কোনো random কাজে যেন প্রভাব না পড়ে তাই seed রিসেট করা হলো
-    random.seed()
-    
-    return render_template('leaderboard.html', earners=earners, referrers=referrers)
-    
+
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session: return redirect(url_for('login'))
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
-    if user.get('is_banned'):
-        session.pop('user_id', None)
-        return redirect(url_for('login'))
+    
+    # নোটিশ আনা হচ্ছে
+    notice_res = supabase.table("settings").select("notice_text").eq("id", 1).execute()
+    notice = notice_res.data[0]['notice_text'] if notice_res.data else "InvestEarn এ স্বাগতম!"
 
     pkg_res = supabase.table("user_packages").select("*").eq("user_id", session['user_id']).execute()
     packages = pkg_res.data
     
-    # প্যাকেজ অনুযায়ী টাইমার এবং আয়ের ডাটা সেট করা হচ্ছে
     for p in packages:
         clean_time = p['last_claim_time'].split('.')[0].split('+')[0]
         last_claim = datetime.fromisoformat(clean_time)
-        
         if p['package_name'] == 'FREE':
             p['next_claim'] = (last_claim + timedelta(hours=8)).isoformat() + "Z"
             p['reward'] = 7
@@ -159,53 +104,59 @@ def dashboard():
             p['reward'] = VIP_PACKAGES[p['package_name']]['daily_profit']
             p['interval'] = '২৪ ঘণ্টা'
 
-    withdraw_res = supabase.table("withdrawals").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
-    deposit_res = supabase.table("deposits").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
-    
-    return render_template('dashboard.html', user=user, packages=packages, vip=VIP_PACKAGES, withdrawals=withdraw_res.data, deposits=deposit_res.data)
+    return render_template('dashboard.html', user=user, packages=packages, vip=VIP_PACKAGES, notice=notice)
 
-# নতুন ডাইনামিক ক্লেইম সিস্টেম
+# --- NEW: Buy Premium Offer (100 TK) ---
+@app.route('/buy_premium_offer', methods=['POST'])
+def buy_premium_offer():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user_id = session['user_id']
+    user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
+    
+    # চেক করা হচ্ছে সে এড মানি করেছে কি না
+    dep_res = supabase.table("deposits").select("amount").eq("user_id", user_id).eq("status", "Approved").execute()
+    total_dep = sum(d['amount'] for d in dep_res.data)
+    
+    if total_dep < 100:
+        flash("এই অফারটি নিতে হলে আপনাকে প্রথমে ন্যূনতম ১০০ টাকা Add Money (ডিপোজিট) করতে হবে!", "danger")
+        return redirect(url_for('transfer'))
+        
+    if user['balance'] < 100:
+        flash("আপনার ব্যালেন্স ১০০ টাকার নিচে!", "danger")
+        return redirect(url_for('transfer'))
+        
+    # অফার দেওয়া হচ্ছে
+    supabase.table("users").update({
+        "balance": user['balance'] - 100,
+        "has_premium_offer": True,
+        "is_vip": True
+    }).eq("id", user_id).execute()
+    
+    supabase.table("user_packages").insert({
+        "user_id": user_id, "package_name": "VIP_1", "last_claim_time": datetime.now().isoformat()
+    }).execute()
+    
+    flash("অভিনন্দন! স্পেশাল প্রিমিয়াম অফারটি সফলভাবে কেনা হয়েছে। এখন আপনার মিনিমাম উইথড্র ১০০ টাকা!", "success")
+    return redirect(url_for('dashboard'))
+
 @app.route('/claim/<int:pkg_id>', methods=['POST'])
 def claim_reward(pkg_id):
     if 'user_id' not in session: return redirect(url_for('login'))
     user_id = session['user_id']
-    
     pkg_res = supabase.table("user_packages").select("*").eq("id", pkg_id).eq("user_id", user_id).execute()
-    if not pkg_res.data:
-        flash("প্যাকেজটি পাওয়া যায়নি!", "danger")
-        return redirect(url_for('dashboard'))
+    if not pkg_res.data: return redirect(url_for('dashboard'))
         
     pkg = pkg_res.data[0]
     pkg_name = pkg['package_name']
     
-    if pkg_name == "FREE":
-        reward = 7
-        interval_hours = 8
-        mead_days = 365
-    elif pkg_name in VIP_PACKAGES:
-        reward = VIP_PACKAGES[pkg_name]['daily_profit']
-        interval_hours = 24
-        mead_days = VIP_PACKAGES[pkg_name]['mead_days']
-    else:
-        return redirect(url_for('dashboard'))
-
-    clean_created = pkg['created_at'].split('.')[0].split('+')[0]
-    created_at = datetime.fromisoformat(clean_created)
-    if datetime.now() > created_at + timedelta(days=mead_days):
-        flash(f"আপনার {pkg_name} প্যাকেজটির মেয়াদ শেষ হয়ে গেছে!", "danger")
-        return redirect(url_for('dashboard'))
+    reward, interval_hours = (7, 8) if pkg_name == "FREE" else (VIP_PACKAGES[pkg_name]['daily_profit'], 24)
         
     clean_time = pkg['last_claim_time'].split('.')[0].split('+')[0]
-    last_claim = datetime.fromisoformat(clean_time)
-    
-    if datetime.now() >= last_claim + timedelta(hours=interval_hours):
+    if datetime.now() >= datetime.fromisoformat(clean_time) + timedelta(hours=interval_hours):
         user = supabase.table("users").select("balance").eq("id", user_id).execute().data[0]
         supabase.table("users").update({"balance": user['balance'] + reward}).eq("id", user_id).execute()
         supabase.table("user_packages").update({"last_claim_time": datetime.now().isoformat()}).eq("id", pkg_id).execute()
         flash(f"আপনি সফলভাবে ৳{reward} ক্লেইম করেছেন!", "success")
-    else:
-        flash("ক্লেইম করার সময় এখনো হয়নি!", "warning")
-        
     return redirect(url_for('dashboard'))
 
 @app.route('/buy_vip/<pkg_name>', methods=['POST'])
@@ -223,6 +174,12 @@ def buy_vip(pkg_name):
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই।", "danger")
     return redirect(url_for('dashboard'))
 
+@app.route('/transfer')
+def transfer():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    return render_template('transfer.html', user=user)
+
 @app.route('/deposit', methods=['POST'])
 def deposit():
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -235,8 +192,9 @@ def deposit():
             "transaction_id": request.form.get('transaction_id'), "amount": amount, "status": "Pending"
         }).execute()
         flash("ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!", "success")
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('transfer'))
 
+# --- UPDATED: Withdraw Logic (Min 500, Premium 100, Suspicious check) ---
 @app.route('/withdraw', methods=['POST'])
 def withdraw():
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -244,9 +202,21 @@ def withdraw():
     amount = float(request.form.get('amount'))
     user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
     
-    if amount < 100:
-        flash("সর্বনিম্ন উত্তোলনের পরিমাণ ১০০ টাকা!", "warning")
-    elif user['balance'] >= amount:
+    min_withdraw = 100 if user.get('has_premium_offer') else 500
+    
+    if amount < min_withdraw:
+        flash(f"আপনার বর্তমান প্যাকেজ অনুযায়ী সর্বনিম্ন উত্তোলনের পরিমাণ {min_withdraw} টাকা!", "warning")
+        return redirect(url_for('transfer'))
+        
+    # Free Plan Withdrawal Check (Suspicious Activity)
+    if not user.get('is_vip') and not user.get('has_premium_offer'):
+        dep_res = supabase.table("deposits").select("amount").eq("user_id", user_id).eq("status", "Approved").execute()
+        total_dep = sum(d['amount'] for d in dep_res.data)
+        if total_dep < 70:
+            flash("Suspicious Activity Detected! আপনার একাউন্টে অস্বাভাবিক কাজ ধরা পড়েছে। ভেরিফিকেশনের জন্য এড মানি অপশন থেকে ন্যূনতম ৭০ টাকা ডিপোজিট করুন।", "danger")
+            return redirect(url_for('transfer'))
+            
+    if user['balance'] >= amount:
         supabase.table("users").update({"balance": user['balance'] - amount}).eq("id", user_id).execute()
         
         existing_w = supabase.table("withdrawals").select("id").eq("user_id", user_id).execute()
@@ -261,20 +231,34 @@ def withdraw():
         flash("উত্তোলন রিকোয়েস্ট পাঠানো হয়েছে!", "success")
     else:
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই!", "danger")
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('transfer'))
 
-# Admin, History & Referrals Routes
+# --- ADMIN ROUTES ---
 @app.route('/admin')
 def admin_panel():
     if not is_admin(): return redirect(url_for('dashboard'))
     users = supabase.table("users").select("*").order("id", desc=True).execute().data
     withdrawals = supabase.table("withdrawals").select("*").order("created_at", desc=True).execute().data
     deposits = supabase.table("deposits").select("*").order("created_at", desc=True).execute().data
+    notice_data = supabase.table("settings").select("notice_text").eq("id", 1).execute().data
+    current_notice = notice_data[0]['notice_text'] if notice_data else ""
     
     user_dict = {u['id']: u for u in users}
-    for w in withdrawals: w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown'); w['user_email'] = user_dict.get(w['user_id'], {}).get('email', 'Unknown')
-    for d in deposits: d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown'); d['user_email'] = user_dict.get(d['user_id'], {}).get('email', 'Unknown')
-    return render_template('admin.html', users=users, withdrawals=withdrawals, deposits=deposits)
+    for w in withdrawals: w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown')
+    for d in deposits: d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown')
+    return render_template('admin.html', users=users, withdrawals=withdrawals, deposits=deposits, current_notice=current_notice)
+
+@app.route('/admin/update_notice', methods=['POST'])
+def admin_update_notice():
+    if not is_admin(): return redirect(url_for('dashboard'))
+    new_notice = request.form.get('notice')
+    check = supabase.table("settings").select("*").eq("id", 1).execute()
+    if check.data:
+        supabase.table("settings").update({"notice_text": new_notice}).eq("id", 1).execute()
+    else:
+        supabase.table("settings").insert({"id": 1, "notice_text": new_notice}).execute()
+    flash("নোটিশ সফলভাবে আপডেট করা হয়েছে!", "success")
+    return redirect(url_for('admin_panel'))
 
 @app.route('/admin/deposit/<int:d_id>/<action>')
 def admin_handle_deposit(d_id, action):
@@ -313,12 +297,6 @@ def admin_toggle_ban(user_id):
         supabase.table("users").update({"is_banned": not user.get('is_banned')}).eq("id", user_id).execute()
     return redirect(url_for('admin_panel'))
 
-@app.route('/admin/delete_user/<int:user_id>')
-def admin_delete_user(user_id):
-    if is_admin():
-        for t in ["user_packages", "withdrawals", "deposits", "users"]: supabase.table(t).delete().eq("user_id" if t!="users" else "id", user_id).execute()
-    return redirect(url_for('admin_panel'))
-
 @app.route('/history')
 def history():
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -333,6 +311,21 @@ def referrals():
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
     team_res = supabase.table("users").select("name, created_at, is_vip").eq("referred_by", user['referral_code']).order("created_at", desc=True).execute()
     return render_template('referrals.html', user=user, team=team_res.data)
+
+@app.route('/leaderboard')
+def leaderboard():
+    fake_names =["Rahim", "Karim", "Samiya", "Nusrat", "Arif", "Hasan", "Mehedi", "Tariq", "Fatema", "Rina", "Shakil", "Imran", "Farjana", "Sumaiya", "Tanjim", "Jony", "Momin", "Sujon", "Riaz", "Habib"]
+    today_str = datetime.now().strftime('%Y-%m-%d')
+    random.seed(today_str)
+    
+    earners =[{"name": n, "total_earned": random.randint(5000, 50000)} for n in random.sample(fake_names, 20)]
+    earners.sort(key=lambda x: x["total_earned"], reverse=True)
+    
+    referrers =[{"name": n, "total_referrals": random.randint(50, 500)} for n in random.sample(fake_names, 20)]
+    referrers.sort(key=lambda x: x["total_referrals"], reverse=True)
+    
+    random.seed()
+    return render_template('leaderboard.html', earners=earners, referrers=referrers)
 
 if __name__ == '__main__':
     app.run(debug=True)
