@@ -84,8 +84,10 @@ def register():
         except Exception as e:
             flash("একাউন্ট তৈরি করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।", "danger")
             return redirect(url_for('register'))
-    return render_template('register.html')
-
+            
+    # GET Request: লিংকের শেষে ?ref=কোড থাকলে সেটা ধরবে
+    ref_code = request.args.get('ref', '')
+    return render_template('register.html', ref_code=ref_code)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
