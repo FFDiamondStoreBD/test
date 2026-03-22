@@ -12,6 +12,8 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "8a5f9c2d4e1b6a7f8d9c0e3b2a1f4c7d")
 
+app.permanent_session_lifetime = timedelta(days=30)
+
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
@@ -96,6 +98,8 @@ def login():
             if res.data[0].get('is_banned'):
                 flash("আপনার একাউন্টটি ব্যান করা হয়েছে!", "danger")
                 return redirect(url_for('login'))
+                session.permanent = True
+                
             session['user_id'] = res.data[0]['id']
             return redirect(url_for('dashboard'))
         flash("ইমেইল বা পাসওয়ার্ড ভুল হয়েছে!", "danger")
