@@ -240,23 +240,40 @@ def withdraw():
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই!", "danger")
     return redirect(url_for('transfer'))
 
-# --- NEW: HIDDEN LEADERSHIP ROUTES ---
+# --- UPDATED: HIDDEN LEADERSHIP ROUTES ---
 @app.route('/leadership')
 def leadership():
     if 'user_id' not in session: return redirect(url_for('login'))
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
     
-    # রেফার করা ইউজারদের নাম এবং ইমেইল আনা হচ্ছে
-    team_res = supabase.table("users").select("name, email, created_at").eq("referred_by", user['referral_code']).order("created_at", desc=True).execute()
+    # ১. রেফার করা ইউজারদের ডাটা আনা হচ্ছে
+    team_res = supabase.table("users").select("id, name, email, created_at").eq("referred_by", user['referral_code']).order("created_at", desc=True).execute()
+    team = team_res.data
     
-    return render_template('leadership.html', user=user, team=team_res.data)
+    # ২. টিম মেম্বারদের মোট ডিপোজিট হিসাব করা হচ্ছে
+    if team:
+        team_ids = [m['id'] for m in team]
+        # শুধুমাত্র এপ্রুভড ডিপোজিটগুলো নেওয়া হচ্ছে
+        dep_res = supabase.table("deposits").select("user_id, amount").in_("user_id", team_ids).eq("status", "Approved").execute()
+        
+        dep_dict = {}
+        for d in dep_res.data:
+            dep_dict[d['user_id']] = dep_dict.get(d['user_id'], 0) + d['amount']
+            
+        for m in team:
+            m['total_deposited'] = dep_dict.get(m['id'], 0.0)
+            
+    # ৩. লিডারের নিজের উইথড্র হিস্ট্রি আনা হচ্ছে (যেগুলোর মেথড 'Leader -' দিয়ে শুরু)
+    leader_w_res = supabase.table("withdrawals").select("*").eq("user_id", user['id']).ilike("method", "Leader%").order("created_at", desc=True).execute()
+    
+    return render_template('leadership.html', user=user, team=team, leader_withdraws=leader_w_res.data)
 
 @app.route('/leader_withdraw', methods=['POST'])
 def leader_withdraw():
     if 'user_id' not in session: return redirect(url_for('login'))
     user_id = session['user_id']
     amount = float(request.form.get('amount'))
-    method = "Leader - " + request.form.get('method') # বুঝার সুবিধার্থে লিডার প্রিফিক্স যোগ করা হলো
+    method = "Leader - " + request.form.get('method')
     account_number = request.form.get('account_number')
     
     user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
@@ -273,7 +290,7 @@ def leader_withdraw():
     else:
         flash("আপনার লিডারশিপ ব্যালেন্সে পর্যাপ্ত টাকা নেই!", "danger")
     return redirect(url_for('leadership'))
-
+    
 # --- ADMIN ROUTES ---
 @app.route('/admin')
 def admin_panel():
