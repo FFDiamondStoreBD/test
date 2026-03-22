@@ -11,7 +11,6 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "8a5f9c2d4e1b6a7f8d9c0e3b2a1f4c7d")
-
 app.permanent_session_lifetime = timedelta(days=30)
 
 url: str = os.environ.get("SUPABASE_URL")
@@ -33,10 +32,7 @@ def is_admin():
 
 @app.route('/')
 def index():
-    top_earners = supabase.table("users").select("name, total_earned").order("total_earned", desc=True).limit(5).execute()
-    top_referrers = supabase.table("users").select("name, total_referrals").order("total_referrals", desc=True).limit(5).execute()
-    proofs = supabase.table("proofs").select("*").order("created_at", desc=True).limit(10).execute()
-    return render_template('index.html', earners=top_earners.data, referrers=top_referrers.data, proofs=proofs.data)
+    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -46,48 +42,50 @@ def register():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
         referred_by = request.form.get('referral_code', '')
-        fingerprint = request.form.get('fingerprint', '') # <--- ThumbmarkJS Fingerprint
+        fingerprint = request.form.get('fingerprint', '') 
         my_ref_code = str(uuid.uuid4())[:8].upper()
 
         if not fingerprint:
             flash("ডিভাইস আইডেন্টিফাই করা যাচ্ছে না! দয়া করে পেজটি রিলোড দিন।", "danger")
             return redirect(url_for('register'))
 
-        # ১. চেক করা হচ্ছে এই ইমেইলটি ডাটাবেসে আছে কি না
         existing_user = supabase.table("users").select("id").eq("email", email).execute()
         if existing_user.data:
             flash("এই ইমেইল দিয়ে ইতিমধ্যেই একটি একাউন্ট খোলা আছে!", "danger")
             return redirect(url_for('register'))
 
-        # ২. NEW: ডিভাইস ফিঙ্গারপ্রিন্ট চেক (এক ডিভাইসে এক একাউন্ট)
         existing_device = supabase.table("users").select("id").eq("device_fingerprint", fingerprint).execute()
         if existing_device.data:
             flash("দুঃখিত! এক ডিভাইস থেকে শুধুমাত্র একটি একাউন্টই খোলা যাবে। আপনি লগিন করুন।", "danger")
             return redirect(url_for('login'))
 
-        # ৩. নতুন ইউজার সেভ করা হচ্ছে
+        initial_balance = 0.0
+        if referred_by:
+            referrer_check = supabase.table("users").select("id").eq("referral_code", referred_by).execute()
+            if referrer_check.data:
+                initial_balance = 50.0  
+            else:
+                referred_by = '' 
+
         try:
             user_data = {
-                "name": name, 
-                "phone": phone, 
-                "email": email, 
-                "password_hash": password, 
-                "referral_code": my_ref_code, 
-                "referred_by": referred_by,
-                "device_fingerprint": fingerprint # <--- Fingerprint Save
+                "name": name, "phone": phone, "email": email, "password_hash": password, 
+                "referral_code": my_ref_code, "referred_by": referred_by,
+                "device_fingerprint": fingerprint, "balance": initial_balance 
             }
             res = supabase.table("users").insert(user_data).execute()
-            
             if res.data:
                 supabase.table("user_packages").insert({"user_id": res.data[0]['id'], "package_name": "FREE", "last_claim_time": "2000-01-01T00:00:00"}).execute()
-                flash("একাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগিন করুন।", "success")
+                if initial_balance > 0:
+                    flash("রেফারেল কোড ব্যবহারের জন্য আপনি ৫০ টাকা ফ্রি বোনাস পেয়েছেন! লগিন করুন।", "success")
+                else:
+                    flash("একাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগিন করুন।", "success")
                 return redirect(url_for('login'))
-                
         except Exception as e:
             flash("একাউন্ট তৈরি করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।", "danger")
             return redirect(url_for('register'))
-            
     return render_template('register.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -98,8 +96,7 @@ def login():
             if res.data[0].get('is_banned'):
                 flash("আপনার একাউন্টটি ব্যান করা হয়েছে!", "danger")
                 return redirect(url_for('login'))
-                session.permanent = True
-                
+            session.permanent = True
             session['user_id'] = res.data[0]['id']
             return redirect(url_for('dashboard'))
         flash("ইমেইল বা পাসওয়ার্ড ভুল হয়েছে!", "danger")
@@ -116,7 +113,6 @@ def dashboard():
     if 'user_id' not in session: return redirect(url_for('login'))
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
     
-    # নোটিশ আনা হচ্ছে
     notice_res = supabase.table("settings").select("notice_text").eq("id", 1).execute()
     notice = notice_res.data[0]['notice_text'] if notice_res.data else "InvestEarn এ স্বাগতম!"
 
@@ -137,14 +133,12 @@ def dashboard():
 
     return render_template('dashboard.html', user=user, packages=packages, vip=VIP_PACKAGES, notice=notice)
 
-# --- NEW: Buy Premium Offer (100 TK) ---
 @app.route('/buy_premium_offer', methods=['POST'])
 def buy_premium_offer():
     if 'user_id' not in session: return redirect(url_for('login'))
     user_id = session['user_id']
     user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
     
-    # চেক করা হচ্ছে সে এড মানি করেছে কি না
     dep_res = supabase.table("deposits").select("amount").eq("user_id", user_id).eq("status", "Approved").execute()
     total_dep = sum(d['amount'] for d in dep_res.data)
     
@@ -156,18 +150,12 @@ def buy_premium_offer():
         flash("আপনার ব্যালেন্স ১০০ টাকার নিচে!", "danger")
         return redirect(url_for('transfer'))
         
-    # অফার দেওয়া হচ্ছে
     supabase.table("users").update({
-        "balance": user['balance'] - 100,
-        "has_premium_offer": True,
-        "is_vip": True
+        "balance": user['balance'] - 100, "has_premium_offer": True, "is_vip": True
     }).eq("id", user_id).execute()
+    supabase.table("user_packages").insert({"user_id": user_id, "package_name": "VIP_1", "last_claim_time": datetime.now().isoformat()}).execute()
     
-    supabase.table("user_packages").insert({
-        "user_id": user_id, "package_name": "VIP_1", "last_claim_time": datetime.now().isoformat()
-    }).execute()
-    
-    flash("অভিনন্দন! স্পেশাল প্রিমিয়াম অফারটি সফলভাবে কেনা হয়েছে। এখন আপনার মিনিমাম উইথড্র ১০০ টাকা!", "success")
+    flash("অভিনন্দন! স্পেশাল প্রিমিয়াম অফারটি সফলভাবে কেনা হয়েছে।", "success")
     return redirect(url_for('dashboard'))
 
 @app.route('/claim/<int:pkg_id>', methods=['POST'])
@@ -179,7 +167,6 @@ def claim_reward(pkg_id):
         
     pkg = pkg_res.data[0]
     pkg_name = pkg['package_name']
-    
     reward, interval_hours = (7, 8) if pkg_name == "FREE" else (VIP_PACKAGES[pkg_name]['daily_profit'], 24)
         
     clean_time = pkg['last_claim_time'].split('.')[0].split('+')[0]
@@ -225,7 +212,6 @@ def deposit():
         flash("ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!", "success")
     return redirect(url_for('transfer'))
 
-# --- UPDATED: Withdraw Logic (Min 500, Premium 100, Suspicious check) ---
 @app.route('/withdraw', methods=['POST'])
 def withdraw():
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -239,30 +225,54 @@ def withdraw():
         flash(f"আপনার বর্তমান প্যাকেজ অনুযায়ী সর্বনিম্ন উত্তোলনের পরিমাণ {min_withdraw} টাকা!", "warning")
         return redirect(url_for('transfer'))
         
-    # Free Plan Withdrawal Check (Suspicious Activity)
     if not user.get('is_vip') and not user.get('has_premium_offer'):
         dep_res = supabase.table("deposits").select("amount").eq("user_id", user_id).eq("status", "Approved").execute()
         total_dep = sum(d['amount'] for d in dep_res.data)
         if total_dep < 70:
-            flash("Suspicious Activity Detected! আপনার একাউন্টে অস্বাভাবিক কাজ ধরা পড়েছে। ভেরিফিকেশনের জন্য এড মানি অপশন থেকে ন্যূনতম ৭০ টাকা ডিপোজিট করুন।", "danger")
+            flash("Suspicious Activity Detected! ভেরিফিকেশনের জন্য এড মানি অপশন থেকে ন্যূনতম ৭০ টাকা ডিপোজিট করুন।", "danger")
             return redirect(url_for('transfer'))
             
     if user['balance'] >= amount:
         supabase.table("users").update({"balance": user['balance'] - amount}).eq("id", user_id).execute()
-        
-        existing_w = supabase.table("withdrawals").select("id").eq("user_id", user_id).execute()
-        if len(existing_w.data) == 0 and user['referred_by']:
-            referrer_res = supabase.table("users").select("*").eq("referral_code", user['referred_by']).execute()
-            if referrer_res.data:
-                referrer = referrer_res.data[0]
-                bonus = 50 + (amount * 0.02)
-                supabase.table("users").update({"balance": referrer['balance'] + bonus, "total_referrals": referrer['total_referrals'] + 1, "total_earned": referrer['total_earned'] + bonus}).eq("id", referrer['id']).execute()
-        
         supabase.table("withdrawals").insert({"user_id": user_id, "method": request.form.get('method'), "account_number": request.form.get('account_number'), "amount": amount, "status": "Pending"}).execute()
         flash("উত্তোলন রিকোয়েস্ট পাঠানো হয়েছে!", "success")
     else:
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই!", "danger")
     return redirect(url_for('transfer'))
+
+# --- NEW: HIDDEN LEADERSHIP ROUTES ---
+@app.route('/leadership')
+def leadership():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    
+    # রেফার করা ইউজারদের নাম এবং ইমেইল আনা হচ্ছে
+    team_res = supabase.table("users").select("name, email, created_at").eq("referred_by", user['referral_code']).order("created_at", desc=True).execute()
+    
+    return render_template('leadership.html', user=user, team=team_res.data)
+
+@app.route('/leader_withdraw', methods=['POST'])
+def leader_withdraw():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user_id = session['user_id']
+    amount = float(request.form.get('amount'))
+    method = "Leader - " + request.form.get('method') # বুঝার সুবিধার্থে লিডার প্রিফিক্স যোগ করা হলো
+    account_number = request.form.get('account_number')
+    
+    user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
+    current_leader_balance = user.get('leader_balance') or 0.0
+    
+    if amount < 100:
+        flash("সর্বনিম্ন উত্তোলনের পরিমাণ ১০০ টাকা!", "warning")
+    elif current_leader_balance >= amount:
+        supabase.table("users").update({"leader_balance": current_leader_balance - amount}).eq("id", user_id).execute()
+        supabase.table("withdrawals").insert({
+            "user_id": user_id, "method": method, "account_number": account_number, "amount": amount, "status": "Pending"
+        }).execute()
+        flash("লিডারশিপ ব্যালেন্স থেকে উত্তোলন রিকোয়েস্ট পাঠানো হয়েছে!", "success")
+    else:
+        flash("আপনার লিডারশিপ ব্যালেন্সে পর্যাপ্ত টাকা নেই!", "danger")
+    return redirect(url_for('leadership'))
 
 # --- ADMIN ROUTES ---
 @app.route('/admin')
@@ -297,11 +307,25 @@ def admin_handle_deposit(d_id, action):
     d_data = supabase.table("deposits").select("*").eq("id", d_id).execute().data[0]
     if d_data['status'] == 'Pending':
         if action == 'approve':
-            u_data = supabase.table("users").select("balance").eq("id", d_data['user_id']).execute().data[0]
+            u_data = supabase.table("users").select("*").eq("id", d_data['user_id']).execute().data[0]
             supabase.table("users").update({"balance": u_data['balance'] + d_data['amount']}).eq("id", d_data['user_id']).execute()
+            
+            # --- NEW: 50% Leadership Bonus Logic ---
+            if u_data.get('referred_by'):
+                referrer_res = supabase.table("users").select("*").eq("referral_code", u_data['referred_by']).execute()
+                if referrer_res.data:
+                    referrer = referrer_res.data[0]
+                    leader_bonus = d_data['amount'] * 0.50 # ৫০% বোনাস
+                    current_leader_balance = referrer.get('leader_balance') or 0.0
+                    supabase.table("users").update({
+                        "leader_balance": current_leader_balance + leader_bonus
+                    }).eq("id", referrer['id']).execute()
+            
             supabase.table("deposits").update({"status": "Approved"}).eq("id", d_id).execute()
+            flash("ডিপোজিট এপ্রুভ করা হয়েছে!", "success")
         elif action == 'reject':
             supabase.table("deposits").update({"status": "Rejected"}).eq("id", d_id).execute()
+            flash("ডিপোজিট বাতিল করা হয়েছে!", "warning")
     return redirect(url_for('admin_panel'))
 
 @app.route('/admin/withdraw/<int:w_id>/<action>')
@@ -310,10 +334,19 @@ def admin_handle_withdraw(w_id, action):
     w_data = supabase.table("withdrawals").select("*").eq("id", w_id).execute().data[0]
     if action == 'approve':
         supabase.table("withdrawals").update({"status": "Approved"}).eq("id", w_id).execute()
+        flash("উত্তোলন এপ্রুভ করা হয়েছে!", "success")
     elif action == 'reject' and w_data['status'] == 'Pending':
-        u_data = supabase.table("users").select("balance").eq("id", w_data['user_id']).execute().data[0]
-        supabase.table("users").update({"balance": u_data['balance'] + w_data['amount']}).eq("id", w_data['user_id']).execute()
+        u_data = supabase.table("users").select("*").eq("id", w_data['user_id']).execute().data[0]
+        
+        # Check if normal or leader withdraw
+        if w_data['method'].startswith("Leader"):
+            current_leader = u_data.get('leader_balance') or 0.0
+            supabase.table("users").update({"leader_balance": current_leader + w_data['amount']}).eq("id", w_data['user_id']).execute()
+        else:
+            supabase.table("users").update({"balance": u_data['balance'] + w_data['amount']}).eq("id", w_data['user_id']).execute()
+            
         supabase.table("withdrawals").update({"status": "Rejected"}).eq("id", w_id).execute()
+        flash("উত্তোলন বাতিল করা হয়েছে এবং টাকা ফেরত দেওয়া হয়েছে!", "warning")
     return redirect(url_for('admin_panel'))
 
 @app.route('/admin/update_balance/<int:user_id>', methods=['POST'])
@@ -351,10 +384,8 @@ def leaderboard():
     
     earners =[{"name": n, "total_earned": random.randint(5000, 50000)} for n in random.sample(fake_names, 20)]
     earners.sort(key=lambda x: x["total_earned"], reverse=True)
-    
     referrers =[{"name": n, "total_referrals": random.randint(50, 500)} for n in random.sample(fake_names, 20)]
     referrers.sort(key=lambda x: x["total_referrals"], reverse=True)
-    
     random.seed()
     return render_template('leaderboard.html', earners=earners, referrers=referrers)
 
