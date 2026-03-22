@@ -78,7 +78,15 @@ def logout():
     session.pop('user_id', None)
     flash("লগআউট সফল হয়েছে।", "success")
     return redirect(url_for('login'))
-
+# --- NEW: Leaderboard Page ---
+@app.route('/leaderboard')
+def leaderboard():
+    # শীর্ষ ২০ জন আয়কারী এবং রেফারার এর ডাটা আনা হচ্ছে
+    top_earners = supabase.table("users").select("name, total_earned").order("total_earned", desc=True).limit(20).execute()
+    top_referrers = supabase.table("users").select("name, total_referrals").order("total_referrals", desc=True).limit(20).execute()
+    
+    return render_template('leaderboard.html', earners=top_earners.data, referrers=top_referrers.data)
+    
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session: return redirect(url_for('login'))
