@@ -59,6 +59,15 @@ def register():
             return redirect(url_for('login'))
     return render_template('register.html')
 
+@app.route('/transfer')
+def transfer():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    
+    # ইউজারের ব্যালেন্স দেখানোর জন্য ডাটাবেস থেকে ডাটা নেওয়া হচ্ছে
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    
+    return render_template('transfer.html', user=user)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
