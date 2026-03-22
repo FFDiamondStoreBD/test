@@ -67,11 +67,10 @@
                     <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">পাসওয়ার্ড</label>
                     <input type="password" name="password" placeholder="••••••••" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-semibold text-sm">
                 </div>
-                <div>
-                    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">রেফারেল কোড <span class="text-gray-400 font-normal">(যদি থাকে)</span></label>
-                    <input type="text" name="referral_code" placeholder="কোডটি এখানে বসান" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-bold text-sm text-bkash uppercase tracking-wider">
-                </div>
-
+<div>
+    <label class="block text-gray-700 text-xs font-bold mb-1 uppercase tracking-wide">রেফারেল কোড <span class="text-gray-400 font-normal">(যদি থাকে)</span></label>
+    <input type="text" name="referral_code" value="{{ ref_code }}" placeholder="কোডটি এখানে বসান" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-bkash focus:ring-1 focus:ring-bkash font-bold text-sm text-bkash uppercase tracking-wider">
+</div>
                 <!-- Submit Button -->
                 <button type="submit" id="submit-btn" disabled class="w-full bg-gray-400 text-white p-4 mt-2 rounded-xl font-extrabold text-sm transition shadow-md flex justify-center items-center gap-2 cursor-not-allowed">
                     <i class="fa-solid fa-spinner fa-spin"></i> ডিভাইস চেক করা হচ্ছে...
