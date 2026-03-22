@@ -290,21 +290,53 @@ def leader_withdraw():
     else:
         flash("আপনার লিডারশিপ ব্যালেন্সে পর্যাপ্ত টাকা নেই!", "danger")
     return redirect(url_for('leadership'))
-    
-# --- ADMIN ROUTES ---
+
+
+# ==========================================
+#         ADMIN PANEL ROUTES
+# ==========================================
+
 @app.route('/admin')
 def admin_panel():
     if not is_admin(): return redirect(url_for('dashboard'))
-    users = supabase.table("users").select("*").order("id", desc=True).execute().data
-    withdrawals = supabase.table("withdrawals").select("*").order("created_at", desc=True).execute().data
+    
+    # স্ট্যাটিস্টিকস (মোট ইউজার, পেন্ডিং রিকোয়েস্ট)
+    all_users = supabase.table("users").select("id").execute().data
+    total_users = len(all_users)
+    
     deposits = supabase.table("deposits").select("*").order("created_at", desc=True).execute().data
+    
+    # নোটিশ ডাটা
     notice_data = supabase.table("settings").select("notice_text").eq("id", 1).execute().data
     current_notice = notice_data[0]['notice_text'] if notice_data else ""
     
+    # ইউজারদের নাম এবং ইমেইল ম্যাপ করা
+    users = supabase.table("users").select("id, name, email").execute().data
     user_dict = {u['id']: u for u in users}
-    for w in withdrawals: w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown')
-    for d in deposits: d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown')
-    return render_template('admin.html', users=users, withdrawals=withdrawals, deposits=deposits, current_notice=current_notice)
+    for d in deposits: 
+        d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown')
+        d['user_email'] = user_dict.get(d['user_id'], {}).get('email', 'Unknown')
+        
+    return render_template('admin.html', total_users=total_users, deposits=deposits, current_notice=current_notice)
+
+@app.route('/admin/users')
+def admin_users():
+    if not is_admin(): return redirect(url_for('dashboard'))
+    users = supabase.table("users").select("*").order("id", desc=True).execute().data
+    return render_template('admin_users.html', users=users)
+
+@app.route('/admin/withdrawals')
+def admin_withdrawals():
+    if not is_admin(): return redirect(url_for('dashboard'))
+    withdrawals = supabase.table("withdrawals").select("*").order("created_at", desc=True).execute().data
+    
+    users = supabase.table("users").select("id, name, email").execute().data
+    user_dict = {u['id']: u for u in users}
+    for w in withdrawals: 
+        w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown')
+        w['user_email'] = user_dict.get(w['user_id'], {}).get('email', 'Unknown')
+        
+    return render_template('admin_withdrawals.html', withdrawals=withdrawals)
 
 @app.route('/admin/update_notice', methods=['POST'])
 def admin_update_notice():
@@ -327,16 +359,14 @@ def admin_handle_deposit(d_id, action):
             u_data = supabase.table("users").select("*").eq("id", d_data['user_id']).execute().data[0]
             supabase.table("users").update({"balance": u_data['balance'] + d_data['amount']}).eq("id", d_data['user_id']).execute()
             
-            # --- NEW: 50% Leadership Bonus Logic ---
+            # Leadership Bonus 50%
             if u_data.get('referred_by'):
                 referrer_res = supabase.table("users").select("*").eq("referral_code", u_data['referred_by']).execute()
                 if referrer_res.data:
                     referrer = referrer_res.data[0]
-                    leader_bonus = d_data['amount'] * 0.50 # ৫০% বোনাস
+                    leader_bonus = d_data['amount'] * 0.50
                     current_leader_balance = referrer.get('leader_balance') or 0.0
-                    supabase.table("users").update({
-                        "leader_balance": current_leader_balance + leader_bonus
-                    }).eq("id", referrer['id']).execute()
+                    supabase.table("users").update({"leader_balance": current_leader_balance + leader_bonus}).eq("id", referrer['id']).execute()
             
             supabase.table("deposits").update({"status": "Approved"}).eq("id", d_id).execute()
             flash("ডিপোজিট এপ্রুভ করা হয়েছে!", "success")
@@ -344,6 +374,45 @@ def admin_handle_deposit(d_id, action):
             supabase.table("deposits").update({"status": "Rejected"}).eq("id", d_id).execute()
             flash("ডিপোজিট বাতিল করা হয়েছে!", "warning")
     return redirect(url_for('admin_panel'))
+
+@app.route('/admin/withdraw/<int:w_id>/<action>')
+def admin_handle_withdraw(w_id, action):
+    if not is_admin(): return redirect(url_for('dashboard'))
+    w_data = supabase.table("withdrawals").select("*").eq("id", w_id).execute().data[0]
+    if action == 'approve':
+        supabase.table("withdrawals").update({"status": "Approved"}).eq("id", w_id).execute()
+        flash("উত্তোলন এপ্রুভ করা হয়েছে!", "success")
+    elif action == 'reject' and w_data['status'] == 'Pending':
+        u_data = supabase.table("users").select("*").eq("id", w_data['user_id']).execute().data[0]
+        if w_data['method'].startswith("Leader"):
+            current_leader = u_data.get('leader_balance') or 0.0
+            supabase.table("users").update({"leader_balance": current_leader + w_data['amount']}).eq("id", w_data['user_id']).execute()
+        else:
+            supabase.table("users").update({"balance": u_data['balance'] + w_data['amount']}).eq("id", w_data['user_id']).execute()
+        supabase.table("withdrawals").update({"status": "Rejected"}).eq("id", w_id).execute()
+        flash("উত্তোলন বাতিল করা হয়েছে এবং টাকা ফেরত দেওয়া হয়েছে!", "warning")
+    return redirect(url_for('admin_withdrawals'))
+
+@app.route('/admin/update_balance/<int:user_id>', methods=['POST'])
+def admin_update_balance(user_id):
+    if is_admin(): supabase.table("users").update({"balance": float(request.form.get('balance'))}).eq("id", user_id).execute()
+    flash("ব্যালেন্স আপডেট হয়েছে!", "success")
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/toggle_ban/<int:user_id>')
+def admin_toggle_ban(user_id):
+    if is_admin():
+        user = supabase.table("users").select("is_banned").eq("id", user_id).execute().data[0]
+        supabase.table("users").update({"is_banned": not user.get('is_banned')}).eq("id", user_id).execute()
+        flash("ইউজারের স্ট্যাটাস পরিবর্তন হয়েছে!", "success")
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/delete_user/<int:user_id>')
+def admin_delete_user(user_id):
+    if is_admin():
+        for t in["user_packages", "withdrawals", "deposits", "users"]: supabase.table(t).delete().eq("user_id" if t!="users" else "id", user_id).execute()
+        flash("ইউজারকে ডিলিট করা হয়েছে!", "danger")
+    return redirect(url_for('admin_users'))
 
 @app.route('/admin/withdraw/<int:w_id>/<action>')
 def admin_handle_withdraw(w_id, action):
