@@ -215,6 +215,14 @@
             </tbody>
         </table>
     </div>
+    <!-- Update Notice Section -->
+<h2 class="text-2xl font-bold mb-4 text-gray-800 border-l-4 border-yellow-500 pl-3">ড্যাশবোর্ড নোটিশ আপডেট</h2>
+<div class="bg-white rounded-xl shadow-md p-6 mb-12 border border-gray-100">
+    <form action="/admin/update_notice" method="POST" class="flex flex-col md:flex-row gap-4">
+        <input type="text" name="notice" value="{{ current_notice }}" placeholder="নতুন নোটিশ লিখুন..." required class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 outline-none font-bold text-gray-700">
+        <button type="submit" class="bg-yellow-500 text-white px-6 py-3 rounded-lg font-bold shadow hover:bg-yellow-600 transition"><i class="fa-solid fa-paper-plane"></i> আপডেট করুন</button>
+    </form>
+</div>
 </div>
 </body>
 </html>
