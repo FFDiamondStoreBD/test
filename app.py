@@ -315,7 +315,9 @@ def admin_users():
 @app.route('/admin/withdrawals')
 def admin_withdrawals():
     if not is_admin(): return redirect(url_for('dashboard'))
-    withdrawals = supabase.table("withdrawals").select("*").order("created_at", desc=True).execute().data
+    
+    # শুধুমাত্র 'Pending' স্ট্যাটাসের রিকোয়েস্টগুলো আনা হচ্ছে
+    withdrawals = supabase.table("withdrawals").select("*").eq("status", "Pending").order("created_at", desc=True).execute().data
     
     users = supabase.table("users").select("id, name, email").execute().data
     user_dict = {u['id']: u for u in users}
@@ -324,7 +326,6 @@ def admin_withdrawals():
         w['user_email'] = user_dict.get(w['user_id'], {}).get('email', 'Unknown')
         
     return render_template('admin_withdrawals.html', withdrawals=withdrawals)
-
 @app.route('/admin/update_notice', methods=['POST'])
 def admin_update_notice():
     if not is_admin(): return redirect(url_for('dashboard'))
