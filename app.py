@@ -1,5 +1,6 @@
 import os
 import uuid
+import random
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -79,13 +80,50 @@ def logout():
     flash("লগআউট সফল হয়েছে।", "success")
     return redirect(url_for('login'))
 # --- NEW: Leaderboard Page ---
+# --- NEW: Fake Auto-updating Leaderboard Page ---
 @app.route('/leaderboard')
 def leaderboard():
-    # শীর্ষ ২০ জন আয়কারী এবং রেফারার এর ডাটা আনা হচ্ছে
-    top_earners = supabase.table("users").select("name, total_earned").order("total_earned", desc=True).limit(20).execute()
-    top_referrers = supabase.table("users").select("name, total_referrals").order("total_referrals", desc=True).limit(20).execute()
+    # ফেক নামের একটি তালিকা (আপনি চাইলে এখানে আরও নাম যোগ করতে পারেন)
+    fake_names =[
+        "Rahim", "Karim", "Samiya", "Nusrat", "Arif", "Hasan", "Mehedi", "Tariq", 
+        "Fatema", "Rina", "Shakil", "Imran", "Farjana", "Sumaiya", "Tanjim", "Jony",
+        "Momin", "Sujon", "Riaz", "Habib", "Ayesha", "Khadija", "Nadim", "Sohel",
+        "Mahmud", "Rubel", "Tania", "Lipa", "Fahim", "Siam", "Rakib", "Asif",
+        "Sabbir", "Mithun", "Rifat", "Jitu", "Sadia", "Riya", "Mitu", "Ashik"
+    ]
     
-    return render_template('leaderboard.html', earners=top_earners.data, referrers=top_referrers.data)
+    # আজকের তারিখ নেওয়া হচ্ছে (এটি প্রতিদিন রাত ১২টায় পরিবর্তন হবে)
+    today_str = datetime.now().strftime('%Y-%m-%d')
+    
+    # Random ফাংশনকে আজকের তারিখ দিয়ে লক করে দেওয়া হলো (যাতে ২৪ ঘণ্টা একই ডাটা থাকে)
+    random.seed(today_str)
+    
+    # ১. ফেক শীর্ষ আয়কারী (Top Earners) তৈরি
+    earners =[]
+    earner_names = random.sample(fake_names, 20) # ২০টি নাম সিলেক্ট করা হলো
+    for name in earner_names:
+        earners.append({
+            "name": name,
+            "total_earned": random.randint(5000, 50000) # ৫ হাজার থেকে ৫০ হাজারের মধ্যে ফেক আয়
+        })
+    # আয় অনুযায়ী বড় থেকে ছোট সাজানো
+    earners.sort(key=lambda x: x["total_earned"], reverse=True)
+    
+    # ২. ফেক শীর্ষ রেফারার (Top Referrers) তৈরি
+    referrers =[]
+    referrer_names = random.sample(fake_names, 20)
+    for name in referrer_names:
+        referrers.append({
+            "name": name,
+            "total_referrals": random.randint(50, 500) # ৫০ থেকে ৫০০ এর মধ্যে ফেক রেফার
+        })
+    # রেফার অনুযায়ী বড় থেকে ছোট সাজানো
+    referrers.sort(key=lambda x: x["total_referrals"], reverse=True)
+    
+    # সিস্টেমের অন্য কোনো random কাজে যেন প্রভাব না পড়ে তাই seed রিসেট করা হলো
+    random.seed()
+    
+    return render_template('leaderboard.html', earners=earners, referrers=referrers)
     
 @app.route('/dashboard')
 def dashboard():
