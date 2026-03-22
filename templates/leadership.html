@@ -11,7 +11,7 @@
 </head>
 <body class="antialiased pb-20">
 
-    <div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="max-w-5xl mx-auto py-10 px-4">
         
         <div class="text-center mb-10">
             <i class="fa-solid fa-user-secret text-5xl text-blue-500 mb-4"></i>
@@ -23,7 +23,7 @@
             {% if messages %}
                 <div class="mb-6">
                 {% for category, message in messages %}
-                    <div class="p-4 mb-3 rounded-xl font-bold shadow-md flex items-center gap-2 {% if category == 'success' %} bg-green-900 text-green-300 {% elif category == 'danger' %} bg-red-900 text-red-300 {% else %} bg-yellow-900 text-yellow-300 {% endif %}">
+                    <div class="p-4 mb-3 rounded-xl font-bold shadow-md flex items-center gap-2 {% if category == 'success' %} bg-green-900/50 border border-green-700 text-green-400 {% elif category == 'danger' %} bg-red-900/50 border border-red-700 text-red-400 {% else %} bg-yellow-900/50 border border-yellow-700 text-yellow-400 {% endif %}">
                         <i class="fa-solid fa-circle-info"></i> {{ message }}
                     </div>
                 {% endfor %}
@@ -32,7 +32,7 @@
         {% endwith %}
 
         <!-- Leader Balance & Withdraw -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             <!-- Balance Card -->
             <div class="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-xl relative overflow-hidden">
                 <div class="absolute top-[-20px] right-[-20px] text-8xl opacity-10 text-blue-500"><i class="fa-solid fa-coins"></i></div>
@@ -48,44 +48,90 @@
                 <h3 class="text-lg font-bold text-gray-200 mb-4 border-b border-gray-700 pb-2"><i class="fa-solid fa-money-bill-transfer text-blue-500"></i> লিডার ব্যালেন্স উত্তোলন</h3>
                 <form method="POST" action="/leader_withdraw" class="space-y-4">
                     <div>
-                        <select name="method" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm">
+                        <select name="method" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm font-bold">
                             <option value="bKash">বিকাশ (bKash)</option>
                             <option value="Nagad">নগদ (Nagad)</option>
                             <option value="Rocket">রকেট (Rocket)</option>
                         </select>
                     </div>
                     <div>
-                        <input type="text" name="account_number" placeholder="আপনার একাউন্ট নম্বর" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm">
+                        <input type="text" name="account_number" placeholder="আপনার একাউন্ট নম্বর" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm font-bold">
                     </div>
                     <div>
-                        <input type="number" name="amount" min="100" placeholder="পরিমাণ (মিনিমাম ১০০৳)" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm">
+                        <input type="number" name="amount" min="100" placeholder="পরিমাণ (মিনিমাম ১০০৳)" required class="w-full p-3 bg-gray-900 border border-gray-700 rounded-xl outline-none focus:border-blue-500 text-gray-300 text-sm font-bold">
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold hover:bg-blue-700 transition">উত্তোলন রিকোয়েস্ট পাঠান</button>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-3.5 mt-2 rounded-xl font-bold hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-900/50">উত্তোলন রিকোয়েস্ট পাঠান</button>
                 </form>
             </div>
         </div>
 
-        <!-- Referred Users Details -->
-        <h3 class="text-xl font-bold text-gray-200 mb-4"><i class="fa-solid fa-address-book text-gray-400"></i> রেফারকৃত মেম্বারদের বিস্তারিত তথ্য</h3>
-        <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-xl">
+        <!-- NEW: Team Member Deposit Stats -->
+        <h3 class="text-xl font-bold text-gray-200 mb-4 flex items-center gap-2"><i class="fa-solid fa-address-book text-gray-400"></i> রেফারকৃত মেম্বারদের তথ্য ও ডিপোজিট</h3>
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-xl mb-12">
             <div class="overflow-x-auto">
                 <table class="w-full text-left whitespace-nowrap text-sm text-gray-300">
                     <thead class="bg-gray-900 text-gray-400">
                         <tr>
-                            <th class="p-4">নাম</th>
-                            <th class="p-4">ইমেইল এড্রেস</th>
-                            <th class="p-4">জয়েনিং ডেট</th>
+                            <th class="p-4 font-bold">মেম্বারের নাম</th>
+                            <th class="p-4 font-bold">ইমেইল এড্রেস</th>
+                            <th class="p-4 font-bold">মোট ডিপোজিট করেছে</th>
+                            <th class="p-4 font-bold">জয়েনিং ডেট</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-700">
                         {% for member in team %}
-                        <tr class="hover:bg-gray-700/50">
+                        <tr class="hover:bg-gray-700/50 transition">
                             <td class="p-4 font-bold text-gray-100"><i class="fa-solid fa-user text-blue-500 mr-2"></i> {{ member.name }}</td>
                             <td class="p-4 font-mono text-gray-400">{{ member.email }}</td>
+                            <td class="p-4 font-black {% if member.total_deposited > 0 %} text-green-400 {% else %} text-gray-500 {% endif %}">
+                                ৳ {{ member.total_deposited }}
+                            </td>
                             <td class="p-4 text-xs text-gray-500">{{ member.created_at.split('T')[0] }}</td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="3" class="p-10 text-center text-gray-500">আপনি এখনো কাউকে রেফার করেননি।</td></tr>
+                        <tr><td colspan="4" class="p-10 text-center text-gray-500">আপনি এখনো কাউকে রেফার করেননি।</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NEW: Leader Withdrawal History -->
+        <h3 class="text-xl font-bold text-gray-200 mb-4 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-gray-400"></i> লিডারশিপ উত্তোলনের ইতিহাস</h3>
+        <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden shadow-xl mb-10">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap text-sm text-gray-300">
+                    <thead class="bg-gray-900 text-gray-400">
+                        <tr>
+                            <th class="p-4 font-bold">তারিখ</th>
+                            <th class="p-4 font-bold">মেথড</th>
+                            <th class="p-4 font-bold">একাউন্ট নম্বর</th>
+                            <th class="p-4 font-bold">পরিমাণ</th>
+                            <th class="p-4 font-bold text-center">স্ট্যাটাস</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for w in leader_withdraws %}
+                        <tr class="hover:bg-gray-700/50 transition">
+                            <td class="p-4 text-xs text-gray-500">{{ w.created_at.split('T')[0] }}</td>
+                            
+                            <!-- 'Leader - bKash' লেখা থেকে শুধু 'bKash' দেখানো হচ্ছে -->
+                            <td class="p-4 font-bold text-blue-400">{{ w.method.replace('Leader - ', '') }}</td>
+                            
+                            <td class="p-4 font-mono text-gray-400">{{ w.account_number }}</td>
+                            <td class="p-4 font-black text-gray-100">৳ {{ w.amount }}</td>
+                            <td class="p-4 text-center">
+                                {% if w.status == 'Pending' %}
+                                    <span class="bg-yellow-900/40 text-yellow-500 px-3 py-1 rounded-full text-[10px] font-black border border-yellow-700/50 uppercase tracking-widest">পেন্ডিং</span>
+                                {% elif w.status == 'Approved' %}
+                                    <span class="bg-green-900/40 text-green-400 px-3 py-1 rounded-full text-[10px] font-black border border-green-700/50 uppercase tracking-widest">সম্পন্ন</span>
+                                {% else %}
+                                    <span class="bg-red-900/40 text-red-400 px-3 py-1 rounded-full text-[10px] font-black border border-red-700/50 uppercase tracking-widest">বাতিল</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5" class="p-10 text-center text-gray-500">আপনার কোনো উত্তোলনের রেকর্ড নেই।</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -93,7 +139,7 @@
         </div>
         
         <div class="text-center mt-10">
-            <a href="/dashboard" class="text-blue-500 hover:text-blue-400 text-sm font-bold"><i class="fa-solid fa-arrow-left"></i> মেইন ড্যাশবোর্ডে ফিরে যান</a>
+            <a href="/dashboard" class="text-blue-500 hover:text-blue-400 text-sm font-bold transition"><i class="fa-solid fa-arrow-left"></i> মেইন ড্যাশবোর্ডে ফিরে যান</a>
         </div>
     </div>
 </body>
