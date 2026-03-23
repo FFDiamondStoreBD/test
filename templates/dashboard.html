@@ -313,5 +313,45 @@
             }, 1000);
         });
     </script>
+    <script>
+        // PWA App Install Logic
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-banner').classList.remove('hidden');
+});
+
+function installApp() {
+    document.getElementById('install-banner').classList.add('hidden');
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') { console.log('User installed the app'); }
+        deferredPrompt = null;
+    });
+}
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(function() {
+        console.log("Service Worker Registered");
+    });
+}
+    </script>
+    <!-- PWA Install Banner -->
+<div id="install-banner" class="hidden bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 p-4 mb-5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#E2136E] text-xl shadow-sm">
+            <i class="fa-brands fa-android"></i>
+        </div>
+        <div>
+            <h3 class="text-white font-bold text-sm">Easy Earn অ্যাপ</h3>
+            <p class="text-gray-400 text-[10px] font-semibold">মোবাইলে ইন্সটল করে সহজে ব্যবহার করুন</p>
+        </div>
+    </div>
+    <button onclick="installApp()" class="bg-[#E2136E] hover:bg-pink-600 text-white px-4 py-2 rounded-lg text-xs font-black shadow-md active:scale-95 transition">
+        ইন্সটল করুন
+    </button>
+</div>
 </body>
 </html>
