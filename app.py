@@ -159,7 +159,6 @@ def buy_premium_offer():
     
     flash("অভিনন্দন! স্পেশাল প্রিমিয়াম অফারটি সফলভাবে কেনা হয়েছে।", "success")
     return redirect(url_for('dashboard'))
-
 @app.route('/claim/<int:pkg_id>', methods=['POST'])
 def claim_reward(pkg_id):
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -173,12 +172,24 @@ def claim_reward(pkg_id):
         
     clean_time = pkg['last_claim_time'].split('.')[0].split('+')[0]
     if datetime.now() >= datetime.fromisoformat(clean_time) + timedelta(hours=interval_hours):
-        user = supabase.table("users").select("balance").eq("id", user_id).execute().data[0]
-        supabase.table("users").update({"balance": user['balance'] + reward}).eq("id", user_id).execute()
+        # ইউজারের ব্যালেন্স এবং টোটাল আর্ন দুটোই আনা হচ্ছে
+        user = supabase.table("users").select("balance, total_earned").eq("id", user_id).execute().data[0]
+        
+        new_balance = user['balance'] + reward
+        new_total_earned = user.get('total_earned', 0.0) + reward  # আগের আয়ের সাথে নতুন আয় যোগ হচ্ছে
+        
+        # ডাটাবেসে আপডেট করা হচ্ছে
+        supabase.table("users").update({
+            "balance": new_balance, 
+            "total_earned": new_total_earned
+        }).eq("id", user_id).execute()
+        
         supabase.table("user_packages").update({"last_claim_time": datetime.now().isoformat()}).eq("id", pkg_id).execute()
         flash(f"আপনি সফলভাবে ৳{reward} ক্লেইম করেছেন!", "success")
+    else:
+        flash("এখনো ক্লেইম করার সময় হয়নি!", "warning")
+        
     return redirect(url_for('dashboard'))
-
 @app.route('/buy_vip/<pkg_name>', methods=['POST'])
 def buy_vip(pkg_name):
     if 'user_id' not in session: return redirect(url_for('login'))
