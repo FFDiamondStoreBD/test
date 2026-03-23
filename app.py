@@ -487,5 +487,56 @@ def leaderboard():
     random.seed()
     return render_template('leaderboard.html', earners=earners, referrers=referrers)
 
+# ==========================================
+#         NEW: PWA AND SPIN ROUTES
+# ==========================================
+@app.route('/manifest.json')
+def serve_manifest():
+    return app.send_static_file('manifest.json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return app.send_static_file('sw.js')
+
+@app.route('/spin')
+def spin_page():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    
+    # 24 Hours Time Check
+    last_spin = user.get('last_spin_time', '2000-01-01T00:00:00')
+    clean_time = last_spin.split('.')[0].split('+')[0]
+    next_spin_time = (datetime.fromisoformat(clean_time) + timedelta(hours=24)).isoformat() + "Z"
+    
+    return render_template('spin.html', user=user, next_spin_time=next_spin_time)
+
+@app.route('/api/spin_reward', methods=['POST'])
+def api_spin_reward():
+    if 'user_id' not in session: return {"error": "Unauthorized"}, 401
+    user_id = session['user_id']
+    user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
+    
+    last_spin = user.get('last_spin_time', '2000-01-01T00:00:00')
+    clean_time = last_spin.split('.')[0].split('+')[0]
+    
+    if datetime.now() < datetime.fromisoformat(clean_time) + timedelta(hours=24):
+        return {"error": "আপনি ইতিমধ্যেই স্পিন করেছেন! কাল আবার চেষ্টা করুন।"}, 400
+        
+    # Spin Rewards (1 TK to 10 TK or 0 TK)
+    rewards =[1, 2, 3, 5, 0, 10, 2, 1, 4, 0]
+    won_amount = random.choice(rewards)
+    
+    new_balance = user['balance'] + won_amount
+    new_total = user.get('total_earned', 0) + won_amount
+    
+    supabase.table("users").update({
+        "balance": new_balance, 
+        "total_earned": new_total,
+        "last_spin_time": datetime.now().isoformat()
+    }).eq("id", user_id).execute()
+    
+    return {"reward": won_amount, "message": f"অভিনন্দন! আপনি স্পিন করে ৳{won_amount} জিতেছেন!" if won_amount > 0 else "দুঃখিত! আপনি এবার কিছু পাননি। কাল আবার চেষ্টা করুন!"}
+
+
 if __name__ == '__main__':
     app.run(debug=True)
