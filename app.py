@@ -18,7 +18,7 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 VIP_PACKAGES = {
-    "VIP_1": {"price": 500, "daily_profit": 50, "mead_days": 30},
+    "VIP_1": {"price": 300, "daily_profit": 40, "mead_days": 30},
     "VIP_2": {"price": 1000, "daily_profit": 110, "mead_days": 30},
     "VIP_3": {"price": 2000, "daily_profit": 230, "mead_days": 30},
     "VIP_4": {"price": 5000, "daily_profit": 600, "mead_days": 30},
