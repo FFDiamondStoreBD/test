@@ -18,7 +18,7 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 VIP_PACKAGES = {
-    "VIP_1": {"price": 300, "daily_profit": 40, "mead_days": 30},
+    "VIP_1": {"price": 500, "daily_profit": 50, "mead_days": 30},
     "VIP_2": {"price": 1000, "daily_profit": 110, "mead_days": 30},
     "VIP_3": {"price": 2000, "daily_profit": 230, "mead_days": 30},
     "VIP_4": {"price": 5000, "daily_profit": 600, "mead_days": 30},
@@ -71,13 +71,13 @@ def register():
             user_data = {
                 "name": name, "phone": phone, "email": email, "password_hash": password, 
                 "referral_code": my_ref_code, "referred_by": referred_by,
-                "device_fingerprint": fingerprint, "balance": initial_balance 
+                "device_fingerprint": fingerprint, "balance": initial_balance, "total_earned": initial_balance 
             }
             res = supabase.table("users").insert(user_data).execute()
             if res.data:
                 supabase.table("user_packages").insert({"user_id": res.data[0]['id'], "package_name": "FREE", "last_claim_time": "2000-01-01T00:00:00"}).execute()
                 if initial_balance > 0:
-                    flash("রেফারেল কোড ব্যবহারের জন্য আপনি ৫০ টাকা ফ্রি বোনাস পেয়েছেন! লগিন করুন।", "success")
+                    flash("রেফারেল কোড ব্যবহারের জন্য আপনি ৫০ টাকা ফ্রি বোনাস পেয়েছেন!", "success")
                 else:
                     flash("একাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগিন করুন।", "success")
                 return redirect(url_for('login'))
@@ -85,9 +85,9 @@ def register():
             flash("একাউন্ট তৈরি করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।", "danger")
             return redirect(url_for('register'))
             
-    # GET Request: লিংকের শেষে ?ref=কোড থাকলে সেটা ধরবে
     ref_code = request.args.get('ref', '')
     return render_template('register.html', ref_code=ref_code)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -116,7 +116,7 @@ def dashboard():
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
     
     notice_res = supabase.table("settings").select("notice_text").eq("id", 1).execute()
-    notice = notice_res.data[0]['notice_text'] if notice_res.data else "InvestEarn এ স্বাগতম!"
+    notice = notice_res.data[0]['notice_text'] if notice_res.data else "Easy Earn এ স্বাগতম!"
 
     pkg_res = supabase.table("user_packages").select("*").eq("user_id", session['user_id']).execute()
     packages = pkg_res.data
@@ -159,6 +159,7 @@ def buy_premium_offer():
     
     flash("অভিনন্দন! স্পেশাল প্রিমিয়াম অফারটি সফলভাবে কেনা হয়েছে।", "success")
     return redirect(url_for('dashboard'))
+
 @app.route('/claim/<int:pkg_id>', methods=['POST'])
 def claim_reward(pkg_id):
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -172,24 +173,14 @@ def claim_reward(pkg_id):
         
     clean_time = pkg['last_claim_time'].split('.')[0].split('+')[0]
     if datetime.now() >= datetime.fromisoformat(clean_time) + timedelta(hours=interval_hours):
-        # ইউজারের ব্যালেন্স এবং টোটাল আর্ন দুটোই আনা হচ্ছে
         user = supabase.table("users").select("balance, total_earned").eq("id", user_id).execute().data[0]
-        
-        new_balance = user['balance'] + reward
-        new_total_earned = user.get('total_earned', 0.0) + reward  # আগের আয়ের সাথে নতুন আয় যোগ হচ্ছে
-        
-        # ডাটাবেসে আপডেট করা হচ্ছে
-        supabase.table("users").update({
-            "balance": new_balance, 
-            "total_earned": new_total_earned
-        }).eq("id", user_id).execute()
-        
+        supabase.table("users").update({"balance": user['balance'] + reward, "total_earned": user.get('total_earned', 0.0) + reward}).eq("id", user_id).execute()
         supabase.table("user_packages").update({"last_claim_time": datetime.now().isoformat()}).eq("id", pkg_id).execute()
         flash(f"আপনি সফলভাবে ৳{reward} ক্লেইম করেছেন!", "success")
     else:
         flash("এখনো ক্লেইম করার সময় হয়নি!", "warning")
-        
     return redirect(url_for('dashboard'))
+
 @app.route('/buy_vip/<pkg_name>', methods=['POST'])
 def buy_vip(pkg_name):
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -253,17 +244,55 @@ def withdraw():
         flash("আপনার একাউন্টে পর্যাপ্ত ব্যালেন্স নেই!", "danger")
     return redirect(url_for('transfer'))
 
-# --- HIDDEN LEADERSHIP ROUTES ---
+
+# ==========================================
+#         NEW: LEADERSHIP APPLY SYSTEM
+# ==========================================
+@app.route('/apply_leader', methods=['GET', 'POST'])
+def apply_leader():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    
+    if user.get('is_leader'):
+        return redirect(url_for('leadership'))
+        
+    app_res = supabase.table("leadership_applications").select("*").eq("user_id", user['id']).order("created_at", desc=True).execute()
+    is_pending = True if app_res.data and app_res.data[0]['status'] == 'Pending' else False
+    
+    if request.method == 'POST':
+        data = {
+            "user_id": user['id'],
+            "name": request.form.get('name'),
+            "email": request.form.get('email'),
+            "phone": request.form.get('phone'),
+            "age": int(request.form.get('age')),
+            "gender": request.form.get('gender'),
+            "education": request.form.get('education'),
+            "address": request.form.get('address'),
+            "photo_url": request.form.get('photo_url'), # Using URL for simple upload
+            "status": "Pending"
+        }
+        supabase.table("leadership_applications").insert(data).execute()
+        flash("আপনার লিডারশিপ আবেদনটি সফলভাবে জমা হয়েছে! এডমিন খুব দ্রুত এটি রিভিউ করবেন।", "success")
+        return redirect(url_for('apply_leader'))
+        
+    return render_template('apply_leader.html', user=user, pending=is_pending)
+
 @app.route('/leadership')
 def leadership():
     if 'user_id' not in session: return redirect(url_for('login'))
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
     
+    # Check if user is actually approved leader
+    if not user.get('is_leader'):
+        flash("আপনাকে প্রথমে লিডারশিপের জন্য আবেদন করতে হবে!", "warning")
+        return redirect(url_for('apply_leader'))
+    
     team_res = supabase.table("users").select("id, name, email, created_at").eq("referred_by", user['referral_code']).order("created_at", desc=True).execute()
     team = team_res.data
     
     if team:
-        team_ids = [m['id'] for m in team]
+        team_ids =[m['id'] for m in team]
         dep_res = supabase.table("deposits").select("user_id, amount").in_("user_id", team_ids).eq("status", "Approved").execute()
         dep_dict = {}
         for d in dep_res.data:
@@ -298,16 +327,12 @@ def leader_withdraw():
 # ==========================================
 #         ADMIN PANEL ROUTES
 # ==========================================
-
 @app.route('/admin')
 def admin_panel():
     if not is_admin(): return redirect(url_for('dashboard'))
-    
     all_users = supabase.table("users").select("id").execute().data
     total_users = len(all_users)
-    
     deposits = supabase.table("deposits").select("*").order("created_at", desc=True).execute().data
-    
     notice_data = supabase.table("settings").select("notice_text").eq("id", 1).execute().data
     current_notice = notice_data[0]['notice_text'] if notice_data else ""
     
@@ -316,7 +341,6 @@ def admin_panel():
     for d in deposits: 
         d['user_name'] = user_dict.get(d['user_id'], {}).get('name', 'Unknown')
         d['user_email'] = user_dict.get(d['user_id'], {}).get('email', 'Unknown')
-        
     return render_template('admin.html', total_users=total_users, deposits=deposits, current_notice=current_notice)
 
 @app.route('/admin/users')
@@ -328,17 +352,34 @@ def admin_users():
 @app.route('/admin/withdrawals')
 def admin_withdrawals():
     if not is_admin(): return redirect(url_for('dashboard'))
-    
-    # শুধুমাত্র 'Pending' স্ট্যাটাসের রিকোয়েস্টগুলো আনা হচ্ছে
     withdrawals = supabase.table("withdrawals").select("*").eq("status", "Pending").order("created_at", desc=True).execute().data
-    
     users = supabase.table("users").select("id, name, email").execute().data
     user_dict = {u['id']: u for u in users}
     for w in withdrawals: 
         w['user_name'] = user_dict.get(w['user_id'], {}).get('name', 'Unknown')
         w['user_email'] = user_dict.get(w['user_id'], {}).get('email', 'Unknown')
-        
     return render_template('admin_withdrawals.html', withdrawals=withdrawals)
+
+@app.route('/admin/leadership_apps')
+def admin_leadership_apps():
+    if not is_admin(): return redirect(url_for('dashboard'))
+    apps = supabase.table("leadership_applications").select("*").order("created_at", desc=True).execute().data
+    return render_template('admin_leadership.html', applications=apps)
+
+@app.route('/admin/leadership_action/<int:app_id>/<action>')
+def admin_handle_leadership(app_id, action):
+    if not is_admin(): return redirect(url_for('dashboard'))
+    app_data = supabase.table("leadership_applications").select("*").eq("id", app_id).execute().data[0]
+    
+    if action == 'approve':
+        supabase.table("leadership_applications").update({"status": "Approved"}).eq("id", app_id).execute()
+        supabase.table("users").update({"is_leader": True}).eq("id", app_data['user_id']).execute()
+        flash("লিডারশিপ রিকোয়েস্ট এপ্রুভ করা হয়েছে!", "success")
+    elif action == 'reject':
+        supabase.table("leadership_applications").update({"status": "Rejected"}).eq("id", app_id).execute()
+        flash("রিকোয়েস্ট বাতিল করা হয়েছে!", "warning")
+    return redirect(url_for('admin_leadership_apps'))
+
 @app.route('/admin/update_notice', methods=['POST'])
 def admin_update_notice():
     if not is_admin(): return redirect(url_for('dashboard'))
@@ -360,14 +401,16 @@ def admin_handle_deposit(d_id, action):
             u_data = supabase.table("users").select("*").eq("id", d_data['user_id']).execute().data[0]
             supabase.table("users").update({"balance": u_data['balance'] + d_data['amount']}).eq("id", d_data['user_id']).execute()
             
-            # Leadership Bonus 50%
+            # --- 50% Leadership Bonus Logic ---
             if u_data.get('referred_by'):
                 referrer_res = supabase.table("users").select("*").eq("referral_code", u_data['referred_by']).execute()
                 if referrer_res.data:
                     referrer = referrer_res.data[0]
-                    leader_bonus = d_data['amount'] * 0.50
-                    current_leader_balance = referrer.get('leader_balance') or 0.0
-                    supabase.table("users").update({"leader_balance": current_leader_balance + leader_bonus}).eq("id", referrer['id']).execute()
+                    # বোনাস শুধুমাত্র এপ্রুভড লিডাররা পাবে
+                    if referrer.get('is_leader'):
+                        leader_bonus = d_data['amount'] * 0.50
+                        current_leader_balance = referrer.get('leader_balance') or 0.0
+                        supabase.table("users").update({"leader_balance": current_leader_balance + leader_bonus}).eq("id", referrer['id']).execute()
             
             supabase.table("deposits").update({"status": "Approved"}).eq("id", d_id).execute()
             flash("ডিপোজিট এপ্রুভ করা হয়েছে!", "success")
@@ -385,14 +428,11 @@ def admin_handle_withdraw(w_id, action):
         flash("উত্তোলন এপ্রুভ করা হয়েছে!", "success")
     elif action == 'reject' and w_data['status'] == 'Pending':
         u_data = supabase.table("users").select("*").eq("id", w_data['user_id']).execute().data[0]
-        
-        # Check if normal or leader withdraw
         if w_data['method'].startswith("Leader"):
             current_leader = u_data.get('leader_balance') or 0.0
             supabase.table("users").update({"leader_balance": current_leader + w_data['amount']}).eq("id", w_data['user_id']).execute()
         else:
             supabase.table("users").update({"balance": u_data['balance'] + w_data['amount']}).eq("id", w_data['user_id']).execute()
-            
         supabase.table("withdrawals").update({"status": "Rejected"}).eq("id", w_id).execute()
         flash("উত্তোলন বাতিল করা হয়েছে এবং টাকা ফেরত দেওয়া হয়েছে!", "warning")
     return redirect(url_for('admin_withdrawals'))
@@ -418,19 +458,16 @@ def admin_delete_user(user_id):
         flash("ইউজারকে ডিলিট করা হয়েছে!", "danger")
     return redirect(url_for('admin_users'))
 
+# --- Other Pages Routes ---
 @app.route('/history')
 def history():
     if 'user_id' not in session: return redirect(url_for('login'))
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
-    
-    # উইথড্র হিস্ট্রি ডাটাবেস থেকে আনা হচ্ছে
     withdraw_res = supabase.table("withdrawals").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
     withdrawals = withdraw_res.data
-    
-    # শুধুমাত্র Approved (সফল) হওয়া উইথড্রগুলোর যোগফল বের করা হচ্ছে
     total_withdraw = sum(w['amount'] for w in withdrawals if w['status'] == 'Approved')
-    
     return render_template('history.html', user=user, withdrawals=withdrawals, total_withdraw=total_withdraw)
+
 @app.route('/referrals')
 def referrals():
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -443,7 +480,6 @@ def leaderboard():
     fake_names =["Rahim", "Karim", "Samiya", "Nusrat", "Arif", "Hasan", "Mehedi", "Tariq", "Fatema", "Rina", "Shakil", "Imran", "Farjana", "Sumaiya", "Tanjim", "Jony", "Momin", "Sujon", "Riaz", "Habib"]
     today_str = datetime.now().strftime('%Y-%m-%d')
     random.seed(today_str)
-    
     earners =[{"name": n, "total_earned": random.randint(5000, 50000)} for n in random.sample(fake_names, 20)]
     earners.sort(key=lambda x: x["total_earned"], reverse=True)
     referrers =[{"name": n, "total_referrals": random.randint(50, 500)} for n in random.sample(fake_names, 20)]
