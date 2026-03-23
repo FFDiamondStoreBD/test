@@ -407,15 +407,19 @@ def admin_delete_user(user_id):
         flash("ইউজারকে ডিলিট করা হয়েছে!", "danger")
     return redirect(url_for('admin_users'))
 
-# --- Other Pages Routes ---
 @app.route('/history')
 def history():
     if 'user_id' not in session: return redirect(url_for('login'))
     user = supabase.table("users").select("*").eq("id", session['user_id']).execute().data[0]
+    
+    # উইথড্র হিস্ট্রি ডাটাবেস থেকে আনা হচ্ছে
     withdraw_res = supabase.table("withdrawals").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
-    deposit_res = supabase.table("deposits").select("*").eq("user_id", session['user_id']).order("created_at", desc=True).execute()
-    return render_template('history.html', user=user, withdrawals=withdraw_res.data, deposits=deposit_res.data)
-
+    withdrawals = withdraw_res.data
+    
+    # শুধুমাত্র Approved (সফল) হওয়া উইথড্রগুলোর যোগফল বের করা হচ্ছে
+    total_withdraw = sum(w['amount'] for w in withdrawals if w['status'] == 'Approved')
+    
+    return render_template('history.html', user=user, withdrawals=withdrawals, total_withdraw=total_withdraw)
 @app.route('/referrals')
 def referrals():
     if 'user_id' not in session: return redirect(url_for('login'))
