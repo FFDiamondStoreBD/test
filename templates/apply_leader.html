@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>লিডারশিপ আবেদন - Easy Earn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; } </style>
+</head>
+<body class="text-gray-800 antialiased pb-20">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/dashboard" class="text-blue-600 font-bold hover:bg-blue-50 px-3 py-2 rounded-lg transition"><i class="fa-solid fa-arrow-left"></i> ড্যাশবোর্ড</a>
+            <h1 class="text-xl font-extrabold text-gray-800">লিডারশিপ প্রোগ্রাম</h1>
+            <div class="w-10"></div>
+        </div>
+    </nav>
+
+    <div class="max-w-xl mx-auto py-8 px-4">
+
+        <!-- Banner Info -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-lg shadow-blue-500/30 mb-8 relative overflow-hidden">
+            <div class="absolute top-[-20px] right-[-20px] text-8xl opacity-10"><i class="fa-solid fa-star"></i></div>
+            <h2 class="text-2xl font-black mb-2 relative z-10"><i class="fa-solid fa-gift text-yellow-300 mr-1"></i> ৫০% কমিশন সুযোগ!</h2>
+            <p class="text-blue-100 text-sm font-semibold relative z-10">
+                আমাদের লিডারশিপ প্রোগ্রামে এপ্রুভ হলে, আপনার রেফার করা মেম্বাররা যত টাকা অ্যাড মানি করবে, আপনি সরাসরি তার <strong class="text-yellow-300">৫০% কমিশন</strong> পাবেন!
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="mb-6">{% for category, message in messages %}<div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md flex items-center gap-2 {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% else %} bg-yellow-500 text-yellow-900 {% endif %}"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+
+        {% if pending %}
+        <!-- If Application is Pending -->
+        <div class="bg-white rounded-2xl p-10 text-center shadow-sm border border-yellow-200">
+            <div class="w-20 h-20 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-yellow-50"><i class="fa-solid fa-hourglass-half animate-pulse"></i></div>
+            <h2 class="text-2xl font-extrabold text-gray-800 mb-2">আবেদনটি রিভিউতে আছে!</h2>
+            <p class="text-gray-500 font-semibold">আপনার আবেদনটি সফলভাবে জমা নেওয়া হয়েছে। এডমিন আপনার তথ্য যাচাই করে খুব দ্রুত এপ্রুভ করবেন। দয়া করে অপেক্ষা করুন।</p>
+        </div>
+        {% else %}
+        <!-- Application Form -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-black text-gray-800 mb-6 border-b border-gray-100 pb-3"><i class="fa-solid fa-file-signature text-blue-500 mr-1"></i> আবেদন ফর্ম পূরণ করুন</h3>
+            
+            <form method="POST" action="/apply_leader" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">আপনার পুরো নাম</label>
+                    <input type="text" name="name" value="{{ user.name }}" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">ইমেইল এড্রেস</label>
+                        <input type="email" name="email" value="{{ user.email }}" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">ফোন নম্বর</label>
+                        <input type="text" name="phone" value="{{ user.phone }}" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">লিঙ্গ (Gender)</label>
+                        <select name="gender" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                            <option value="Male">পুরুষ</option>
+                            <option value="Female">মহিলা</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">বয়স</label>
+                        <input type="number" name="age" min="15" placeholder="যেমন: 22" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">শিক্ষাগত যোগ্যতা (Education)</label>
+                    <input type="text" name="education" placeholder="যেমন: HSC, BBA" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">স্থায়ী ঠিকানা (Address)</label>
+                    <textarea name="address" rows="2" placeholder="আপনার বর্তমান বা স্থায়ী ঠিকানা" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-xs font-bold mb-1.5 uppercase">আপনার ছবির লিংক (Photo URL)</label>
+                    <input type="text" name="photo_url" placeholder="ফেসবুক প্রোফাইল বা ছবির ডাইরেক্ট লিংক দিন" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700">
+                    <p class="text-[10px] text-gray-400 mt-1 font-semibold">আপনার আইডেন্টিটি ভেরিফাই করার জন্য এটি প্রয়োজন।</p>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white p-4 mt-2 rounded-xl font-black hover:bg-blue-700 transition active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-paper-plane"></i> আবেদন সাবমিট করুন
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
