@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ড্যাশবোর্ড - InvestEarn</title>
+    <title>ড্যাশবোর্ড - Easy Earn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -35,9 +35,9 @@
                     <p class="font-extrabold text-lg leading-tight">{{ user.name }}</p>
                 </div>
             </div>
-            <div class="bg-white/20 p-2.5 rounded-full backdrop-blur-md shadow-sm border border-white/30">
+            <a href="https://t.me/earndailysite" target="_blank" class="bg-white/20 p-2.5 rounded-full backdrop-blur-md shadow-sm border border-white/30 hover:bg-white/30 transition">
                 <i class="fa-solid fa-headset text-xl text-white"></i>
-            </div>
+            </a>
         </div>
 
         <!-- Tap for Balance -->
@@ -89,13 +89,13 @@
             
             <a href="/leaderboard" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-trophy"></i></div><span class="text-[10px] font-extrabold text-gray-600">র‍্যাংকিং</span></a>
             
-            <a href="/history" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-clock-rotate-left"></i></div><span class="text-[10px] font-extrabold text-gray-600">হিস্ট্রি</span></a>
+            <a href="/history" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-file-invoice"></i></div><span class="text-[10px] font-extrabold text-gray-600">স্টেটমেন্ট</span></a>
             
-            <a href="/#proofs" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-money-check-dollar"></i></div><span class="text-[10px] font-extrabold text-gray-600">প্রুফ</span></a>
+            <a href="https://t.me/pay_easy_earn" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-money-check-dollar"></i></div><span class="text-[10px] font-extrabold text-gray-600">প্রুফ</span></a>
             
-            <a href="https://t.me/your_telegram_channel" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-brands fa-telegram"></i></div><span class="text-[10px] font-extrabold text-gray-600">টেলিগ্রাম</span></a>
+            <a href="/#how-it-works" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-book-open"></i></div><span class="text-[10px] font-extrabold text-gray-600">কাজের নিয়ম</span></a>
             
-            <a href="https://t.me/your_support_bot" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-headset"></i></div><span class="text-[10px] font-extrabold text-gray-600">সাপোর্ট</span></a>
+            <a href="https://t.me/earndailysite" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-headset"></i></div><span class="text-[10px] font-extrabold text-gray-600">সাপোর্ট</span></a>
         </div>
 
         <!-- ========================================== -->
@@ -118,7 +118,49 @@
         {% endif %}
 
         <!-- ========================================== -->
-        <!-- 5. Active Packages & Daily Claims          -->
+        <!-- 5. NEW: Support & Payment Proof Section    -->
+        <!-- ========================================== -->
+        <div class="mb-6">
+            <h2 class="text-base font-extrabold text-gray-800 mb-3 px-1"><i class="fa-solid fa-users-rectangle text-blue-500 mr-1"></i> সাপোর্ট ও কমিউনিটি</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <a href="https://t.me/earndailysite" target="_blank" class="bg-white border border-blue-100 shadow-sm rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:bg-blue-50 transition active:scale-95">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-headset"></i></div>
+                    <h3 class="font-bold text-gray-800 text-sm">লাইভ সাপোর্ট</h3>
+                    <p class="text-[10px] font-bold text-gray-500 mt-0.5">যেকোনো সমস্যার সমাধানে</p>
+                </a>
+                <a href="https://t.me/pay_easy_earn" target="_blank" class="bg-white border border-green-100 shadow-sm rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:bg-green-50 transition active:scale-95">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl mb-2"><i class="fa-solid fa-money-check-dollar"></i></div>
+                    <h3 class="font-bold text-gray-800 text-sm">পেমেন্ট প্রুফ</h3>
+                    <p class="text-[10px] font-bold text-gray-500 mt-0.5">লাইভ ক্যাশআউট আপডেট</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 6. NEW: Earning Tips Content               -->
+        <!-- ========================================== -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-yellow-200 mb-6">
+            <h2 class="text-base font-extrabold text-gray-800 mb-3 flex items-center gap-2 border-b border-gray-100 pb-2">
+                <i class="fa-solid fa-lightbulb text-yellow-500 text-lg"></i> কীভাবে বেশি আয় করবেন?
+            </h2>
+            <ul class="text-sm text-gray-600 space-y-3 font-medium">
+                <li class="flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> 
+                    <span>প্রতিদিন নির্দিষ্ট সময়ে ড্যাশবোর্ডে লগিন করে আপনার ফ্রি এবং ভিআইপি প্যাকেজগুলোর টাকা ক্লেইম করুন।</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> 
+                    <span>"টিম/রেফার" মেনু থেকে লিংক কপি করে বন্ধুদের একাউন্ট খুলতে সাহায্য করুন এবং বড় কমিশন উপভোগ করুন।</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-check text-green-500 mt-1 text-xs"></i> 
+                    <span>স্টোর থেকে আপনার বাজেট অনুযায়ী বড় <strong>VIP প্যাকেজ</strong> কিনে দৈনিক আয় কয়েকগুণ বাড়িয়ে নিন।</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 7. Active Packages & Daily Claims          -->
         <!-- ========================================== -->
         <div class="mb-6">
             <div class="flex items-center justify-between mb-3 px-1">
@@ -141,7 +183,6 @@
                         </div>
                     </div>
                     
-                    <!-- Claim Button -->
                     <form method="POST" action="/claim/{{ pkg.id }}">
                         <button id="claim-btn-{{ pkg.id }}" type="submit" class="hidden {% if pkg.package_name == 'FREE' %} bg-green-500 {% else %} bg-bkash {% endif %} text-white px-4 py-2.5 rounded-xl text-xs font-extrabold shadow-md hover:scale-105 transition active:scale-95 flex items-center gap-1">
                             <i class="fa-solid fa-hand-holding-dollar"></i> ৳{{ pkg.reward }}
@@ -158,7 +199,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- 6. Attractive VIP Packages Store           -->
+        <!-- 8. Attractive VIP Packages Store           -->
         <!-- ========================================== -->
         <div class="mb-6">
             <div class="flex items-center justify-between mb-4 px-1">
@@ -168,13 +209,11 @@
             <div class="grid grid-cols-1 gap-5">
                 {% for pkg_name, details in vip.items() %}
                 <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-2xl shadow-lg border border-yellow-500/30 overflow-hidden relative">
-                    <!-- Validity Badge -->
                     <div class="absolute top-0 right-0 bg-gradient-to-l from-yellow-500 to-yellow-400 text-gray-900 text-[10px] font-black px-4 py-1.5 rounded-bl-xl shadow-md">
                         {{ details.mead_days }} দিন মেয়াদ
                     </div>
                     
                     <div class="p-5 flex items-center justify-between">
-                        <!-- Left Side: Icon & Title -->
                         <div class="flex items-center gap-4">
                             <div class="w-14 h-14 bg-gradient-to-tr from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-white text-2xl shadow-[0_0_15px_rgba(234,179,8,0.4)] border border-yellow-300">
                                 <i class="fa-solid fa-crown"></i>
@@ -185,7 +224,6 @@
                             </div>
                         </div>
 
-                        <!-- Right Side: Button -->
                         <div>
                             <form method="POST" action="/buy_vip/{{ pkg_name }}">
                                 <button type="submit" class="bg-gradient-to-r from-yellow-500 to-yellow-400 text-gray-900 px-5 py-2.5 rounded-xl text-sm font-black hover:scale-105 transition active:scale-95 shadow-lg shadow-yellow-500/20">
@@ -195,7 +233,6 @@
                         </div>
                     </div>
 
-                    <!-- Details Box (Daily vs Total Profit) -->
                     <div class="bg-gray-800/80 px-5 py-3 border-t border-gray-700/50 flex justify-between items-center text-xs font-bold">
                         <div class="flex items-center gap-2">
                             <div class="w-6 h-6 rounded bg-gray-700 text-yellow-400 flex items-center justify-center"><i class="fa-solid fa-bolt"></i></div>
@@ -204,7 +241,6 @@
                         <div class="h-6 w-px bg-gray-700"></div>
                         <div class="flex items-center gap-2">
                             <div class="w-6 h-6 rounded bg-gray-700 text-yellow-400 flex items-center justify-center"><i class="fa-solid fa-sack-dollar"></i></div>
-                            <!-- Calculate Total Profit -->
                             <div><p class="text-gray-400 text-[9px]">মোট আয়</p><p class="text-green-400">৳{{ details.daily_profit * details.mead_days }}</p></div>
                         </div>
                     </div>
@@ -216,7 +252,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- 7. Bottom Navigation Bar                   -->
+    <!-- 9. Bottom Navigation Bar                   -->
     <!-- ========================================== -->
     <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-50 rounded-t-2xl">
         <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2.5">
@@ -232,9 +268,9 @@
                 <i class="fa-solid fa-users text-xl mb-0.5"></i>
                 <span class="text-[10px] font-extrabold">টিম</span>
             </a>
-            <a href="/logout" class="flex flex-col items-center gap-1 text-gray-400 hover:text-red-500 transition">
-                <i class="fa-solid fa-power-off text-xl mb-0.5"></i>
-                <span class="text-[10px] font-extrabold">লগআউট</span>
+            <a href="/history" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
+                <i class="fa-solid fa-clock-rotate-left text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">হিস্ট্রি</span>
             </a>
         </div>
     </div>
