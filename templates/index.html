@@ -31,7 +31,7 @@
 <body class="text-gray-800 antialiased overflow-x-hidden">
 
     <!-- ========================================== -->
-    <!-- 1. Navbar (Dynamic Login/Dashboard Button) -->
+    <!-- 1. Navbar                                  -->
     <!-- ========================================== -->
     <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -42,9 +42,9 @@
 
             <!-- Nav Links (Desktop) -->
             <div class="hidden md:flex items-center gap-8 font-bold text-gray-600">
-                <a href="#how-it-works" class="hover:text-[#E2136E] transition">কীভাবে কাজ করে?</a>
-                <a href="#proofs" class="hover:text-[#E2136E] transition">পেমেন্ট প্রুফ</a>
-                <a href="#reviews" class="hover:text-[#E2136E] transition">রিভিউ</a>
+                <a href="#free-rules" class="hover:text-[#E2136E] transition">ফ্রি ইনকাম ও রুলস</a>
+                <a href="#how-to-start" class="hover:text-[#E2136E] transition">কীভাবে কাজ করবেন</a>
+                <a href="#mechanism" class="hover:text-[#E2136E] transition">কাজের মেকানিজম</a>
                 <a href="https://t.me/earndailysite" target="_blank" class="hover:text-[#E2136E] transition">সাপোর্ট</a>
             </div>
 
@@ -67,25 +67,24 @@
     </nav>
 
     <!-- ========================================== -->
-    <!-- 2. Hero Section (Modern & Attractive)      -->
+    <!-- 2. Hero Section                            -->
     <!-- ========================================== -->
     <header class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden py-20 lg:py-28">
-        <!-- Background Elements -->
         <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#E2136E] rounded-full blur-[120px] opacity-20"></div>
         <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600 rounded-full blur-[120px] opacity-20"></div>
 
         <div class="max-w-7xl mx-auto px-4 relative z-10 flex flex-col lg:flex-row items-center gap-12">
             <!-- Text Content -->
             <div class="lg:w-1/2 text-center lg:text-left">
-                <div class="inline-block bg-white/10 border border-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-pink-300 mb-6 tracking-widest uppercase">
-                    <i class="fa-solid fa-star text-yellow-400 mr-1"></i> স্মার্ট ইনকামের নতুন প্ল্যাটফর্ম
+                <div class="inline-block bg-green-500/20 border border-green-500/30 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-green-300 mb-6 tracking-widest uppercase">
+                    <i class="fa-solid fa-gift text-green-400 mr-1"></i> সম্পূর্ণ ফ্রি-তেও আয় করা সম্ভব!
                 </div>
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 leading-tight">
                     Easy Earn -এ যুক্ত হোন, <br> 
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">প্রতিদিন স্মার্ট আয়</span> করুন!
                 </h1>
                 <p class="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0">
-                    একাউন্ট খুললেই পাচ্ছেন একটি ফ্রি প্যাকেজ! আমাদের প্ল্যাটফর্মে যুক্ত হয়ে আপনার দৈনন্দিন আয় নিশ্চিত করুন এবং আকর্ষণীয় রেফারেল বোনাস উপভোগ করুন।
+                    কোনো ধরনের ইনভেস্টমেন্ট ছাড়াই একাউন্ট খুলে প্রতিদিন ফ্রি ইনকাম করুন। অথবা আমাদের ভিআইপি প্যাকেজ কিনে আয় কয়েকগুণ বাড়িয়ে নিন।
                 </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                     {% if 'user_id' in session %}
@@ -94,23 +93,20 @@
                         </a>
                     {% else %}
                         <a href="/register" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#E2136E] to-pink-600 text-white text-lg font-black rounded-full shadow-lg shadow-pink-600/40 hover:scale-105 transition text-center flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-user-plus"></i> এখনই শুরু করুন
+                            <i class="fa-solid fa-user-plus"></i> ফ্রিতে আয় শুরু করুন
                         </a>
                     {% endif %}
-                    <a href="https://t.me/earndailysite" target="_blank" class="w-full sm:w-auto px-8 py-4 bg-white/10 border border-white/20 text-white text-lg font-bold rounded-full hover:bg-white/20 transition text-center flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-headset"></i> সাপোর্ট
-                    </a>
                 </div>
             </div>
 
-            <!-- Hero Image / Graphics -->
+            <!-- Hero Image -->
             <div class="lg:w-1/2 relative hidden md:block">
                 <div class="relative w-full max-w-md mx-auto animate-float">
                     <div class="w-full aspect-square bg-gradient-to-tr from-[#E2136E] to-purple-600 rounded-full blur-3xl opacity-40 absolute top-0"></div>
                     <div class="bg-gray-800 border border-gray-700 p-8 rounded-3xl shadow-2xl relative z-10 text-center">
-                        <i class="fa-solid fa-chart-line text-7xl text-green-400 mb-6"></i>
-                        <h3 class="text-3xl font-black text-white">স্টক মার্কেট ইনভেস্টমেন্ট</h3>
-                        <p class="text-gray-400 mt-3 font-semibold">আপনার ফান্ড রিয়েল স্টক সাইটে ট্রেড করা হয় এবং সেখান থেকে প্রফিট জেনারেট হয়।</p>
+                        <i class="fa-solid fa-mobile-screen-button text-7xl text-green-400 mb-6"></i>
+                        <h3 class="text-3xl font-black text-white">বিকাশ ও নগদে পেমেন্ট</h3>
+                        <p class="text-gray-400 mt-3 font-semibold">আপনার ইনকাম করা টাকা সরাসরি আপনার মোবাইল ব্যাংকিংয়ে ক্যাশ আউট করুন।</p>
                     </div>
                 </div>
             </div>
@@ -118,31 +114,137 @@
     </header>
 
     <!-- ========================================== -->
-    <!-- 3. How Easy Earn Works (Important Details) -->
+    <!-- 3. Live Statistics                         -->
     <!-- ========================================== -->
-    <section id="how-it-works" class="py-20 bg-[#f8fafc]">
+    <div class="bg-white border-b border-gray-100 relative z-20 -mt-6 mx-4 sm:mx-auto max-w-6xl rounded-2xl shadow-lg p-6 md:p-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-gray-100">
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">২৫,০০০+</h4>
+                <p class="text-sm font-bold text-gray-500">মোট মেম্বার</p>
+            </div>
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">৳ ১২ লক্ষ+</h4>
+                <p class="text-sm font-bold text-gray-500">মোট পেমেন্ট</p>
+            </div>
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">৩ মিনিট</h4>
+                <p class="text-sm font-bold text-gray-500">গড় পেমেন্ট সময়</p>
+            </div>
+            <div>
+                <h4 class="text-3xl md:text-4xl font-black text-[#E2136E] mb-1">২৪/৭</h4>
+                <p class="text-sm font-bold text-gray-500">লাইভ সাপোর্ট</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 4. NEW: Free Earning & Rules Section       -->
+    <!-- ========================================== -->
+    <section id="free-rules" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                <!-- Free Earning Box -->
+                <div class="lg:w-1/2 bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-3xl border border-green-200 shadow-sm relative overflow-hidden">
+                    <i class="fa-solid fa-gift absolute -right-10 -bottom-10 text-9xl text-green-500 opacity-10"></i>
+                    <h3 class="text-2xl font-black text-green-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-hand-holding-dollar text-green-600"></i> ফ্রি-তে ইনকামের সুযোগ
+                    </h3>
+                    <p class="text-gray-700 font-semibold mb-6">Easy Earn-এ কাজ করার জন্য কোনো বাধ্যবাধকতা নেই যে আপনাকে প্যাকেজ কিনতেই হবে। আপনি চাইলে সম্পূর্ণ ফ্রি-তেও ইনকাম করতে পারবেন।</p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-green-600 mt-1 text-xl"></i>
+                            <span class="text-gray-800 font-extrabold">একাউন্ট খুললেই ফ্রি প্যাকেজ: <span class="font-medium text-gray-600 block mt-1">লগিন করে আপনার ড্যাশবোর্ড থেকে প্রতি ৮ ঘণ্টা পর পর ৭ টাকা করে ক্লেইম করুন একদম ফ্রিতে।</span></span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-green-600 mt-1 text-xl"></i>
+                            <span class="text-gray-800 font-extrabold">ইনস্ট্যান্ট রেফার বোনাস: <span class="font-medium text-gray-600 block mt-1">আপনার শেয়ার করা লিংকের মাধ্যমে কেউ একাউন্ট খুললে সে সাথে সাথে ৫০ টাকা ফ্রি পেয়ে যাবে।</span></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Important Rules Box -->
+                <div class="lg:w-1/2 bg-gradient-to-br from-red-50 to-red-100 p-8 rounded-3xl border border-red-200 shadow-sm relative overflow-hidden">
+                    <i class="fa-solid fa-triangle-exclamation absolute -right-10 -bottom-10 text-9xl text-red-500 opacity-10"></i>
+                    <h3 class="text-2xl font-black text-red-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-red-600"></i> প্ল্যাটফর্মের নিয়মাবলী
+                    </h3>
+                    <p class="text-gray-700 font-semibold mb-6">সকল ইউজারদের সমান সুযোগ দিতে এবং সাইটকে সুরক্ষিত রাখতে নিচের নিয়মগুলো কঠোরভাবে মেনে চলতে হবে:</p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-xmark text-red-600 mt-1 text-xl"></i>
+                            <span class="text-gray-800 font-extrabold">মাল্টিপল একাউন্ট সম্পূর্ণ নিষিদ্ধ: <span class="font-medium text-gray-600 block mt-1">একই মোবাইল বা ডিভাইস থেকে একাধিক (একের অধিক) একাউন্ট খোলার চেষ্টা করলে সিকিউরিটি সিস্টেম সবগুলো একাউন্ট স্থায়ীভাবে ব্যান করে দেবে।</span></span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-info text-blue-600 mt-1 text-xl"></i>
+                            <span class="text-gray-800 font-extrabold">ফ্রি উইথড্র রুলস: <span class="font-medium text-gray-600 block mt-1">ফ্রি ইউজারদের ক্ষেত্রে ক্যাশ আউট দেওয়ার সময় একাউন্ট ভেরিফিকেশনের জন্য নির্দিষ্ট কিছু রুলস বা লিমিটেশন প্রযোজ্য হতে পারে।</span></span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 5. How to Start Working (Steps)            -->
+    <!-- ========================================== -->
+    <section id="how-to-start" class="py-20 bg-[#f8fafc]">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-black text-gray-800 mb-4">কীভাবে কাজ শুরু করবেন?</h2>
+            <p class="text-gray-500 font-medium mb-12 max-w-2xl mx-auto">খুব সহজ ৪টি ধাপে আমাদের প্ল্যাটফর্মে যুক্ত হয়ে আপনার স্মার্ট ইনকাম যাত্রা শুরু করুন।</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-pink-50 text-[#E2136E] rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-user-plus"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">১. একাউন্ট খুলুন</h3>
+                    <p class="text-sm text-gray-500">আপনার নাম, ফোন নম্বর ও ইমেইল দিয়ে মাত্র ১ মিনিটে ফ্রি একাউন্ট তৈরি করুন।</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">২. ফ্রি ক্লেইম করুন</h3>
+                    <p class="text-sm text-gray-500">ড্যাশবোর্ড থেকে আপনার ফ্রি প্যাকেজের টাকা নিয়মিত ক্লেইম করে ব্যালেন্স বাড়ান।</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-users"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">৩. রেফার করুন</h3>
+                    <p class="text-sm text-gray-500">আপনার লিংক শেয়ার করে বন্ধুদের ইনভাইট করুন এবং আকর্ষণীয় রিওয়ার্ড উপভোগ করুন।</p>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition relative group">
+                    <div class="w-16 h-16 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 group-hover:scale-110 transition"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">৪. ক্যাশআউট করুন</h3>
+                    <p class="text-sm text-gray-500">আপনার জমানো টাকা যেকোনো সময় সরাসরি আপনার বিকাশ বা নগদে ক্যাশআউট করুন।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 6. How Easy Earn Works (Stock Mechanism)   -->
+    <!-- ========================================== -->
+    <section id="mechanism" class="py-20 bg-white border-t border-gray-100">
         <div class="max-w-6xl mx-auto px-4">
             <div class="text-center mb-12">
-                <span class="text-theme font-bold tracking-wider uppercase text-xs bg-pink-50 px-4 py-1.5 rounded-full border border-pink-100 mb-4 inline-block shadow-sm">কাজের ধরন</span>
+                <span class="text-theme font-bold tracking-wider uppercase text-xs bg-pink-50 px-4 py-1.5 rounded-full border border-pink-100 mb-4 inline-block shadow-sm">কাজের মেকানিজম</span>
                 <h2 class="text-3xl md:text-4xl font-black text-gray-800 mb-4">Easy Earn কীভাবে কাজ করে?</h2>
-                <p class="text-gray-500 font-medium max-w-2xl mx-auto">আমাদের প্ল্যাটফর্মের সম্পূর্ণ মেকানিজম এবং পেমেন্ট পলিসি সম্পর্কে জেনে নিন।</p>
+                <p class="text-gray-500 font-medium max-w-2xl mx-auto">আমরা কীভাবে আপনাকে পেমেন্ট দিই? আমাদের প্ল্যাটফর্মের ফান্ডিং মেকানিজম এবং পেমেন্ট পলিসি সম্পর্কে জেনে নিন।</p>
             </div>
             
-            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="bg-gray-50 rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-8 md:p-12 lg:flex items-center gap-10">
                     <div class="lg:w-1/3 mb-8 lg:mb-0 text-center">
-                        <div class="w-32 h-32 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-5xl mx-auto mb-4 border-4 border-blue-100">
+                        <div class="w-32 h-32 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-5xl mx-auto mb-4 border border-blue-200">
                             <i class="fa-solid fa-money-trend-up"></i>
                         </div>
                         <h3 class="text-2xl font-black text-gray-800">স্টক ট্রেডিং ও ইনভেস্টমেন্ট</h3>
                     </div>
                     
-                    <div class="lg:w-2/3 space-y-6 border-l-0 lg:border-l-4 border-gray-100 lg:pl-10">
+                    <div class="lg:w-2/3 space-y-6 border-l-0 lg:border-l-4 border-gray-200 lg:pl-10">
                         <div class="flex gap-4">
                             <div class="mt-1 text-green-500 text-xl"><i class="fa-solid fa-circle-check"></i></div>
                             <div>
                                 <h4 class="text-lg font-extrabold text-gray-800 mb-1">১. ফান্ডের ব্যবহার</h4>
-                                <p class="text-gray-600 font-medium">আপনারা যে প্যাকেজগুলো কিনেন বা যে ফান্ড থাকে, সেই সম্পূর্ণ টাকা আমরা বিভিন্ন গ্লোবাল <strong class="text-gray-800">স্টক সাইটে (Stock Market)</strong> ইনভেস্ট করে থাকি।</p>
+                                <p class="text-gray-600 font-medium">যারা ভিআইপি প্যাকেজ কিনে থাকেন, সেই সম্পূর্ণ ফান্ড আমরা বিভিন্ন গ্লোবাল <strong class="text-gray-800">স্টক সাইটে (Stock Market)</strong> ট্রেড ও ইনভেস্ট করে থাকি।</p>
                             </div>
                         </div>
                         
@@ -150,7 +252,7 @@
                             <div class="mt-1 text-yellow-500 text-xl"><i class="fa-solid fa-scale-unbalanced"></i></div>
                             <div>
                                 <h4 class="text-lg font-extrabold text-gray-800 mb-1">২. প্রফিট এবং লস (Profit & Loss)</h4>
-                                <p class="text-gray-600 font-medium">স্টক মার্কেটে ট্রেডিংয়ের মাধ্যমে যখন আমাদের প্রফিট (লাভ) হয়, তখন আমরা সাথে সাথেই সবার পেমেন্ট ক্লিয়ার করে দিই। আর যদি কোনো কারণে স্টকে লস হয়, সেক্ষেত্রে ফান্ডের ব্যালেন্স মেলাতে সময় লাগে, তাই পেমেন্ট দিতে কিছুটা <strong>দেরি (Delay)</strong> হতে পারে।</p>
+                                <p class="text-gray-600 font-medium">স্টক মার্কেটে ট্রেডিংয়ের মাধ্যমে লাভ হলে আমরা সাথে সাথেই সবার পেমেন্ট ক্লিয়ার করে দিই। আর যদি স্টকে লস হয়, সেক্ষেত্রে ফান্ডের ব্যালেন্স মেলাতে সময় লাগে, তাই পেমেন্ট দিতে কিছুটা <strong>দেরি (Delay)</strong> হতে পারে।</p>
                             </div>
                         </div>
                         
@@ -158,7 +260,7 @@
                             <div class="mt-1 text-blue-500 text-xl"><i class="fa-solid fa-handshake"></i></div>
                             <div>
                                 <h4 class="text-lg font-extrabold text-gray-800 mb-1">৩. আমাদের পলিসি</h4>
-                                <p class="text-gray-600 font-medium">Easy Earn সর্বদা স্বচ্ছতায় বিশ্বাস করে। উপরে উল্লেখিত ট্রেডিং এবং পেমেন্ট পলিসির বিষয়গুলো ভালোভাবে বুঝেই আমাদের সাথে কাজ শুরু করবেন।</p>
+                                <p class="text-gray-600 font-medium">Easy Earn সর্বদা স্বচ্ছতায় বিশ্বাস করে। উপরে উল্লেখিত ট্রেডিং এবং পেমেন্ট পলিসির বিষয়গুলো ভালোভাবে বুঝেই আমাদের সাথে কাজ করবেন।</p>
                             </div>
                         </div>
                     </div>
@@ -168,15 +270,14 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- 4. Payment Proof Channel Section           -->
+    <!-- 7. Payment Proof Channel Section           -->
     <!-- ========================================== -->
-    <section id="proofs" class="py-16 bg-white border-t border-gray-100">
+    <section id="proofs" class="py-16 bg-[#f8fafc] border-t border-gray-100">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <h2 class="text-3xl font-black text-gray-800 mb-6">আমাদের লাইভ পেমেন্ট প্রুফ</h2>
-            <p class="text-gray-500 font-medium mb-8">Easy Earn-এর সকল লাইভ পেমেন্ট প্রুফ এবং আপডেট পেতে আমাদের অফিসিয়াল টেলিগ্রাম চ্যানেল ভিজিট করুন।</p>
+            <p class="text-gray-500 font-medium mb-8">Easy Earn-এর সকল লাইভ পেমেন্ট প্রুফ দেখতে আমাদের অফিসিয়াল টেলিগ্রাম চ্যানেল ভিজিট করুন।</p>
             
-            <!-- Warning & Channel Link Box -->
-            <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden border border-gray-700">
+            <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-8 shadow-xl relative overflow-hidden border border-gray-700">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-[80px] opacity-30"></div>
                 
                 <h3 class="text-2xl font-black text-white mb-4"><i class="fa-brands fa-telegram text-blue-400"></i> @pay_easy_earn</h3>
@@ -194,9 +295,9 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- 5. User Reviews Section                    -->
+    <!-- 8. User Reviews Section                    -->
     <!-- ========================================== -->
-    <section id="reviews" class="py-20 bg-gray-50 border-t border-gray-100">
+    <section id="reviews" class="py-20 bg-white border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-16">
                 <span class="text-theme font-bold tracking-wider uppercase text-xs bg-pink-50 px-4 py-1.5 rounded-full border border-pink-100 mb-4 inline-block shadow-sm">ইউজার রিভিউ</span>
@@ -204,51 +305,39 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Review 1 -->
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative hover:-translate-y-2 hover:shadow-xl transition duration-300 group">
-                    <i class="fa-solid fa-quote-right absolute top-6 right-6 text-4xl text-gray-100 group-hover:text-pink-50 transition"></i>
+                <div class="bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100 relative hover:-translate-y-2 hover:shadow-md transition duration-300 group">
+                    <i class="fa-solid fa-quote-right absolute top-6 right-6 text-4xl text-gray-200 group-hover:text-pink-100 transition"></i>
                     <div class="flex items-center gap-1 text-yellow-400 mb-5 text-sm">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     </div>
-                    <p class="text-gray-600 font-medium mb-8 leading-relaxed italic">"Easy Earn-এর সিস্টেমটি খুবই চমৎকার। তাদের ট্রেডিং প্রফিটের উপর বেস করে পেমেন্ট সিস্টেম থাকায় সাইটটি অনেক বেশি ট্রাস্টেড মনে হয়েছে।"</p>
-                    <div class="flex items-center gap-4 border-t border-gray-50 pt-5 mt-auto">
-                        <div class="w-12 h-12 rounded-full bg-pink-100 text-[#E2136E] flex items-center justify-center font-black text-xl border-2 border-white shadow-sm">M</div>
-                        <div>
-                            <h4 class="font-extrabold text-gray-800">মো. শামীম আহমেদ</h4>
-                            <p class="text-xs text-green-500 font-bold"><i class="fa-solid fa-circle-check"></i> ভেরিফাইড ইউজার</p>
-                        </div>
+                    <p class="text-gray-600 font-medium mb-8 leading-relaxed italic">"খুবই চমৎকার একটি সাইট! আমি প্রথমে বিশ্বাস করিনি, কিন্তু সম্পূর্ণ ফ্রি-তে কাজ করেও আমি পেমেন্ট পেয়েছি।"</p>
+                    <div class="flex items-center gap-4 border-t border-gray-200 pt-5 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-pink-100 text-[#E2136E] flex items-center justify-center font-black text-xl border-2 border-white">M</div>
+                        <div><h4 class="font-extrabold text-gray-800">মো. শামীম আহমেদ</h4></div>
                     </div>
                 </div>
 
-                <!-- Review 2 -->
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative hover:-translate-y-2 hover:shadow-xl transition duration-300 group">
-                    <i class="fa-solid fa-quote-right absolute top-6 right-6 text-4xl text-gray-100 group-hover:text-pink-50 transition"></i>
+                <div class="bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100 relative hover:-translate-y-2 hover:shadow-md transition duration-300 group">
+                    <i class="fa-solid fa-quote-right absolute top-6 right-6 text-4xl text-gray-200 group-hover:text-pink-100 transition"></i>
                     <div class="flex items-center gap-1 text-yellow-400 mb-5 text-sm">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     </div>
-                    <p class="text-gray-600 font-medium mb-8 leading-relaxed italic">"আমি প্রথমে বিশ্বাস করিনি, কিন্তু যখন দেখলাম তারা রিয়েল স্টক মার্কেটে ইনভেস্ট করে লাভ থেকে আমাদের পেমেন্ট দেয়, তখন কাজ শুরু করি এবং ভালো প্রফিট পাচ্ছি।"</p>
-                    <div class="flex items-center gap-4 border-t border-gray-50 pt-5 mt-auto">
-                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black text-xl border-2 border-white shadow-sm">F</div>
-                        <div>
-                            <h4 class="font-extrabold text-gray-800">ফাতেমা আক্তার</h4>
-                            <p class="text-xs text-green-500 font-bold"><i class="fa-solid fa-circle-check"></i> রেগুলার ইউজার</p>
-                        </div>
+                    <p class="text-gray-600 font-medium mb-8 leading-relaxed italic">"আমি ভিআইপি অফারটা কিনেছি, এবং উইথড্র দেওয়ার খুব অল্প সময়ের মধ্যেই আমার নাম্বারে টাকা চলে এসেছে। ১০০% ট্রাস্টেড।"</p>
+                    <div class="flex items-center gap-4 border-t border-gray-200 pt-5 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black text-xl border-2 border-white">F</div>
+                        <div><h4 class="font-extrabold text-gray-800">ফাতেমা আক্তার</h4></div>
                     </div>
                 </div>
 
-                <!-- Review 3 -->
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative hover:-translate-y-2 hover:shadow-xl transition duration-300 group">
-                    <i class="fa-solid fa-quote-right absolute top-6 right-6 text-4xl text-gray-100 group-hover:text-pink-50 transition"></i>
+                <div class="bg-gray-50 p-8 rounded-3xl shadow-sm border border-gray-100 relative hover:-translate-y-2 hover:shadow-md transition duration-300 group">
+                    <i class="fa-solid fa-quote-right absolute top-6 right-6 text-4xl text-gray-200 group-hover:text-pink-100 transition"></i>
                     <div class="flex items-center gap-1 text-yellow-400 mb-5 text-sm">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
                     </div>
-                    <p class="text-gray-600 font-medium mb-8 leading-relaxed italic">"মাঝে মাঝে পেমেন্ট দিতে লেট হয়, কিন্তু এডমিন সাপোর্ট থেকে ক্লিয়ার করে দিয়েছে যে স্টকে লস হলে একটু দেরি হতে পারে। বিষয়গুলো স্বচ্ছ রাখাটা ভালো লেগেছে।"</p>
-                    <div class="flex items-center gap-4 border-t border-gray-50 pt-5 mt-auto">
-                        <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xl border-2 border-white shadow-sm">S</div>
-                        <div>
-                            <h4 class="font-extrabold text-gray-800">সাজ্জাদ হোসেন</h4>
-                            <p class="text-xs text-green-500 font-bold"><i class="fa-solid fa-circle-check"></i> ভেরিফাইড ইউজার</p>
-                        </div>
+                    <p class="text-gray-600 font-medium mb-8 leading-relaxed italic">"তাদের স্টক মার্কেটের লজিকটা খুবই স্বচ্ছ। মাঝে মাঝে পেমেন্ট দিতে লেট হয়, কিন্তু পেমেন্ট ১০০% করে তারা। সাপোর্টের মানুষগুলো অনেক হেল্পফুল।"</p>
+                    <div class="flex items-center gap-4 border-t border-gray-200 pt-5 mt-auto">
+                        <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xl border-2 border-white">S</div>
+                        <div><h4 class="font-extrabold text-gray-800">সাজ্জাদ হোসেন</h4></div>
                     </div>
                 </div>
             </div>
@@ -256,7 +345,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- 6. Clean Footer                            -->
+    <!-- 9. Clean Footer                            -->
     <!-- ========================================== -->
     <footer class="bg-gray-900 text-gray-300 py-12 border-t-4 border-[#E2136E]">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center text-center md:text-left">
@@ -269,9 +358,9 @@
             
             <div class="flex flex-col gap-2">
                 <h4 class="text-white font-bold mb-2">প্রয়োজনীয় লিংক</h4>
-                <a href="#how-it-works" class="hover:text-white transition">কাজের ধরন</a>
+                <a href="#how-to-start" class="hover:text-white transition">কীভাবে কাজ করবেন</a>
                 <a href="/login" class="hover:text-white transition">লগিন করুন</a>
-                <a href="/register" class="hover:text-white transition">নতুন একাউন্ট</a>
+                <a href="/register" class="hover:text-white transition">নতুন একাউন্ট খুলুন</a>
             </div>
             
             <div class="flex flex-col gap-2">
