@@ -70,6 +70,15 @@
                             <th class="p-4 font-bold">আবেদনকারীর নাম ও ছবি</th>
                             <th class="p-4 font-bold">যোগাযোগ ও বয়স</th>
                             <th class="p-4 font-bold">ঠিকানা ও শিক্ষা</th>
+                            <!-- Contact Info -->
+<td class="p-4">
+    <p class="text-[13px] font-bold text-blue-600 mb-1"><i class="fa-brands fa-telegram text-blue-400 mr-1"></i> @{{ app.telegram_username }}</p>
+    <p class="text-[12px] font-semibold text-gray-700 mb-0.5"><i class="fa-regular fa-envelope text-gray-400 mr-1"></i> {{ app.email }}</p>
+    <p class="text-[12px] font-mono text-gray-600 mb-1.5"><i class="fa-solid fa-phone text-gray-400 mr-1"></i> {{ app.phone }}</p>
+    <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold border border-gray-200">
+        <i class="fa-solid fa-person"></i> {{ app.gender }} | {{ app.age }} বছর
+    </span>
+</td>
                             <th class="p-4 font-bold text-center">স্ট্যাটাস</th>
                             <th class="p-4 font-bold text-center">অ্যাকশন (Approve/Reject)</th>
                         </tr>
