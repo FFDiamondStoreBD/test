@@ -11,7 +11,6 @@
 </head>
 <body class="text-gray-800 antialiased pb-20">
 
-    <!-- Navbar -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
             <a href="/dashboard" class="text-blue-600 font-bold hover:bg-blue-50 px-3 py-2 rounded-lg transition active:scale-95"><i class="fa-solid fa-arrow-left"></i> ড্যাশবোর্ড</a>
@@ -22,8 +21,7 @@
 
     <div class="max-w-xl mx-auto py-8 px-4">
 
-        <!-- Banner Info -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-lg shadow-blue-500/30 mb-8 relative overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-lg shadow-blue-500/30 mb-6 relative overflow-hidden">
             <div class="absolute top-[-20px] right-[-20px] text-8xl opacity-10"><i class="fa-solid fa-star"></i></div>
             <h2 class="text-2xl font-black mb-2 relative z-10"><i class="fa-solid fa-gift text-yellow-300 mr-1"></i> ৫০% কমিশন সুযোগ!</h2>
             <p class="text-blue-100 text-sm font-semibold relative z-10 leading-relaxed">
@@ -31,32 +29,32 @@
             </p>
         </div>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="mb-6">
-                {% for category, message in messages %}
-                    <div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md flex items-center gap-2 {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% else %} bg-yellow-500 text-yellow-900 {% endif %}"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>
-                {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="mb-6">{% for category, message in messages %}<div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md flex items-center gap-2 {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-500 {% else %} bg-yellow-500 text-yellow-900 {% endif %}"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
 
         {% if pending %}
-        <!-- If Application is Pending -->
         <div class="bg-white rounded-2xl p-10 text-center shadow-sm border border-yellow-200">
             <div class="w-20 h-20 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-yellow-50"><i class="fa-solid fa-hourglass-half animate-pulse"></i></div>
             <h2 class="text-2xl font-extrabold text-gray-800 mb-2">আবেদনটি রিভিউতে আছে!</h2>
             <p class="text-gray-500 font-semibold text-sm">আপনার আবেদনটি সফলভাবে জমা নেওয়া হয়েছে। এডমিন আপনার তথ্য যাচাই করে খুব দ্রুত এপ্রুভ করবেন। দয়া করে অপেক্ষা করুন।</p>
         </div>
         {% else %}
-        <!-- Application Form -->
+        
         <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
+            
+            <!-- NEW: Security & Real Data Warning -->
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 flex items-start gap-3">
+                <i class="fa-solid fa-shield-halved text-blue-500 text-2xl mt-0.5 animate-pulse"></i>
+                <div>
+                    <h4 class="text-blue-800 font-extrabold text-sm mb-1">১০০% নিরাপদ ও সুরক্ষিত ডাটা</h4>
+                    <p class="text-xs text-blue-600 font-semibold leading-relaxed">লিডারশিপ এপ্রুভালের জন্য অনুগ্রহ করে আপনার সঠিক ও রিয়েল ইনফরমেশন দিন। আপনার দেওয়া সকল ব্যক্তিগত ডাটা এবং ছবি আমাদের সার্ভারে সম্পূর্ণ সুরক্ষিত (Encrypted) থাকবে এবং তৃতীয় কোনো পক্ষের সাথে শেয়ার করা হবে না।</p>
+                </div>
+            </div>
+
             <h3 class="text-lg font-black text-gray-800 mb-6 border-b border-gray-100 pb-3 flex items-center gap-2"><i class="fa-solid fa-file-signature text-blue-500"></i> আবেদন ফর্ম পূরণ করুন</h3>
             
             <form method="POST" action="/apply_leader" id="leaderForm" class="space-y-5">
                 <div>
-                    <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">আপনার পুরো নাম</label>
+                    <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">আপনার পুরো নাম (আসল নাম)</label>
                     <input type="text" name="name" value="{{ user.name }}" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700 transition">
                 </div>
                 
@@ -71,6 +69,16 @@
                     </div>
                 </div>
 
+                <!-- NEW: Telegram Username -->
+                <div>
+                    <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">টেলিগ্রাম ইউজারনেম</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 font-black text-blue-500">@</span>
+                        <input type="text" name="telegram_username" placeholder="your_username" required class="w-full pl-9 p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700 transition">
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1 font-semibold">এডমিন আপনার সাথে এই টেলিগ্রামে যোগাযোগ করবেন।</p>
+                </div>
+
                 <div class="grid grid-cols-2 gap-5">
                     <div>
                         <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">লিঙ্গ (Gender)</label>
@@ -80,7 +88,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">বয়স</label>
+                        <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">সঠিক বয়স</label>
                         <input type="number" name="age" min="15" placeholder="যেমন: 22" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700 transition">
                     </div>
                 </div>
@@ -95,33 +103,22 @@
                     <textarea name="address" rows="2" placeholder="আপনার বর্তমান বা স্থায়ী ঠিকানা" required class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700 transition"></textarea>
                 </div>
 
-                <!-- ========================================== -->
-                <!-- NEW: ImgBB API Image Upload Section        -->
-                <!-- ========================================== -->
                 <div>
-                    <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">আপনার ছবি আপলোড করুন</label>
+                    <label class="block text-gray-700 text-xs font-extrabold mb-1.5 uppercase tracking-wide">আপনার ক্লিয়ার ছবি আপলোড করুন</label>
                     <div class="flex items-center gap-4">
-                        <!-- Custom File Input Button -->
                         <div class="relative w-full">
                             <input type="file" id="imageInput" accept="image/*" required class="hidden">
                             <label for="imageInput" id="uploadLabel" class="w-full flex items-center justify-center gap-2 p-3.5 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition text-gray-600 font-bold text-sm">
                                 <i class="fa-solid fa-cloud-arrow-up text-xl"></i> গ্যালারি থেকে ছবি নির্বাচন করুন
                             </label>
                         </div>
-                        
-                        <!-- Image Preview Box -->
                         <div id="imagePreviewContainer" class="hidden w-14 h-14 rounded-xl border-2 border-blue-200 overflow-hidden shrink-0 shadow-sm p-0.5 bg-white">
                             <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover rounded-lg">
                         </div>
                     </div>
-                    
-                    <p id="uploadStatus" class="text-[10px] text-gray-400 mt-2 font-semibold"><i class="fa-solid fa-circle-info"></i> আপনার আইডেন্টিটি ভেরিফাই করার জন্য একটি ক্লিয়ার ছবি দিন।</p>
-                    
-                    <!-- Hidden input to store ImgBB URL for Python Backend -->
                     <input type="hidden" name="photo_url" id="photo_url" required>
                 </div>
 
-                <!-- Submit Button (Disabled initially until photo uploads) -->
                 <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white p-4 mt-4 rounded-xl font-black hover:bg-blue-700 transition active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30">
                     <i class="fa-solid fa-paper-plane"></i> আবেদন সাবমিট করুন
                 </button>
@@ -130,38 +127,28 @@
         {% endif %}
     </div>
 
-    <!-- ========================================== -->
-    <!-- Script for ImgBB Auto Upload               -->
-    <!-- ========================================== -->
     <script>
         const imageInput = document.getElementById('imageInput');
-        
         if(imageInput) {
             imageInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
 
                 const uploadLabel = document.getElementById('uploadLabel');
-                const uploadStatus = document.getElementById('uploadStatus');
                 const submitBtn = document.getElementById('submitBtn');
                 const photoUrlInput = document.getElementById('photo_url');
                 const imagePreviewContainer = document.getElementById('imagePreviewContainer');
                 const imagePreview = document.getElementById('imagePreview');
 
-                // 1. Show Loading State
                 uploadLabel.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xl"></i> আপলোড হচ্ছে...';
                 uploadLabel.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-600');
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                uploadStatus.innerText = "অনুগ্রহ করে অপেক্ষা করুন...";
-                uploadStatus.className = "text-[11px] text-blue-500 mt-2 font-bold animate-pulse";
 
-                // 2. Prepare Data for ImgBB
                 const formData = new FormData();
                 formData.append('image', file);
-                formData.append('key', '43bdd734e68b97522c8cfb0ef20b7e91'); // Your ImgBB API Key
+                formData.append('key', '43bdd734e68b97522c8cfb0ef20b7e91');
 
-                // 3. Upload via Fetch API
                 fetch('https://api.imgbb.com/1/upload', {
                     method: 'POST',
                     body: formData
@@ -169,26 +156,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Successfully uploaded to ImgBB!
                         const uploadedUrl = data.data.url;
-                        
-                        // Set the hidden input value for the form submission
                         photoUrlInput.value = uploadedUrl;
                         
-                        // Update UI to success
                         uploadLabel.innerHTML = '<i class="fa-solid fa-check-circle text-xl"></i> ছবি আপলোড সম্পন্ন';
                         uploadLabel.classList.replace('border-blue-500', 'border-green-500');
                         uploadLabel.classList.replace('text-blue-600', 'text-green-600');
                         uploadLabel.classList.replace('bg-blue-50', 'bg-green-50');
 
-                        // Show image preview
                         imagePreview.src = uploadedUrl;
                         imagePreviewContainer.classList.remove('hidden');
 
-                        uploadStatus.innerText = "ছবি সফলভাবে সার্ভারে আপলোড হয়েছে! এখন সাবমিট করতে পারেন।";
-                        uploadStatus.className = "text-[11px] text-green-600 mt-2 font-bold";
-
-                        // Enable Submit Button
                         submitBtn.disabled = false;
                         submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     } else {
@@ -196,21 +174,14 @@
                     }
                 })
                 .catch(error => {
-                    // Handle Errors
                     uploadLabel.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-xl"></i> আবার চেষ্টা করুন';
                     uploadLabel.classList.replace('border-blue-500', 'border-red-500');
                     uploadLabel.classList.replace('text-blue-600', 'text-red-600');
                     uploadLabel.classList.replace('bg-blue-50', 'bg-red-50');
-                    
-                    uploadStatus.innerText = "আপলোড ব্যর্থ হয়েছে! ইন্টারনেট কানেকশন চেক করে আবার ছবি সিলেক্ট করুন।";
-                    uploadStatus.className = "text-[11px] text-red-500 mt-2 font-bold";
-                    
-                    // Reset file input
                     imageInput.value = '';
                 });
             });
         }
     </script>
-
 </body>
 </html>
