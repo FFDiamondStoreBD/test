@@ -246,7 +246,7 @@ def withdraw():
 
 
 # ==========================================
-#         NEW: LEADERSHIP APPLY SYSTEM
+#         LEADERSHIP APPLY SYSTEM
 # ==========================================
 @app.route('/apply_leader', methods=['GET', 'POST'])
 def apply_leader():
@@ -265,11 +265,12 @@ def apply_leader():
             "name": request.form.get('name'),
             "email": request.form.get('email'),
             "phone": request.form.get('phone'),
+            "telegram_username": request.form.get('telegram_username'), # <-- NEW: Telegram Username
             "age": int(request.form.get('age')),
             "gender": request.form.get('gender'),
             "education": request.form.get('education'),
             "address": request.form.get('address'),
-            "photo_url": request.form.get('photo_url'), # Using URL for simple upload
+            "photo_url": request.form.get('photo_url'),
             "status": "Pending"
         }
         supabase.table("leadership_applications").insert(data).execute()
@@ -277,7 +278,6 @@ def apply_leader():
         return redirect(url_for('apply_leader'))
         
     return render_template('apply_leader.html', user=user, pending=is_pending)
-
 @app.route('/leadership')
 def leadership():
     if 'user_id' not in session: return redirect(url_for('login'))
