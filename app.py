@@ -18,7 +18,7 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 VIP_PACKAGES = {
-    "VIP_1": {"price": 500, "daily_profit": 50, "mead_days": 30},
+    "VIP_1": {"price": 300, "daily_profit": 40, "mead_days": 30},
     "VIP_2": {"price": 1000, "daily_profit": 110, "mead_days": 30},
     "VIP_3": {"price": 2000, "daily_profit": 230, "mead_days": 30},
     "VIP_4": {"price": 5000, "daily_profit": 600, "mead_days": 30},
@@ -510,6 +510,7 @@ def spin_page():
     
     return render_template('spin.html', user=user, next_spin_time=next_spin_time)
 
+# --- UPDATED: Spin Reward API (With 0.5% chance for 50 TK) ---
 @app.route('/api/spin_reward', methods=['POST'])
 def api_spin_reward():
     if 'user_id' not in session: return {"error": "Unauthorized"}, 401
@@ -522,10 +523,33 @@ def api_spin_reward():
     if datetime.now() < datetime.fromisoformat(clean_time) + timedelta(hours=24):
         return {"error": "আপনি ইতিমধ্যেই স্পিন করেছেন! কাল আবার চেষ্টা করুন।"}, 400
         
-    # Spin Rewards (1 TK to 10 TK or 0 TK)
-    rewards =[1, 2, 3, 5, 0, 10, 2, 1, 4, 0]
-    won_amount = random.choice(rewards)
+    # চাকার ৮টি স্লট এবং তাদের পাওয়ার সম্ভাবনা (Probability %)
+    slots =[
+        {"amount": 0,  "prob": 15.0},   # Slot 0: 0 TK (15%)
+        {"amount": 1,  "prob": 25.0},   # Slot 1: 1 TK (25%)
+        {"amount": 2,  "prob": 20.0},   # Slot 2: 2 TK (20%)
+        {"amount": 5,  "prob": 15.0},   # Slot 3: 5 TK (15%)
+        {"amount": 0,  "prob": 15.0},   # Slot 4: 0 TK (15%)
+        {"amount": 3,  "prob": 5.0},    # Slot 5: 3 TK (5%)
+        {"amount": 10, "prob": 4.5},    # Slot 6: 10 TK (4.5%)
+        {"amount": 50, "prob": 0.5},    # Slot 7: 50 TK (Exactly 0.5% chance)
+    ]
     
+    # ০ থেকে ১০০ এর মধ্যে একটি র‍্যান্ডম নাম্বার তৈরি
+    rand_val = random.uniform(0, 100)
+    cumulative = 0
+    won_index = 0
+    
+    # কোন স্লটে পড়বে তা হিসাব করা হচ্ছে
+    for i, s in enumerate(slots):
+        cumulative += s["prob"]
+        if rand_val <= cumulative:
+            won_index = i
+            break
+            
+    won_amount = slots[won_index]["amount"]
+    
+    # ব্যালেন্স এবং ডাটাবেস আপডেট
     new_balance = user['balance'] + won_amount
     new_total = user.get('total_earned', 0) + won_amount
     
@@ -535,8 +559,12 @@ def api_spin_reward():
         "last_spin_time": datetime.now().isoformat()
     }).eq("id", user_id).execute()
     
-    return {"reward": won_amount, "message": f"অভিনন্দন! আপনি স্পিন করে ৳{won_amount} জিতেছেন!" if won_amount > 0 else "দুঃখিত! আপনি এবার কিছু পাননি। কাল আবার চেষ্টা করুন!"}
-
+    # রেজাল্ট পাঠানো হচ্ছে (যেটি দিয়ে ফ্রন্টএন্ড চাকা ঘুরাবে)
+    return {
+        "reward": won_amount, 
+        "slot_index": won_index, # কোন স্লটে থেমেছে তার ইনডেক্স (০ থেকে ৭)
+        "message": f"অভিনন্দন! আপনি স্পিন করে ৳{won_amount} জিতেছেন!" if won_amount > 0 else "দুঃখিত! আপনি এবার কিছু পাননি। কাল আবার চেষ্টা করুন!"
+        }
 
 if __name__ == '__main__':
     app.run(debug=True)
