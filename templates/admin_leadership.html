@@ -3,166 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>লিডারশিপ রিকোয়েস্ট - Admin Panel</title>
+    <title>লিডারশিপ রিকোয়েস্ট - Admin Pro</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts (Bangla) -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; } </style>
+    
+    <style> 
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; } 
+        .hide-scrollbar::-webkit-scrollbar { display: none; } 
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="text-gray-800 antialiased pb-20">
+<body class="text-slate-800 antialiased pb-20">
 
     <!-- ========================================== -->
-    <!-- Admin Navbar                               -->
+    <!-- Admin Premium Navbar                       -->
     <!-- ========================================== -->
-    <nav class="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <a href="/admin" class="text-2xl font-bold flex items-center gap-2 text-yellow-400">
-                <i class="fa-solid fa-user-shield"></i> এডমিন প্যানেল
+    <nav class="bg-[#0f172a] border-b border-slate-800 sticky top-0 z-50 shadow-lg shadow-slate-900/20">
+        <!-- Top Row -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <a href="/admin" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-blue-500"></i> Admin Pro
             </a>
-            <div class="flex items-center gap-2 md:gap-4 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                <a href="/admin" class="px-4 py-2 hover:bg-gray-800 rounded-lg text-sm font-bold whitespace-nowrap transition"><i class="fa-solid fa-wallet text-green-400"></i> ডিপোজিট</a>
-                <a href="/admin/withdrawals" class="px-4 py-2 hover:bg-gray-800 rounded-lg text-sm font-bold whitespace-nowrap transition"><i class="fa-solid fa-money-bill-transfer text-red-400"></i> উইথড্র</a>
-                <a href="/admin/users" class="px-4 py-2 hover:bg-gray-800 rounded-lg text-sm font-bold whitespace-nowrap transition"><i class="fa-solid fa-users text-blue-400"></i> ইউজার্স</a>
-                
+            <a href="/dashboard" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-sm font-bold transition border border-slate-700 flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="hidden sm:inline">মেইন সাইট</span>
+            </a>
+        </div>
+        
+        <!-- Bottom Tabs -->
+        <div class="bg-slate-900 border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 overflow-x-auto hide-scrollbar py-3">
+                <a href="/admin" class="px-5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl text-sm font-bold whitespace-nowrap transition">
+                    <i class="fa-solid fa-wallet mr-1"></i> ডিপোজিট
+                </a>
+                <a href="/admin/withdrawals" class="px-5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl text-sm font-bold whitespace-nowrap transition">
+                    <i class="fa-solid fa-money-bill-transfer mr-1"></i> উইথড্র
+                </a>
+                <a href="/admin/users" class="px-5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl text-sm font-bold whitespace-nowrap transition">
+                    <i class="fa-solid fa-users mr-1"></i> ইউজার্স
+                </a>
                 <!-- Active Tab -->
-                <a href="/admin/leadership_apps" class="px-4 py-2 bg-gray-700 rounded-lg text-sm font-bold whitespace-nowrap shadow-md transition"><i class="fa-solid fa-star text-yellow-400"></i> লিডার রিকোয়েস্ট</a>
-                
-                <a href="/dashboard" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-bold whitespace-nowrap shadow-md transition ml-2"><i class="fa-solid fa-house"></i> সাইট</a>
+                <a href="/admin/leadership_apps" class="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-extrabold whitespace-nowrap shadow-md shadow-blue-500/20 transition">
+                    <i class="fa-solid fa-star text-yellow-400 mr-1"></i> লিডার রিকোয়েস্ট
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- ========================================== -->
-    <!-- Main Content                               -->
+    <!-- Main Content Area                          -->
     <!-- ========================================== -->
-    <div class="max-w-7xl mx-auto py-8 px-4">
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="mb-6">
                 {% for category, message in messages %}
-                    <div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md flex items-center gap-2 animate-bounce
-                        {% if category == 'success' %} bg-green-500 
-                        {% elif category == 'danger' %} bg-red-500 
-                        {% else %} bg-yellow-500 text-yellow-900 {% endif %}">
-                        <i class="fa-solid fa-circle-info text-lg"></i> {{ message }}
+                    <div class="p-4 mb-3 rounded-2xl text-white font-bold shadow-lg flex items-center gap-3 
+                        {% if category == 'success' %} bg-emerald-500 
+                        {% elif category == 'danger' %} bg-rose-500 
+                        {% else %} bg-amber-500 {% endif %}">
+                        <i class="fa-solid fa-circle-info text-xl"></i> {{ message }}
                     </div>
                 {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
 
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-extrabold text-gray-800 flex items-center gap-2">
-                <i class="fa-solid fa-user-tie text-yellow-500"></i> সকল লিডারশিপ আবেদন
+        <!-- Header Row -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-user-tie text-blue-500"></i> সকল লিডারশিপ আবেদন
             </h2>
-            <span class="bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm border border-yellow-200">
-                মোট আবেদন: {{ applications|length }} টি
+            <span class="bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm border border-blue-200 flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> মোট: {{ applications|length }} টি
             </span>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <!-- Applications Table -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left whitespace-nowrap text-sm">
-                    <thead class="bg-gray-100 text-gray-700 border-b border-gray-200">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-100">
                         <tr>
-                            <th class="p-4 font-bold">আবেদনকারীর নাম ও ছবি</th>
-                            <th class="p-4 font-bold">যোগাযোগ ও বয়স</th>
-                            <th class="p-4 font-bold">ঠিকানা ও শিক্ষা</th>
-                            <!-- Contact Info -->
-<td class="p-4">
-    <p class="text-[13px] font-bold text-blue-600 mb-1"><i class="fa-brands fa-telegram text-blue-400 mr-1"></i> @{{ app.telegram_username }}</p>
-    <p class="text-[12px] font-semibold text-gray-700 mb-0.5"><i class="fa-regular fa-envelope text-gray-400 mr-1"></i> {{ app.email }}</p>
-    <p class="text-[12px] font-mono text-gray-600 mb-1.5"><i class="fa-solid fa-phone text-gray-400 mr-1"></i> {{ app.phone }}</p>
-    <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-bold border border-gray-200">
-        <i class="fa-solid fa-person"></i> {{ app.gender }} | {{ app.age }} বছর
-    </span>
-</td>
-                            <th class="p-4 font-bold text-center">স্ট্যাটাস</th>
-                            <th class="p-4 font-bold text-center">অ্যাকশন (Approve/Reject)</th>
+                            <th class="px-6 py-4 font-extrabold uppercase tracking-wider text-[11px]">আবেদনকারীর নাম ও ছবি</th>
+                            <th class="px-6 py-4 font-extrabold uppercase tracking-wider text-[11px]">যোগাযোগ ও বয়স</th>
+                            <th class="px-6 py-4 font-extrabold uppercase tracking-wider text-[11px]">ঠিকানা ও শিক্ষা</th>
+                            <th class="px-6 py-4 font-extrabold uppercase tracking-wider text-[11px] text-center">স্ট্যাটাস</th>
+                            <th class="px-6 py-4 font-extrabold uppercase tracking-wider text-[11px] text-center">অ্যাকশন</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-slate-50">
                         {% for app in applications %}
-                        <tr class="hover:bg-gray-50 transition duration-150">
+                        <tr class="hover:bg-slate-50/50 transition duration-150">
                             
-                            <!-- Name & Photo (Uploaded via ImgBB) -->
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <a href="{{ app.photo_url }}" target="_blank" class="w-12 h-12 bg-gray-100 rounded-full overflow-hidden border-2 border-blue-200 shadow-sm block shrink-0 hover:scale-110 transition" title="ছবিটি বড় করে দেখতে ক্লিক করুন">
-                                        <img src="{{ app.photo_url }}" alt="Profile Pic" class="w-full h-full object-cover">
+                            <!-- 1. Name & Photo -->
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    <a href="{{ app.photo_url }}" target="_blank" class="w-14 h-14 bg-slate-100 rounded-2xl overflow-hidden border-2 border-slate-200 shadow-sm block shrink-0 hover:scale-105 transition" title="ছবিটি বড় করে দেখতে ক্লিক করুন">
+                                        <img src="{{ app.photo_url }}" alt="Pic" class="w-full h-full object-cover">
                                     </a>
                                     <div>
-                                        <p class="font-extrabold text-gray-800 text-base">{{ app.name }}</p>
-                                        <p class="text-[11px] text-gray-400 font-bold uppercase mt-0.5"><i class="fa-regular fa-clock"></i> {{ app.created_at.split('T')[0] }}</p>
+                                        <p class="font-black text-slate-800 text-base">{{ app.name }}</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
+                                            <i class="fa-regular fa-clock"></i> {{ app.created_at.split('T')[0] }}
+                                        </p>
                                     </div>
                                 </div>
                             </td>
 
-                            <!-- Contact Info -->
-                            <td class="p-4">
-                                <p class="text-[13px] font-bold text-gray-700 mb-1"><i class="fa-regular fa-envelope text-gray-400 mr-1"></i> {{ app.email }}</p>
-                                <p class="text-[13px] font-mono text-gray-600 mb-1"><i class="fa-solid fa-phone text-gray-400 mr-1"></i> {{ app.phone }}</p>
-                                <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-bold border border-blue-100">
-                                    <i class="fa-solid fa-person"></i> {{ app.gender }} | {{ app.age }} বছর
+                            <!-- 2. Contact Info (Telegram, Email, Phone) -->
+                            <td class="px-6 py-4">
+                                <p class="text-xs font-bold text-blue-600 mb-1">
+                                    <i class="fa-brands fa-telegram text-blue-400 mr-1"></i> @{{ app.telegram_username }}
+                                </p>
+                                <p class="text-xs font-mono text-slate-500 font-semibold mb-1">
+                                    <i class="fa-regular fa-envelope text-slate-300 mr-1"></i> {{ app.email }}
+                                </p>
+                                <p class="text-xs font-mono text-slate-500 font-semibold mb-2">
+                                    <i class="fa-solid fa-phone text-slate-300 mr-1"></i> {{ app.phone }}
+                                </p>
+                                <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                    {{ app.gender }} | {{ app.age }} বছর
                                 </span>
                             </td>
 
-                            <!-- Address & Education -->
-                            <td class="p-4">
-                                <p class="text-[13px] font-extrabold text-blue-600 mb-1"><i class="fa-solid fa-graduation-cap text-gray-400 mr-1"></i> {{ app.education }}</p>
-                                <p class="text-[12px] text-gray-500 font-semibold truncate max-w-[250px]" title="{{ app.address }}">
-                                    <i class="fa-solid fa-location-dot text-gray-400 mr-1"></i> {{ app.address }}
+                            <!-- 3. Address & Education -->
+                            <td class="px-6 py-4">
+                                <p class="text-sm font-black text-slate-700 mb-1">
+                                    <i class="fa-solid fa-graduation-cap text-slate-300 mr-1"></i> {{ app.education }}
+                                </p>
+                                <p class="text-xs text-slate-500 font-semibold truncate max-w-[200px]" title="{{ app.address }}">
+                                    <i class="fa-solid fa-location-dot text-slate-300 mr-1"></i> {{ app.address }}
                                 </p>
                             </td>
 
-                            <!-- Status Badge -->
-                            <td class="p-4 text-center">
+                            <!-- 4. Status Badge -->
+                            <td class="px-6 py-4 text-center">
                                 {% if app.status == 'Pending' %}
-                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm border border-yellow-200 uppercase tracking-wide">Pending</span>
+                                    <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-200">Pending</span>
                                 {% elif app.status == 'Approved' %}
-                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm border border-green-200 uppercase tracking-wide">Approved</span>
+                                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200">Approved</span>
                                 {% else %}
-                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-extrabold shadow-sm border border-red-200 uppercase tracking-wide">Rejected</span>
+                                    <span class="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border border-rose-200">Rejected</span>
                                 {% endif %}
                             </td>
 
-                            <!-- Action Buttons -->
-                            <td class="p-4 text-center">
+                            <!-- 5. Action Buttons -->
+                            <td class="px-6 py-4 text-center">
+                                {% if app.status == 'Pending' %}
                                 <div class="flex items-center justify-center gap-2">
-                                    {% if app.status == 'Pending' %}
-                                    <a href="/admin/leadership_action/{{ app.id }}/approve" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 text-xs font-bold transition active:scale-95 flex items-center gap-1.5" onclick="return confirm('আপনি কি নিশ্চিত যে এই ইউজারকে লিডার বানাতে চান? এপ্রুভ করলে তিনি রেফার থেকে ৫০% কমিশন পাবেন!')">
+                                    <a href="/admin/leadership_action/{{ app.id }}/approve" class="bg-emerald-50 text-emerald-600 px-3 py-2 rounded-xl shadow-sm hover:bg-emerald-500 hover:text-white text-xs font-bold transition active:scale-95 border border-emerald-100" onclick="return confirm('আপনি কি নিশ্চিত যে এই ইউজারকে লিডার বানাতে চান? এপ্রুভ করলে তিনি রেফার থেকে ৫০% কমিশন পাবেন!')">
                                         <i class="fa-solid fa-check"></i> Approve
                                     </a>
-                                    <a href="/admin/leadership_action/{{ app.id }}/reject" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 text-xs font-bold transition active:scale-95 flex items-center gap-1.5" onclick="return confirm('আবেদনটি বাতিল করতে চান?')">
+                                    <a href="/admin/leadership_action/{{ app.id }}/reject" class="bg-rose-50 text-rose-600 px-3 py-2 rounded-xl shadow-sm hover:bg-rose-500 hover:text-white text-xs font-bold transition active:scale-95 border border-rose-100" onclick="return confirm('আবেদনটি বাতিল করতে চান?')">
                                         <i class="fa-solid fa-xmark"></i> Reject
                                     </a>
-                                    {% else %}
-                                    <span class="text-gray-400 text-xs italic font-semibold">কাজ সম্পন্ন হয়েছে</span>
-                                    {% endif %}
                                 </div>
+                                {% else %}
+                                <span class="text-slate-300 text-xs font-bold uppercase tracking-wider">Done</span>
+                                {% endif %}
                             </td>
 
+                        </tr>
+                        {% else %}
+                        
+                        <!-- Empty State (No Applications) -->
+                        <tr>
+                            <td colspan="5" class="px-6 py-16 text-center">
+                                <div class="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
+                                    <i class="fa-solid fa-inbox"></i>
+                                </div>
+                                <h3 class="text-xl font-black text-slate-800 mb-1">কোনো আবেদন নেই!</h3>
+                                <p class="font-bold text-sm text-slate-500">এই মুহূর্তে কোনো নতুন লিডারশিপ আবেদন জমা পড়েনি।</p>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                
-                <!-- Empty State -->
-                {% if not applications %}
-                <div class="p-12 text-center text-gray-400">
-                    <div class="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-gray-100">
-                        <i class="fa-solid fa-inbox"></i>
-                    </div>
-                    <h3 class="text-xl font-extrabold text-gray-800 mb-1">কোনো আবেদন নেই!</h3>
-                    <p class="font-semibold text-sm text-gray-500">এই মুহূর্তে কোনো নতুন লিডারশিপ আবেদন জমা পড়েনি।</p>
-                </div>
-                {% endif %}
-                
             </div>
         </div>
     </div>
-
 </body>
 </html>
