@@ -2,7 +2,7 @@
   "name": "Easy Earn",
   "short_name": "Easy Earn",
   "description": "Smart Daily Income Platform",
-  "start_url": "/dashbord",
+  "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#E2136E",
