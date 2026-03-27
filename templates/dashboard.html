@@ -10,11 +10,16 @@
     <meta name="theme-color" content="#E2136E">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2830/2830284.png">
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- SweetAlert for nice popups -->
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts (Bangla) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -28,7 +33,12 @@
 <body class="text-gray-800 antialiased pb-24">
 
     <!-- ========================================== -->
-    <!-- 1. Header (Avatar, App Install & Support)  -->
+    <!-- Global Page Load Animation                 -->
+    <!-- ========================================== -->
+    <div id="top-progress-bar" class="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-pink-500 via-[#E2136E] to-purple-600 z-[99999] w-0 transition-all duration-300 ease-out shadow-[0_0_10px_#E2136E]"></div>
+
+    <!-- ========================================== -->
+    <!-- 1. Header (Avatar, App Install & Balance)  -->
     <!-- ========================================== -->
     <div class="bg-bkash text-white px-5 pt-6 pb-10 rounded-b-[2.5rem] shadow-lg relative overflow-hidden z-20">
         <div class="absolute top-[-20px] right-[-20px] w-32 h-32 bg-white opacity-10 rounded-full"></div>
@@ -45,7 +55,6 @@
                 </div>
             </div>
             
-            <!-- NEW: App Install & Support Icons -->
             <div class="flex items-center gap-2">
                 <button onclick="installApp()" id="install-icon-btn" class="bg-white/20 w-10 h-10 rounded-full backdrop-blur-md shadow-sm border border-white/30 hover:bg-white/30 transition flex items-center justify-center active:scale-95" title="অ্যাপ ইন্সটল করুন">
                     <i class="fa-brands fa-android text-xl text-white"></i>
@@ -81,6 +90,22 @@
             {% endif %}
         {% endwith %}
 
+        <!-- PWA Install Banner (Fallback) -->
+        <div id="install-banner" class="hidden bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 p-4 mb-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#E2136E] text-xl shadow-sm">
+                    <i class="fa-brands fa-android"></i>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-sm">Easy Earn অ্যাপ</h3>
+                    <p class="text-gray-400 text-[10px] font-semibold">মোবাইলে ইন্সটল করে সহজে ব্যবহার করুন</p>
+                </div>
+            </div>
+            <button onclick="installApp()" class="bg-[#E2136E] hover:bg-pink-600 text-white px-4 py-2 rounded-lg text-xs font-black shadow-md active:scale-95 transition">
+                ইন্সটল করুন
+            </button>
+        </div>
+
         <!-- Scrolling Notice -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-1 mb-5 flex items-center gap-2 overflow-hidden">
             <div class="w-10 h-10 bg-gradient-to-tr from-yellow-400 to-orange-500 text-white rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm z-10">
@@ -91,23 +116,38 @@
             </marquee>
         </div>
 
-        <!-- Expanded Quick Navs -->
+        <!-- ========================================== -->
+        <!-- 2. Expanded Quick Navs (App Menu)          -->
+        <!-- ========================================== -->
         <div class="bg-white rounded-2xl shadow-sm p-5 grid grid-cols-4 gap-y-5 gap-x-2 text-center mb-6 border border-gray-100">
-            <a href="/history" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-table"></i></div><span class="text-[10px] font-extrabold text-gray-600">হিস্টোরি</span></a>
+            <a href="/transfer#deposit" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-wallet"></i></div><span class="text-[10px] font-extrabold text-gray-600">এড মানি</span></a>
+            
             <a href="/transfer#withdraw" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-money-bill-transfer"></i></div><span class="text-[10px] font-extrabold text-gray-600">উত্তোলন</span></a>
+            
             <a href="/referrals" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-users"></i></div><span class="text-[10px] font-extrabold text-gray-600">টিম/রেফার</span></a>
+            
             <a href="/spin" class="flex flex-col items-center gap-1.5 group relative">
                 <div class="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full animate-bounce">ফ্রি</div>
                 <div class="w-12 h-12 bg-gradient-to-tr from-yellow-400 to-orange-500 text-white rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-dharmachakra fa-spin-hover"></i></div>
                 <span class="text-[10px] font-extrabold text-gray-600">লাকি স্পিন</span>
             </a>
+
             <a href="/review" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-pink-50 text-pink-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-comments"></i></div><span class="text-[10px] font-extrabold text-gray-600">রিভিউ দিন</span></a>
+            
+            <a href="/gmail_tasks" class="flex flex-col items-center gap-1.5 group relative">
+                <div class="absolute -top-2 -right-2 bg-blue-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full animate-pulse">HOT</div>
+                <div class="w-12 h-12 bg-gray-900 text-white rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-brands fa-google"></i></div>
+                <span class="text-[10px] font-extrabold text-gray-600">জিমেইল জব</span>
+            </a>
+
             <a href="https://t.me/pay_easy_earn" target="_blank" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-money-check-dollar"></i></div><span class="text-[10px] font-extrabold text-gray-600">প্রুফ</span></a>
-            <a href="/#how-it-works" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-book-open"></i></div><span class="text-[10px] font-extrabold text-gray-600">কাজের নিয়ম</span></a>
+            
             <a href="/apply_leader" class="flex flex-col items-center gap-1.5 group"><div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center text-xl shadow-sm group-hover:scale-105 transition"><i class="fa-solid fa-star"></i></div><span class="text-[10px] font-extrabold text-gray-600">লিডারশিপ</span></a>
         </div>
 
-        <!-- First Time Premium Offer -->
+        <!-- ========================================== -->
+        <!-- 3. First Time Premium Offer                -->
+        <!-- ========================================== -->
         {% if not user.has_premium_offer %}
         <div class="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 rounded-2xl p-5 mb-6 text-white shadow-lg relative overflow-hidden border-2 border-yellow-300">
             <div class="absolute top-[-10px] right-[-10px] text-7xl opacity-20"><i class="fa-solid fa-bolt"></i></div>
@@ -124,7 +164,9 @@
         </div>
         {% endif %}
 
-        <!-- Earning Tips Content -->
+        <!-- ========================================== -->
+        <!-- 4. Earning Tips Content                    -->
+        <!-- ========================================== -->
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-yellow-200 mb-6">
             <h2 class="text-base font-extrabold text-gray-800 mb-3 flex items-center gap-2 border-b border-gray-100 pb-2">
                 <i class="fa-solid fa-lightbulb text-yellow-500 text-lg"></i> কীভাবে বেশি আয় করবেন?
@@ -145,7 +187,9 @@
             </ul>
         </div>
 
-        <!-- Active Packages & Daily Claims -->
+        <!-- ========================================== -->
+        <!-- 5. Active Packages & Daily Claims          -->
+        <!-- ========================================== -->
         <div class="mb-6">
             <div class="flex items-center justify-between mb-3 px-1">
                 <h2 class="text-base font-extrabold text-gray-800"><i class="fa-solid fa-boxes-packing text-bkash mr-1"></i> আপনার প্যাকেজ ও আয়</h2>
@@ -182,7 +226,9 @@
             </div>
         </div>
 
-        <!-- Attractive VIP Packages Store -->
+        <!-- ========================================== -->
+        <!-- 6. Attractive VIP Packages Store           -->
+        <!-- ========================================== -->
         <div class="mb-6">
             <div class="flex items-center justify-between mb-4 px-1">
                 <h2 class="text-base font-extrabold text-gray-800"><i class="fa-solid fa-store text-yellow-500 mr-1"></i> ভিআইপি স্টোর</h2>
@@ -233,7 +279,9 @@
 
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- ========================================== -->
+    <!-- 7. Bottom Navigation Bar                   -->
+    <!-- ========================================== -->
     <div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-50 rounded-t-2xl">
         <div class="max-w-md mx-auto flex justify-between items-center px-6 py-2.5">
             <a href="/dashboard" class="flex flex-col items-center gap-1 text-bkash">
@@ -248,20 +296,26 @@
                 <i class="fa-solid fa-users text-xl mb-0.5"></i>
                 <span class="text-[10px] font-extrabold">টিম</span>
             </a>
-            <a href="/logout" class="flex flex-col items-center gap-1 text-gray-400 hover:text-red-500 transition">
-                <i class="fa-solid fa-power-off text-xl mb-0.5"></i>
-                <span class="text-[10px] font-extrabold">লগআউট</span>
+            <a href="/history" class="flex flex-col items-center gap-1 text-gray-400 hover:text-bkash transition">
+                <i class="fa-solid fa-clock-rotate-left text-xl mb-0.5"></i>
+                <span class="text-[10px] font-extrabold">হিস্ট্রি</span>
             </a>
         </div>
     </div>
 
-    <!-- Script For Claim Timers & PWA Install -->
+    <!-- ========================================== -->
+    <!-- JS Scripts (Timers, PWA, Progress Bar)     -->
+    <!-- ========================================== -->
     <script>
-        // Claim Timers Logic
+        // 1. Claim Timers Logic
         document.querySelectorAll('.pkg-timer').forEach(function(el) {
             const nextClaimStr = el.getAttribute('data-next-claim');
             const pkgId = el.getAttribute('data-id');
-            const nextClaimTime = new Date(nextClaimStr).getTime();
+            // Clean Timezone issue for Vercel
+            let cleanStr = nextClaimStr.split('.')[0].replace(' ', 'T');
+            if (!cleanStr.endsWith('Z')) cleanStr += 'Z';
+            
+            const nextClaimTime = new Date(cleanStr).getTime();
             const timerDisplay = document.getElementById('timer-display-' + pkgId);
             const claimBtn = document.getElementById('claim-btn-' + pkgId);
 
@@ -280,48 +334,70 @@
             }, 1000);
         });
 
-        // ==========================================
-        // PWA App Install Logic
-        // ==========================================
+        // 2. PWA App Install Logic
         let deferredPrompt;
-        
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // 아이কনটিকে এনিমেট করে ইউজারকে আকর্ষণ করা হচ্ছে
-            document.getElementById('install-icon-btn').classList.add('animate-bounce');
+            document.getElementById('install-icon-btn').classList.add('animate-bounce', 'border-yellow-400');
+            document.getElementById('install-banner').classList.remove('hidden');
         });
 
         function installApp() {
             if (deferredPrompt) {
+                document.getElementById('install-banner').classList.add('hidden');
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') { 
-                        console.log('User accepted the install prompt'); 
-                        document.getElementById('install-icon-btn').classList.remove('animate-bounce');
+                        document.getElementById('install-icon-btn').classList.remove('animate-bounce', 'border-yellow-400');
                     }
                     deferredPrompt = null;
                 });
             } else {
-                // যদি অ্যাপ আগে থেকেই ইন্সটল করা থাকে বা ব্রাউজার সাপোর্ট না করে
                 Swal.fire({
-                    icon: 'info',
-                    title: 'অ্যাপ ইন্সটল',
+                    icon: 'info', title: 'অ্যাপ ইন্সটল',
                     text: 'আপনি ইতিমধ্যেই অ্যাপটি ইন্সটল করেছেন, অথবা আপনার ব্রাউজার সাপোর্ট করছে না। দয়া করে ব্রাউজার মেনু থেকে "Add to Home screen" নির্বাচন করুন।',
-                    confirmButtonColor: '#E2136E',
-                    confirmButtonText: 'বুঝতে পেরেছি'
+                    confirmButtonColor: '#E2136E'
                 });
             }
         }
 
-        // Service Worker Reg
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(function() {
-                    console.log("Service Worker Registered");
-                });
+                navigator.serviceWorker.register('/sw.js');
             });
         }
+
+        // 3. Global Page Load Animation (Browser Style)
+        const progressBar = document.getElementById('top-progress-bar');
+        window.addEventListener('DOMContentLoaded', () => { progressBar.style.width = '60%'; });
+        window.addEventListener('load', () => {
+            progressBar.style.width = '100%';
+            setTimeout(() => { progressBar.style.opacity = '0'; }, 300);
+            setTimeout(() => { progressBar.style.width = '0'; progressBar.style.opacity = '1'; }, 600);
+        });
+
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                const target = this.getAttribute('target');
+                if (href && href !== '#' && !href.startsWith('#') && target !== '_blank' && !href.startsWith('javascript')) {
+                    progressBar.style.opacity = '1';
+                    progressBar.style.width = '30%';
+                    setTimeout(() => { progressBar.style.width = '65%'; }, 200);
+                    setTimeout(() => { progressBar.style.width = '85%'; }, 500);
+                }
+            });
+        });
+
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                progressBar.style.opacity = '1';
+                progressBar.style.width = '40%';
+                setTimeout(() => { progressBar.style.width = '75%'; }, 200);
+                setTimeout(() => { progressBar.style.width = '90%'; }, 600);
+            });
+        });
     </script>
 </body>
 </html>
