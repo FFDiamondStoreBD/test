@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Tasks - Admin Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; } </style>
+</head>
+<body class="text-slate-800 antialiased pb-20">
+
+    <nav class="bg-[#0f172a] border-b border-slate-800 sticky top-0 z-50 shadow-lg shadow-slate-900/20">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/admin" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 flex items-center gap-2"><i class="fa-solid fa-shield-halved text-blue-500"></i> Admin Pro</a>
+            <a href="/dashboard" class="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl text-sm font-bold"><i class="fa-solid fa-house"></i> সাইট</a>
+        </div>
+        <!-- Menus -->
+        <div class="bg-slate-900 border-t border-slate-800 flex items-center gap-2 overflow-x-auto px-4 py-3">
+            <a href="/admin" class="px-4 py-1.5 text-slate-400 hover:text-white font-bold text-sm">ডিপোজিট</a>
+            <a href="/admin/withdrawals" class="px-4 py-1.5 text-slate-400 hover:text-white font-bold text-sm">উইথড্র</a>
+            <a href="/admin/users" class="px-4 py-1.5 text-slate-400 hover:text-white font-bold text-sm">ইউজার্স</a>
+            <a href="/admin/gmail" class="px-4 py-1.5 bg-blue-600 text-white rounded-lg font-bold text-sm shadow-md"><i class="fa-brands fa-google text-yellow-400"></i> জিমেইল টাস্ক</a>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-8 px-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="mb-6">{% for category, message in messages %}<div class="p-4 mb-3 rounded-xl text-white font-bold shadow-md {% if category == 'success' %} bg-emerald-500 {% else %} bg-rose-500 {% endif %}"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+
+        <!-- Add New Task Form -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-8">
+            <h2 class="text-lg font-black text-slate-800 mb-4 border-b border-slate-100 pb-2"><i class="fa-solid fa-plus-circle text-blue-500"></i> নতুন জিমেইল টাস্ক অ্যাড করুন</h2>
+            <form action="/admin/add_gmail_task" method="POST" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">First & Last Name</label><input type="text" name="first_name" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Email Prefix</label><input type="text" name="email_prefix" placeholder="rohim2026" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Password</label><input type="text" name="password_string" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1">রেট (৳)</label><input type="number" name="rate" value="5" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none font-bold"></div>
+                <div><button type="submit" class="w-full bg-blue-600 text-white p-2.5 rounded-lg font-bold shadow-md hover:bg-blue-700">অ্যাড করুন</button></div>
+            </form>
+        </div>
+
+        <!-- Task List -->
+        <h2 class="text-lg font-black text-slate-800 mb-4"><i class="fa-solid fa-list-check text-slate-500"></i> সকল টাস্কের তালিকা</h2>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <table class="w-full text-left whitespace-nowrap text-sm">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-100">
+                    <tr>
+                        <th class="px-6 py-3 font-extrabold uppercase text-[10px]">একাউন্ট ডিটেইলস</th>
+                        <th class="px-6 py-3 font-extrabold uppercase text-[10px]">রেট</th>
+                        <th class="px-6 py-3 font-extrabold uppercase text-[10px]">স্ট্যাটাস</th>
+                        <th class="px-6 py-3 font-extrabold uppercase text-[10px] text-center">অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for t in tasks %}
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-3">
+                            <p class="font-black text-slate-700">{{ t.first_name }}</p>
+                            <p class="font-mono text-xs text-blue-500">{{ t.email_prefix }}@gmail.com</p>
+                            <p class="font-mono text-[10px] text-slate-400">Pass: {{ t.password_string }}</p>
+                        </td>
+                        <td class="px-6 py-3 font-black text-emerald-500">৳{{ t.rate }}</td>
+                        <td class="px-6 py-3">
+                            {% if t.status == 'Available' %}<span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-[10px] font-bold">Available</span>
+                            {% elif t.status == 'In Progress' %}<span class="bg-amber-100 text-amber-600 px-2 py-0.5 rounded text-[10px] font-bold">User ID: {{ t.assigned_user_id }}</span>
+                            {% elif t.status == 'Submitted' %}<span class="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-[10px] font-bold animate-pulse">Checking (ID: {{ t.assigned_user_id }})</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 text-center space-x-2">
+                            {% if t.status == 'Submitted' %}
+                                <a href="/admin/gmail_action/{{ t.id }}/approve" class="bg-emerald-500 text-white px-2 py-1 rounded text-xs font-bold" onclick="return confirm('একাউন্টটি চেক করেছেন? এপ্রুভ করলে ইউজারের একাউন্টে টাকা যোগ হবে।')">Approve & Pay</a>
+                                <a href="/admin/gmail_action/{{ t.id }}/reject" class="bg-rose-500 text-white px-2 py-1 rounded text-xs font-bold" onclick="return confirm('বাতিল করলে কাজটি আবার অন্য ইউজারদের জন্য এভেইলেবল হয়ে যাবে।')">Reject</a>
+                            {% else %}
+                                <a href="/admin/gmail_action/{{ t.id }}/delete" class="text-rose-400 hover:text-rose-600 font-bold text-[10px] uppercase"><i class="fa-solid fa-trash"></i> Delete</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
