@@ -2,125 +2,259 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>জিমেইল মাইক্রো-টাস্ক - Easy Earn</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; } .bg-bkash { background-color: #E2136E; } .text-bkash { color: #E2136E; } </style>
+    
+    <!-- Google Fonts (Bangla) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style> 
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f4f6f9; } 
+        .bg-bkash { background-color: #E2136E; } 
+        .text-bkash { color: #E2136E; } 
+    </style>
 </head>
 <body class="text-gray-800 antialiased pb-24">
 
-    <div class="bg-bkash text-white px-5 pt-6 pb-8 rounded-b-[2rem] shadow-lg relative z-20">
-        <div class="flex justify-between items-center mb-4">
-            <a href="/dashboard" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md transition active:scale-95"><i class="fa-solid fa-arrow-left text-lg"></i></a>
-            <h1 class="text-xl font-extrabold tracking-wide">জিমেইল একাউন্ট তৈরি</h1>
+    <!-- ========================================== -->
+    <!-- 1. App Header & Tutorial Button            -->
+    <!-- ========================================== -->
+    <div class="bg-bkash text-white px-5 pt-6 pb-10 rounded-b-[2rem] shadow-lg relative z-20 overflow-hidden">
+        <!-- Decor Elements -->
+        <div class="absolute top-[-20px] right-[-20px] w-32 h-32 bg-white opacity-10 rounded-full"></div>
+        <div class="absolute bottom-[-20px] left-[-20px] w-24 h-24 bg-white opacity-10 rounded-full"></div>
+
+        <div class="flex justify-between items-center mb-5 relative z-10">
+            <a href="/dashboard" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md transition active:scale-95 shadow-sm border border-white/30">
+                <i class="fa-solid fa-arrow-left text-lg"></i>
+            </a>
+            <h1 class="text-xl font-black tracking-wide">জিমেইল জবস</h1>
             <div class="w-10"></div>
+        </div>
+
+        <!-- Tutorial Button -->
+        <div class="text-center relative z-10">
+            <a href="https://youtu.be/your_tutorial_link" target="_blank" class="inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 transition active:scale-95 border-2 border-pink-200">
+                <i class="fa-brands fa-youtube text-red-600 text-lg animate-pulse"></i> কাজের নিয়ম দেখুন
+            </a>
+            <p class="text-[10px] text-pink-100 font-bold mt-2">নতুন হলে আগে ভিডিওটি দেখে নিন</p>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4 -mt-4 relative z-30">
-        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="mb-4">{% for category, message in messages %}<div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-md flex items-center gap-2 animate-bounce {% if category == 'success' %} bg-green-500 {% elif category == 'danger' %} bg-red-600 animate-pulse border-2 border-red-800 {% else %} bg-yellow-500 text-yellow-900 {% endif %}"><i class="fa-solid fa-circle-exclamation"></i> {{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+    <div class="max-w-md mx-auto px-4 -mt-5 relative z-30">
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                {% for category, message in messages %}
+                    <div class="p-3 mb-2 rounded-xl text-white text-sm font-bold shadow-lg flex items-center gap-2 animate-bounce
+                        {% if category == 'success' %} bg-emerald-500 
+                        {% elif category == 'danger' %} bg-red-600 border-2 border-red-800 animate-pulse
+                        {% else %} bg-amber-500 text-amber-900 {% endif %}">
+                        <i class="fa-solid fa-circle-exclamation text-lg"></i> <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <!-- Rules Box -->
-        <div class="bg-red-50 border border-red-200 p-4 rounded-2xl mb-6 shadow-sm">
-            <h3 class="text-red-700 font-extrabold text-sm mb-1"><i class="fa-solid fa-triangle-exclamation"></i> কড়া সতর্কতা</h3>
-            <p class="text-xs text-red-600 font-semibold leading-relaxed">আপনি কোনো কাজ গ্রহণ (Take Task) করার পর ঠিক <strong>১ ঘণ্টার মধ্যে</strong> একাউন্ট তৈরি করে "Done" বাটনে ক্লিক করতে হবে। না হলে আপনার মেইন ব্যালেন্স থেকে <strong>২০ টাকা জরিমানা</strong> কাটা হবে!</p>
+        <!-- Strict Rules Box -->
+        <div class="bg-red-50 border border-red-200 p-4 rounded-2xl mb-6 shadow-sm flex items-start gap-3">
+            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-xl shrink-0 mt-1"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i></div>
+            <div>
+                <h3 class="text-red-700 font-black text-sm mb-1">কড়া সতর্কতা</h3>
+                <p class="text-xs text-red-600 font-bold leading-relaxed">কাজ গ্রহণ (Take Task) করার পর ঠিক <strong>১ ঘণ্টার মধ্যে</strong> একাউন্ট তৈরি করে সাবমিট করতে হবে। না হলে ব্যালেন্স থেকে <strong>২০ টাকা জরিমানা</strong> কাটা হবে!</p>
+            </div>
         </div>
 
-        <!-- 1. My Active Tasks -->
+        <!-- ========================================== -->
+        <!-- 2. My Active Tasks (Advanced Terminal UI)  -->
+        <!-- ========================================== -->
         {% if my_tasks %}
-        <h2 class="text-base font-extrabold text-gray-800 mb-3 px-1"><i class="fa-solid fa-user-clock text-blue-500 mr-1"></i> আপনার রানিং কাজ</h2>
-        <div class="space-y-4 mb-8">
+        <div class="flex items-center justify-between mb-3 px-1">
+            <h2 class="text-base font-black text-gray-800"><i class="fa-solid fa-user-clock text-blue-600 mr-1"></i> আপনার রানিং কাজ</h2>
+            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm border border-blue-200">{{ my_tasks|length }} টি</span>
+        </div>
+        
+        <div class="space-y-5 mb-8">
             {% for t in my_tasks %}
-            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-5 shadow-lg border border-gray-700 text-white relative overflow-hidden">
-                {% if t.status == 'In Progress' %}
+            <div class="bg-[#0f172a] rounded-3xl p-5 shadow-[0_10px_20px_rgba(0,0,0,0.2)] border border-slate-700 text-white relative overflow-hidden">
                 
-                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
-                    <span class="bg-yellow-500 text-gray-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest animate-pulse">Running</span>
-                    <div class="text-right">
-                        <p class="text-[10px] text-gray-400">সময় বাকি</p>
-                        <p class="text-red-400 font-mono font-bold text-sm timer" data-assigned="{{ t.assigned_at }}">Loading...</p>
+                {% if t.status == 'In Progress' %}
+                <!-- Status Header -->
+                <div class="flex justify-between items-center mb-5 border-b border-slate-700 pb-4">
+                    <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-[0_0_10px_rgba(245,158,11,0.5)] animate-pulse flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> Running</span>
+                    <div class="text-right bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700">
+                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5"><i class="fa-regular fa-clock"></i> সময় বাকি</p>
+                        <p class="text-rose-400 font-mono font-bold text-sm tracking-widest timer" data-assigned="{{ t.assigned_at }}">Loading...</p>
                     </div>
                 </div>
                 
-                <div class="space-y-3 mb-5">
-                    <div><p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">First & Last Name:</p><p class="font-extrabold text-lg text-blue-400">{{ t.first_name }}</p></div>
-                    <div>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Email Address:</p>
-                        <div class="flex items-center gap-2"><p class="font-mono bg-black/40 px-3 py-1.5 rounded-lg text-sm border border-gray-600">{{ t.email_prefix }}@gmail.com</p></div>
+                <!-- Data Copy Area (Advanced) -->
+                <div class="space-y-3 mb-6">
+                    
+                    <!-- Full Name -->
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-600 flex justify-between items-center group">
+                        <div class="overflow-hidden pr-2">
+                            <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-1">First & Last Name</p>
+                            <p class="font-black text-base text-blue-400 truncate">{{ t.first_name }}</p>
+                        </div>
+                        <button onclick="copyToClipboard('{{ t.first_name }}', this)" class="w-10 h-10 bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white rounded-lg flex items-center justify-center transition active:scale-90 shadow-inner shrink-0">
+                            <i class="fa-regular fa-copy text-lg"></i>
+                        </button>
                     </div>
-                    <div>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Password:</p>
-                        <p class="font-mono bg-black/40 px-3 py-1.5 rounded-lg text-sm border border-gray-600 tracking-widest text-green-400">{{ t.password_string }}</p>
+                    
+                    <!-- Email Prefix -->
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-600 flex justify-between items-center group">
+                        <div class="overflow-hidden pr-2">
+                            <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-1">Email Address</p>
+                            <p class="font-mono text-[13px] font-bold text-emerald-400 truncate">{{ t.email_prefix }}@gmail.com</p>
+                        </div>
+                        <button onclick="copyToClipboard('{{ t.email_prefix }}@gmail.com', this)" class="w-10 h-10 bg-slate-700 hover:bg-emerald-600 text-slate-300 hover:text-white rounded-lg flex items-center justify-center transition active:scale-90 shadow-inner shrink-0">
+                            <i class="fa-regular fa-copy text-lg"></i>
+                        </button>
                     </div>
+                    
+                    <!-- Password -->
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-600 flex justify-between items-center group">
+                        <div class="overflow-hidden pr-2">
+                            <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-1">Password</p>
+                            <p class="font-mono text-sm font-bold text-amber-400 tracking-widest truncate">{{ t.password_string }}</p>
+                        </div>
+                        <button onclick="copyToClipboard('{{ t.password_string }}', this)" class="w-10 h-10 bg-slate-700 hover:bg-amber-600 text-slate-300 hover:text-white rounded-lg flex items-center justify-center transition active:scale-90 shadow-inner shrink-0">
+                            <i class="fa-regular fa-copy text-lg"></i>
+                        </button>
+                    </div>
+
                 </div>
 
-                <form method="POST" action="/submit_gmail_task/{{ t.id }}">
-                    <button type="submit" class="w-full bg-green-500 text-white py-3 rounded-xl text-sm font-black shadow-lg shadow-green-500/30 hover:scale-[1.02] transition active:scale-95 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-check-double"></i> কাজ শেষ করেছি (Done)
-                    </button>
-                </form>
+                <!-- Submit Action -->
+                <div class="bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                    <p class="text-xs text-slate-400 font-bold mb-3 text-center"><i class="fa-solid fa-circle-info text-blue-400"></i> উপরের তথ্যগুলো দিয়ে জিমেইল খোলা শেষ হলে নিচের বাটনে ক্লিক করুন।</p>
+                    <form method="POST" action="/submit_gmail_task/{{ t.id }}">
+                        <button type="submit" class="w-full bg-emerald-500 text-white py-3.5 rounded-xl text-sm font-black shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition active:scale-95 flex items-center justify-center gap-2 uppercase tracking-wide" onclick="return confirm('আপনি কি নিশ্চিত যে জিমেইলটি সম্পূর্ণভাবে তৈরি করেছেন? ভুল ডাটা দিলে একাউন্ট ব্যান হতে পারে!')">
+                            <i class="fa-solid fa-check-double text-lg"></i> কাজ শেষ করেছি (Submit)
+                        </button>
+                    </form>
+                </div>
                 
                 {% else %}
-                <div class="text-center py-4">
-                    <div class="w-16 h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <h3 class="font-black text-lg text-white">রিভিউ পেন্ডিং</h3>
-                    <p class="text-xs text-gray-400 mt-1">আপনার কাজটি এডমিনের কাছে পাঠানো হয়েছে। এপ্রুভ হলে ৳{{ t.rate }} ব্যালেন্সে যুক্ত হবে।</p>
+                <!-- If Submitted and Pending Review -->
+                <div class="text-center py-8">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest shadow-md">Under Review</div>
+                    <div class="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-emerald-500/30">
+                        <i class="fa-solid fa-clock-rotate-left animate-spin-slow"></i>
+                    </div>
+                    <h3 class="font-black text-xl text-white mb-2">রিভিউ পেন্ডিং</h3>
+                    <p class="text-xs text-slate-400 font-semibold max-w-[250px] mx-auto leading-relaxed">আপনার কাজটি এডমিনের কাছে পাঠানো হয়েছে। এডমিন চেক করে এপ্রুভ করলেই আপনার ব্যালেন্সে <strong class="text-emerald-400">৳{{ t.rate }}</strong> যুক্ত হবে।</p>
                 </div>
                 {% endif %}
+
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
-        <!-- 2. Available Tasks -->
-        <h2 class="text-base font-extrabold text-gray-800 mb-3 px-1"><i class="fa-solid fa-list-check text-bkash mr-1"></i> নতুন কাজের তালিকা</h2>
-        <div class="space-y-4">
+        <!-- ========================================== -->
+        <!-- 3. Available Tasks List                    -->
+        <!-- ========================================== -->
+        <div class="flex items-center justify-between mb-3 px-1">
+            <h2 class="text-base font-black text-gray-800"><i class="fa-solid fa-list-check text-bkash mr-1"></i> নতুন কাজের তালিকা</h2>
+            <span class="bg-pink-100 text-bkash px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-sm border border-pink-200">এভেইলেবল: {{ available_tasks|length }} টি</span>
+        </div>
+        
+        <div class="space-y-4 mb-10">
             {% for t in available_tasks %}
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full bg-pink-50 text-bkash flex items-center justify-center text-2xl shadow-sm border border-pink-100"><i class="fa-brands fa-google"></i></div>
-                    <div>
-                        <h3 class="font-extrabold text-gray-800 text-sm">জিমেইল একাউন্ট তৈরি</h3>
-                        <p class="text-[11px] font-bold text-gray-500 mt-0.5">রেট: <span class="text-green-600 font-black">৳{{ t.rate }}</span></p>
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3 relative overflow-hidden group hover:border-pink-300 transition">
+                <div class="absolute right-[-10px] top-[-10px] text-5xl text-gray-50 opacity-50 group-hover:text-pink-50 transition"><i class="fa-brands fa-google"></i></div>
+                
+                <div class="flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-pink-50 text-bkash flex items-center justify-center text-2xl shadow-inner border border-pink-100"><i class="fa-solid fa-envelope-open-text"></i></div>
+                        <div>
+                            <h3 class="font-black text-gray-800 text-sm">জিমেইল একাউন্ট তৈরি</h3>
+                            <p class="text-xs font-bold text-gray-500 mt-0.5"><i class="fa-solid fa-bolt text-yellow-500"></i> রেট: <span class="text-green-600 font-black text-sm">৳{{ t.rate }}</span></p>
+                        </div>
                     </div>
                 </div>
-                <form method="POST" action="/take_gmail_task/{{ t.id }}">
-                    <button type="submit" class="bg-bkash text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-md hover:scale-105 transition active:scale-95" onclick="return confirm('সতর্কতা: কাজ নেওয়ার ১ ঘণ্টার মধ্যে শেষ না করলে ২০ টাকা জরিমানা হবে। আপনি কি রাজি?')">
-                        কাজটি নিন
-                    </button>
-                </form>
+                
+                <div class="relative z-10 pt-2 border-t border-gray-50">
+                    <form method="POST" action="/take_gmail_task/{{ t.id }}">
+                        <button type="submit" class="w-full bg-bkash text-white py-2.5 rounded-xl text-xs font-black shadow-md hover:bg-pink-700 transition active:scale-95 flex justify-center items-center gap-2 uppercase tracking-wide" onclick="return confirm('সতর্কতা: কাজ নেওয়ার ১ ঘণ্টার মধ্যে শেষ না করলে ২০ টাকা জরিমানা হবে। আপনি কি কাজটি নিতে চান?')">
+                            <i class="fa-solid fa-hand-pointer"></i> কাজটি গ্রহণ করুন
+                        </button>
+                    </form>
+                </div>
             </div>
             {% else %}
-            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 text-center">
-                <i class="fa-solid fa-box-open text-gray-300 text-4xl mb-2"></i>
-                <p class="text-sm font-bold text-gray-500">এই মুহূর্তে নতুন কোনো কাজ নেই।</p>
+            <!-- Empty State -->
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 text-center">
+                <div class="w-20 h-20 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-gray-100"><i class="fa-solid fa-box-open"></i></div>
+                <h3 class="font-black text-gray-800 text-lg mb-1">কোনো কাজ নেই!</h3>
+                <p class="text-xs font-bold text-gray-500">এই মুহূর্তে নতুন কোনো কাজ এভেইলেবল নেই। দয়া করে কিছুক্ষণ পর আবার চেক করুন।</p>
             </div>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Timer Script for 1 Hour -->
+    <!-- ========================================== -->
+    <!-- Scripts (Timer & Copy Function)            -->
+    <!-- ========================================== -->
     <script>
+        // Copy to Clipboard Logic
+        function copyToClipboard(text, btnElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Change icon to checkmark
+                const icon = btnElement.querySelector('i');
+                const originalClass = icon.className;
+                
+                btnElement.classList.replace('text-slate-300', 'text-green-400');
+                icon.className = "fa-solid fa-check text-xl";
+                
+                // Show small toast
+                Swal.fire({
+                    toast: true, position: 'top-end', icon: 'success',
+                    title: 'কপি হয়েছে!', showConfirmButton: false, timer: 1500,
+                    background: '#1e293b', color: '#fff'
+                });
+
+                // Revert back after 2 seconds
+                setTimeout(() => {
+                    icon.className = originalClass;
+                    btnElement.classList.replace('text-green-400', 'text-slate-300');
+                }, 2000);
+            });
+        }
+
+        // Countdown Timer Logic (1 Hour Penalty)
         document.querySelectorAll('.timer').forEach(function(el) {
             const assignedStr = el.getAttribute('data-assigned');
-            // Clean Supabase ISO string
-            const cleanStr = assignedStr.split('.')[0].replace(' ', 'T');
+            const cleanStr = assignedStr.split('.')[0].replace(' ', 'T'); // Fix Safari/iOS issue
             const assignedTime = new Date(cleanStr).getTime();
-            const deadline = assignedTime + (60 * 60 * 1000); // 1 Hour added
+            const deadline = assignedTime + (60 * 60 * 1000); // Add 1 Hour
 
             const updateTimer = setInterval(function() {
                 const distance = deadline - new Date().getTime();
+                
                 if (distance <= 0) {
                     clearInterval(updateTimer);
-                    el.innerHTML = "সময় শেষ!";
-                    el.classList.replace('text-red-400', 'text-gray-500');
-                    setTimeout(() => location.reload(), 2000); // Reload to apply penalty
+                    el.innerHTML = "সময় শেষ!";
+                    el.classList.replace('text-rose-400', 'text-slate-500');
+                    // Reload the page to trigger the Python penalty check automatically
+                    setTimeout(() => location.reload(), 2000); 
                 } else {
                     const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     const s = Math.floor((distance % (1000 * 60)) / 1000);
-                    el.innerHTML = (m<10?"0"+m:m) + ":" + (s<10?"0"+s:s) + " মিনিট";
+                    el.innerHTML = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s) + " <span class='text-[10px] text-slate-500 ml-1'>মিনিট</span>";
                 }
             }, 1000);
         });
