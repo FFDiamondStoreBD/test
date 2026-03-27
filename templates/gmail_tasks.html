@@ -206,28 +206,25 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
+ <!-- ========================================== -->
     <!-- Scripts (Timer & Copy Function)            -->
     <!-- ========================================== -->
     <script>
         // Copy to Clipboard Logic
         function copyToClipboard(text, btnElement) {
             navigator.clipboard.writeText(text).then(() => {
-                // Change icon to checkmark
                 const icon = btnElement.querySelector('i');
                 const originalClass = icon.className;
                 
                 btnElement.classList.replace('text-slate-300', 'text-green-400');
                 icon.className = "fa-solid fa-check text-xl";
                 
-                // Show small toast
                 Swal.fire({
                     toast: true, position: 'top-end', icon: 'success',
                     title: 'কপি হয়েছে!', showConfirmButton: false, timer: 1500,
                     background: '#1e293b', color: '#fff'
                 });
 
-                // Revert back after 2 seconds
                 setTimeout(() => {
                     icon.className = originalClass;
                     btnElement.classList.replace('text-green-400', 'text-slate-300');
@@ -235,21 +232,31 @@
             });
         }
 
-        // Countdown Timer Logic (1 Hour Penalty)
+        // Countdown Timer Logic (Timezone Fixed)
         document.querySelectorAll('.timer').forEach(function(el) {
             const assignedStr = el.getAttribute('data-assigned');
-            const cleanStr = assignedStr.split('.')[0].replace(' ', 'T'); // Fix Safari/iOS issue
+            if (!assignedStr || assignedStr === 'None') return;
+
+            // ক্লিন স্ট্রিং এবং Timezone (Z) ফিক্স করা হলো
+            let cleanStr = assignedStr.split('.')[0].replace(' ', 'T'); 
+            if (!cleanStr.endsWith('Z')) {
+                cleanStr += 'Z'; // Vercel এর UTC টাইমকে ব্রাউজারে ঠিক করার জন্য
+            }
+            
             const assignedTime = new Date(cleanStr).getTime();
-            const deadline = assignedTime + (60 * 60 * 1000); // Add 1 Hour
+            const deadline = assignedTime + (60 * 60 * 1000); // ১ ঘন্টা (৬০ মিনিট) যোগ করা হলো
 
             const updateTimer = setInterval(function() {
-                const distance = deadline - new Date().getTime();
+                const now = new Date().getTime();
+                const distance = deadline - now;
                 
                 if (distance <= 0) {
                     clearInterval(updateTimer);
                     el.innerHTML = "সময় শেষ!";
-                    el.classList.replace('text-rose-400', 'text-slate-500');
-                    // Reload the page to trigger the Python penalty check automatically
+                    el.classList.remove('text-rose-400');
+                    el.classList.add('text-slate-500');
+                    
+                    // ২ সেকেন্ড পর পেজ রিলোড হয়ে ডাটাবেস থেকে ২০ টাকা জরিমানা কাটবে
                     setTimeout(() => location.reload(), 2000); 
                 } else {
                     const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
