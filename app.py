@@ -566,5 +566,134 @@ def api_spin_reward():
         "message": f"অভিনন্দন! আপনি স্পিন করে ৳{won_amount} জিতেছেন!" if won_amount > 0 else "দুঃখিত! আপনি এবার কিছু পাননি। কাল আবার চেষ্টা করুন!"
         }
 
+# ==========================================
+#         GMAIL MICRO-TASKS SYSTEM
+# ==========================================
+
+# ১ ঘণ্টার মধ্যে কাজ না করলে ২০ টাকা কাটার ফাংশন
+def check_gmail_penalties(user_id):
+    overdue_tasks = supabase.table("gmail_tasks").select("*").eq("assigned_user_id", user_id).eq("status", "In Progress").execute().data
+    if not overdue_tasks: return
+    
+    user_data = supabase.table("users").select("balance").eq("id", user_id).execute().data[0]
+    current_balance = user_data['balance']
+    penalty_applied = False
+    
+    for task in overdue_tasks:
+        if task['assigned_at']:
+            clean_time = task['assigned_at'].split('.')[0].split('+')[0]
+            assigned_time = datetime.fromisoformat(clean_time)
+            
+            # যদি ১ ঘন্টা পার হয়ে যায়
+            if datetime.now() > assigned_time + timedelta(hours=1):
+                current_balance -= 20.0
+                penalty_applied = True
+                
+                # কাজটিকে আবার Available করে দেওয়া হচ্ছে
+                supabase.table("gmail_tasks").update({
+                    "status": "Available",
+                    "assigned_user_id": None,
+                    "assigned_at": None
+                }).eq("id", task['id']).execute()
+                
+    if penalty_applied:
+        supabase.table("users").update({"balance": current_balance}).eq("id", user_id).execute()
+        flash("সতর্কতা: আপনি ১ ঘণ্টার মধ্যে জিমেইল একাউন্ট সাবমিট না করায় আপনার ব্যালেন্স থেকে ২০ টাকা জরিমানা কাটা হয়েছে!", "danger")
+
+@app.route('/gmail_tasks')
+def gmail_tasks():
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user_id = session['user_id']
+    user = supabase.table("users").select("*").eq("id", user_id).execute().data[0]
+    
+    # পেজে ঢোকার সাথে সাথেই চেক করবে জরিমানা খাবে কি না
+    check_gmail_penalties(user_id)
+    
+    # ইউজারের নেওয়া রানিং কাজ
+    my_tasks = supabase.table("gmail_tasks").select("*").eq("assigned_user_id", user_id).in_("status", ["In Progress", "Submitted"]).execute().data
+    # খালি কাজগুলো (যেগুলো কেউ নেয়নি)
+    available_tasks = supabase.table("gmail_tasks").select("*").eq("status", "Available").execute().data
+    
+    return render_template('gmail_tasks.html', user=user, my_tasks=my_tasks, available_tasks=available_tasks)
+
+@app.route('/take_gmail_task/<int:task_id>', methods=['POST'])
+def take_gmail_task(task_id):
+    if 'user_id' not in session: return redirect(url_for('login'))
+    user_id = session['user_id']
+    
+    task = supabase.table("gmail_tasks").select("*").eq("id", task_id).execute().data[0]
+    if task['status'] == 'Available':
+        supabase.table("gmail_tasks").update({
+            "status": "In Progress",
+            "assigned_user_id": user_id,
+            "assigned_at": datetime.now().isoformat()
+        }).eq("id", task_id).execute()
+        flash("কাজটি আপনি সফলভাবে গ্রহণ করেছেন! ১ ঘণ্টার মধ্যে সম্পন্ন করে সাবমিট করুন।", "success")
+    else:
+        flash("দুঃখিত, এই কাজটি অন্য কেউ নিয়ে নিয়েছে!", "warning")
+    return redirect(url_for('gmail_tasks'))
+
+@app.route('/submit_gmail_task/<int:task_id>', methods=['POST'])
+def submit_gmail_task(task_id):
+    if 'user_id' not in session: return redirect(url_for('login'))
+    supabase.table("gmail_tasks").update({"status": "Submitted"}).eq("id", task_id).execute()
+    flash("জিমেইল একাউন্টটি রিভিউয়ের জন্য এডমিনের কাছে পাঠানো হয়েছে!", "success")
+    return redirect(url_for('gmail_tasks'))
+
+# ==========================================
+#         ADMIN GMAIL ROUTES
+# ==========================================
+@app.route('/admin/gmail')
+def admin_gmail():
+    if not is_admin(): return redirect(url_for('dashboard'))
+    tasks = supabase.table("gmail_tasks").select("*").order("created_at", desc=True).execute().data
+    return render_template('admin_gmail.html', tasks=tasks)
+
+@app.route('/admin/add_gmail_task', methods=['POST'])
+def admin_add_gmail_task():
+    if not is_admin(): return redirect(url_for('dashboard'))
+    data = {
+        "first_name": request.form.get("first_name"),
+        "email_prefix": request.form.get("email_prefix"),
+        "password_string": request.form.get("password_string"),
+        "rate": float(request.form.get("rate")),
+        "status": "Available"
+    }
+    supabase.table("gmail_tasks").insert(data).execute()
+    flash("নতুন জিমেইল টাস্ক সফলভাবে অ্যাড করা হয়েছে!", "success")
+    return redirect(url_for('admin_gmail'))
+
+@app.route('/admin/gmail_action/<int:task_id>/<action>')
+def admin_gmail_action(task_id, action):
+    if not is_admin(): return redirect(url_for('dashboard'))
+    task = supabase.table("gmail_tasks").select("*").eq("id", task_id).execute().data[0]
+    
+    if action == 'approve' and task['status'] == 'Submitted':
+        # ইউজারকে টাকা দেওয়া হচ্ছে
+        u_data = supabase.table("users").select("balance, total_earned").eq("id", task['assigned_user_id']).execute().data[0]
+        supabase.table("users").update({
+            "balance": u_data['balance'] + task['rate'],
+            "total_earned": u_data.get('total_earned', 0) + task['rate']
+        }).eq("id", task['assigned_user_id']).execute()
+        
+        # টাস্ক ডিলিট করা হচ্ছে (কারণ কাজ শেষ)
+        supabase.table("gmail_tasks").delete().eq("id", task_id).execute()
+        flash(f"কাজটি এপ্রুভ করা হয়েছে এবং ইউজারকে {task['rate']} টাকা পেমেন্ট করা হয়েছে!", "success")
+        
+    elif action == 'reject' and task['status'] in ['Submitted', 'In Progress']:
+        # কাজ রিজেক্ট করে আবার এভেইলেবল করা হচ্ছে
+        supabase.table("gmail_tasks").update({
+            "status": "Available",
+            "assigned_user_id": None,
+            "assigned_at": None
+        }).eq("id", task_id).execute()
+        flash("কাজটি বাতিল করে আবার নতুনদের জন্য উন্মুক্ত করা হয়েছে!", "warning")
+        
+    elif action == 'delete':
+        supabase.table("gmail_tasks").delete().eq("id", task_id).execute()
+        flash("টাস্কটি ডিলিট করা হয়েছে!", "danger")
+        
+    return redirect(url_for('admin_gmail'))
+    
 if __name__ == '__main__':
     app.run(debug=True)
